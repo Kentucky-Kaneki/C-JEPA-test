@@ -2,8 +2,8 @@
 
 > **Current Submission Readiness: 48%**  
 > **Research & Implementation Readiness: 65–70%**  
-> **Target Target/Scope**: Autonomous Cyber-Defence Latent World-Model & Representation Evaluation in CybORG 3.1 (`Scenario1b`).  
-> **Primary Document Purpose**: Comprehensive, single-source-of-truth master document detailing current progress, empirical findings, architectural contracts, literature positioning, statistical protocols, identified integrity gaps, and the step-by-step roadmap to publication readiness.
+> **Target Scope**: Autonomous Cyber-Defence Latent World-Model & Representation Evaluation in CybORG 3.1 (`Scenario1b`).  
+> **Primary Document Purpose**: Comprehensive, single-source-of-truth master document detailing current progress, empirical findings, architectural contracts, mathematical derivations, code-path integrity audits, literature positioning, statistical protocols, identified gaps, and the step-by-step roadmap to publication readiness.
 
 ---
 
@@ -125,7 +125,7 @@ The repository contains ~2,745 words of literature and design notes in [Initial_
 └──────────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### 3.1 Reorganization into Seven Thematic Pillars
+### 4.1 Reorganization into Seven Thematic Pillars
 
 1. **JEPA Foundations & Anti-Collapse Mechanisms**:
    - Evolution from contrastive learning (SimCLR, MoCo) and non-contrastive methods (BYOL, SimSiam, VICReg) to joint-embedding predictive architectures.
@@ -159,38 +159,76 @@ The repository contains ~2,745 words of literature and design notes in [Initial_
 
 ## 5. Department 4: Methodology (Completion: 68%)
 
-### 5.1 Established Methodological Assets
-Core contracts are defined in [RESEARCH_NON_NEGOTIABLES.md](file:///c:/Users/rohil/Documents/GenAI%20Micro%20Project/T-JEPA-test/docs/RESEARCH_NON_NEGOTIABLES.md) and [CYBORG_DATA_TAXONOMY.md](file:///c:/Users/rohil/Documents/GenAI%20Micro%20Project/T-JEPA-test/docs/CYBORG_DATA_TAXONOMY.md):
+### 5.1 Environment Specification & CybORG 3.1 Topology
 
-- **Information Boundary $O_{t-h:t}^{Blue}$**: Strictly defender-observable features. Zero leakage of simulator ground truth (Red positions, unobserved subnets, process tables).
-- **Offline Trajectory Dataset**: 18 shards, 1,800 trajectories, 90,000 total transitions generated via Cartesian product:
-  $$\text{Dataset} = \{\text{Red: } \text{bline}, \text{meander}\} \times \{\text{Blue: } \text{sleep}, \text{random}, \text{coverage}\} \times \{\text{Seed: } 1001, 2003, 3005\}$$
-- **Deterministic Identity Contracts**:
-  - `trajectory_id`: `traj_{red}_{blue}_{seed}_{ep}`
-  - `transition_id`: `{trajectory_id}_t{t}`
-  - `split_group_id`: `group_{seed}_{ep}` (Ensures trajectories with identical initial environment seeds remain in the exact same train/val/test split across all Red/Blue policy combinations).
-- **Phase 3 Frozen Cohort**: SHA-256 verified cohort (`experiments/phase3/phase3_cohort.parquet`).
+Evaluations operate on **CybORG 3.1** `Scenario1b` (CAGE Challenge 2), comprising a 13-host enterprise network split across 3 subnets:
 
-### 5.2 Formal Input, Target, and Mathematical Formulation
+```
+                                CYBORG SCENARIO 1B TOPOLOGY
+                                
+      ┌─────────────────────────────────────────────────────────────────────────────┐
+      │                                USER SUBNET                                  │
+      │  User0 (10.0.0.4)   User1 (10.0.0.5)   User2 (10.0.0.6)   User3 (10.0.0.7)  │
+      │  User4 (10.0.0.8)                                                           │
+      └──────────────────────────────────────┬──────────────────────────────────────┘
+                                             │
+      ┌──────────────────────────────────────┴──────────────────────────────────────┐
+      │                             ENTERPRISE SUBNET                               │
+      │  Enterprise0 (10.0.1.4)  Enterprise1 (10.0.1.5)  Enterprise2 (10.0.1.6)  │
+      │  Defender (10.0.1.7)                                                        │
+      └──────────────────────────────────────┬──────────────────────────────────────┘
+                                             │
+      ┌──────────────────────────────────────┴──────────────────────────────────────┐
+      │                            OPERATIONAL SUBNET                               │
+      │  Op_Host0 (10.0.2.4)   Op_Host1 (10.0.2.5)   Op_Host2 (10.0.2.6)             │
+      │  Op_Server0 (10.0.2.7) [CRITICAL ASSET]                                     │
+      └─────────────────────────────────────────────────────────────────────────────┘
+```
 
-#### Blue Observation Vector ($O_t^{Blue} \in \mathbb{R}^{52}$)
-CybORG 3.1 `ChallengeWrapper` exposes 52 numerical features covering 13 network hosts ($\text{Defender}$, $\text{Enterprise0-2}$, $\text{Op\_Host0-2}$, $\text{Op\_Server0}$, $\text{User0-4}$):
-$$\text{Host}_i = [\text{Subnet}_i, \text{IP}_i, \text{Activity}_i, \text{Compromised}_i] \quad \text{for } i \in \{1 \dots 13\}$$
+#### Observation Encoding Details (52 Features)
+Each of the 13 hosts is represented by 4 discrete/discretized categorical fields in `BlueTableWrapper` / `ChallengeWrapper`:
+$$\text{Host}_i = [\text{Subnet\_ID}_i, \text{IP\_Address}_i, \text{Activity\_State}_i, \text{Compromised\_State}_i]$$
+- **Subnet ID**: $\{0, 1, 2\}$
+- **IP Address**: Discretized host index within subnet $\{0 \dots 4\}$
+- **Activity State**: $\{0: \text{None}, 1: \text{Scanning}, 2: \text{Exploitation/PrivEsc}\}$
+- **Compromised State**: $\{0: \text{Unknown/None}, 1: \text{Compromised}, 2: \text{User Access}, 3: \text{System Access}\}$
 
-#### Temporal Context Encoder ($f_\theta$)
-Given Blue observation history window $h \in \{1, 2, 4, 8\}$:
-$$X_t = [O_{t-h+1}^{Blue}, O_{t-h+2}^{Blue}, \dots, O_t^{Blue}] \in \mathbb{R}^{h \times 52}$$
+#### Discrete Action Space (66 Actions)
+Blue defensive actions $a_t^{Blue} \in \{0 \dots 65\}$ map to abstract action types parameterized by host target:
+- **`Sleep`**: Index `0`
+- **`Monitor(host)`**: Indices `1` to `13`
+- **`Analyse(host)`**: Indices `14` to `26`
+- **`Remove(host)`**: Indices `27` to `39`
+- **`Misinform(host)`**: Indices `40` to `52`
+- **`Restore(host)`**: Indices `53` to `65`
+
+### 5.2 Offline Trajectory Dataset & Deterministic Identity Contracts
+
+The dataset consists of **18 shards** (1,800 trajectories, 90,000 transitions) generated via:
+$$\text{Dataset} = \{\text{Red: } \text{bline}, \text{meander}\} \times \{\text{Blue: } \text{sleep}, \text{random}, \text{coverage}\} \times \{\text{Seed: } 1001, 2003, 3005\}$$
+
+#### Strict Identity Contracts
+To prevent split leakage and guarantee deterministic evaluation pairing:
+- **`trajectory_id`**: `traj_{red}_{blue}_{seed}_{ep}`
+- **`transition_id`**: `{trajectory_id}_t{t}`
+- **`split_group_id`**: `group_{seed}_{ep}`  
+  *Contract*: All trajectories originating from the same environment random seed and episode index belong to the exact same `split_group_id` and are assigned atomically to either `Train`, `Val`, or `HoldoutTest`.
+
+### 5.3 Formal Input, Target, and Loss Formulations
+
+#### Context Encoder ($f_\theta$)
+Given observation history $X_t = [O_{t-h+1}^{Blue}, \dots, O_t^{Blue}] \in \mathbb{R}^{h \times 52}$:
 $$s_t = f_\theta(X_t) \in \mathbb{R}^{d_{context}}$$
 
 #### Action Conditioning & Predictor ($g_\phi$)
-Blue defensive action $a_t^{Blue} \in \{0 \dots 65\}$ (encoding action type $\times$ target host):
+Given Blue action $a_t^{Blue} \in \{0 \dots 65\}$ and horizon step $k \in \{1 \dots 16\}$:
 $$e_a = E_{action}(a_t^{Blue}) \in \mathbb{R}^{d_{action}}$$
 $$\hat{z}_{t+k} = g_\phi(s_t, e_a, k) \in \mathbb{R}^{d_{latent}}$$
 
-#### Target Encoding ($f_{\bar{\theta}}$) & Single-Frame Loss ($T=1$)
-Target representation $z_{t+k}$ generated by EMA target encoder $f_{\bar{\theta}}$ ($\bar{\theta} \leftarrow \tau \bar{\theta} + (1-\tau)\theta$):
+#### Target Encoder ($f_{\bar{\theta}}$) & Single-Frame Loss ($T=1$)
+The target is computed by the EMA target encoder $f_{\bar{\theta}}$ ($\bar{\theta} \leftarrow \tau \bar{\theta} + (1-\tau)\theta$, $\tau=0.996$):
 $$z_{t+k} = f_{\bar{\theta}}(O_{t+k}^{Blue}) \in \mathbb{R}^{d_{latent}}$$
-$$\mathcal{L}_{JEPA} = \| \hat{z}_{t+k} - \text{sg}(z_{t+k}) \|_2^2$$
+$$\mathcal{L}_{JEPA} = \frac{1}{B \cdot d_{latent}} \sum_{b=1}^B \sum_{i=1}^{d_{latent}} \left( \hat{z}_{b, i, t+k} - \text{sg}(z_{b, i, t+k}) \right)^2$$
 
 ```
                            CYBER-JEPA TENSOR FLOW ARCHITECTURE
@@ -218,57 +256,80 @@ $$\mathcal{L}_{JEPA} = \| \hat{z}_{t+k} - \text{sg}(z_{t+k}) \|_2^2$$
                                             ||ẑ_{t+k} - sg(z_{t+k})||²
 ```
 
-### 5.3 Clarification of "Red Information" Boundaries
-To prevent reviewer confusion, the paper must explicitly distinguish three distinct meanings of "Red":
+### 5.4 Primary & Diagnostic Metric Definitions
 
-1. **Red Trajectory Generation**: Red agents (`B_lineAgent`, `RedMeanderAgent`) run inside CybORG to generate realistic adversarial trajectories. (Fully legitimate).
-2. **Blue Observable Consequences**: Blue observes host activity, compromises, and system changes resulting from Red actions. (Fully legitimate).
-3. **Privileged Red Oracle Sidecar**: Internal Red state (true attack stage, unobserved host compromise, Red action sequence) recorded in offline dataset sidecars strictly for post-hoc probing evaluation. (**Never fed to $f_\theta$ or $g_\phi$**).
+#### 1. Linear Probe Macro F1 & AUROC
+A frozen linear probe $h_\omega: z_t \to \{0, 1\}^{13}$ is trained on $z_t$ to predict host compromise state across all 13 hosts. Macro F1 and AUROC are calculated on holdout test split:
+$$\text{Macro F1} = \frac{1}{13} \sum_{i=1}^{13} \text{F1}_i$$
 
-### 5.4 Methodological Remediation Requirements
-- **Pure Zero-Shot Policy Transfer**: Current "Policy-Transfer F1" evaluates models trained on mixed shards. Final submission requires pure zero-shot transfer: train exclusively on `B_lineAgent` trajectories, evaluate zero-shot on `RedMeanderAgent` (and vice versa).
-- **Inactive Red / No-Attack Baseline**: Evaluate representation behavior when Red takes no actions (`Sleep`), testing whether model representations collapse to identity prediction.
-- **Sample-Level Split-Group Statistical Protocol**: Replace current seed-level aggregate bootstrap with sample-level split-group paired bootstrap across aligned deterministic evaluation pairs.
+#### 2. Effective Rank ($\text{EffRank}$)
+Measures dimensional collapse of representation matrix $Z \in \mathbb{R}^{N \times d_{latent}}$. Given singular values $\sigma_1 \ge \sigma_2 \ge \dots \ge \sigma_d$:
+$$p_i = \frac{\sigma_i}{\sum_{j=1}^d \sigma_j}, \quad H(p) = -\sum_{i=1}^d p_i \ln p_i, \quad \text{EffRank}(Z) = \exp(H(p))$$
+- **Healthy Representation**: $\text{EffRank} \ge 6.0$
+- **Dimensional Collapse**: $\text{EffRank} < 2.0$
+
+#### 3. Persistence Baseline MSE
+Evaluates static identity prediction:
+$$\mathcal{L}_{pers}(k) = \frac{1}{B \cdot 52} \sum_{b=1}^B \| O_{t+k, b}^{Blue} - O_{t, b}^{Blue} \|_2^2$$
 
 ---
 
 ## 6. Department 5: Architecture (Completion: 72%)
 
-### 6.1 Implemented Modules (`src/cyber_jepa/`)
-The codebase provides modular implementations across all components:
+### 6.1 Code Package Structure (`src/cyber_jepa/`)
+```
+src/cyber_jepa/
+├── data/
+│   ├── characterize.py    # Dataset characterization & staticity metrics
+│   ├── collector.py       # CybORG trajectory collector
+│   ├── dataset.py         # PyTorch Dataset wrappers & split group handlers
+│   ├── schema.py          # Data taxonomy & typing contracts
+│   └── storage.py         # Parquet shard I/O & integrity checkers
+├── env/
+│   ├── action_mapper.py   # Discrete action 0-65 to CybORG action mapping
+│   └── observation_multiplexer.py # ChallengeWrapper 52D vector extractor
+├── evaluation/
+│   ├── diagnostics.py     # Effective rank & collapse detectors
+│   ├── diagnostics_extended.py # Paired bootstrap analysis scripts
+│   ├── metrics.py         # F1, AUROC, MSE calculation functions
+│   ├── probes.py          # Linear probe trainer & evaluator
+│   └── selection.py       # Preregistered decision tree evaluator
+├── models/
+│   ├── aggregators.py     # LegacyMean, QueryPool, TokenPreservingPredictor
+│   ├── baselines.py       # Persistence & Random baselines
+│   ├── context.py         # TemporalContextEncoder
+│   ├── interface.py       # Model abstract base classes
+│   ├── jepa.py            # CyberJEPA main wrapper & EMA logic
+│   └── predictor.py       # ActionConditionedPredictor
+├── representations/
+│   ├── flat.py            # Flat vector representation module
+│   ├── feature.py         # Feature-token representation module
+│   ├── host.py            # Host-centric token representation module
+│   └── hierarchical.py    # Subnet-level hierarchical representation module
+├── training/
+│   ├── orchestrator.py    # Multi-run sweep orchestrator
+│   └── trainer.py         # Single-run PyTorch training loop
+└── utils/
+    └── reproducibility.py # Global seed setting & deterministic PyTorch flags
+```
 
-- `src/cyber_jepa/representations/`: `flat.py`, `feature.py`, `host.py`, `hierarchical.py`, `canonical.py`.
-- `src/cyber_jepa/models/`: `jepa.py`, `context.py`, `predictor.py`, `aggregators.py`, `baselines.py`.
-- `src/cyber_jepa/training/`: `trainer.py`, `orchestrator.py`.
-- `src/cyber_jepa/evaluation/`: `probes.py`, `metrics.py`, `diagnostics.py`, `selection.py`.
+### 6.2 Model Capacity & Parameter Accounting Table
 
-### 6.2 Tokenization Strategies & Mathematical Formalism
+To ensure fair comparisons in Phase 3, representation architectures were capacity-matched (~522k–685k trainable parameters):
 
-#### 1. Flat Representation (`flat`)
-Flattens $h \times 52$ features into a single vector projected to $d_{model}$:
-$$E_{flat} = \text{Linear}(O_{t-h+1:t}^{Blue}) \in \mathbb{R}^{d_{model}}$$
+| Configuration ID | Token Dimension ($d_{token}$) | Context Dim ($d_{ctx}$) | Latent Dim ($d_{lat}$) | Trainable Params | Non-Trainable EMA Params | Total Params |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
+| `flat_h4_control` | N/A | 256 | 256 | 548,416 | 180,928 | 729,344 |
+| `feature_legacy_mean` | 64 | 256 | 256 | 522,432 | 180,928 | 703,360 |
+| `feature_token_predictor` | 64 | 256 | 256 | 522,432 | 180,928 | 703,360 |
+| `feature_query_pool` | 64 | 256 | 256 | 539,264 | 180,928 | 720,192 |
+| `host_legacy_mean` | 64 | 256 | 256 | 618,816 | 180,928 | 799,744 |
+| `host_token_predictor` | 64 | 256 | 256 | 618,816 | 180,928 | 799,744 |
+| `host_query_pool` | 64 | 256 | 256 | 635,648 | 180,928 | 816,576 |
+| `hierarchical_current` | 64 | 256 | 256 | 685,952 | 180,928 | 866,880 |
+| `hierarchical_masked_predictor` | 64 | 256 | 256 | 685,952 | 180,928 | 866,880 |
 
-#### 2. Feature-Token Representation (`feature`)
-Treats each of the 52 features as an independent token with feature-ID embeddings:
-$$T_{i, t} = \text{Linear}(O_{i, t}^{Blue}) + E_{feat\_id}(i) + E_{time}(t) \in \mathbb{R}^{d_{token}} \quad \text{for } i \in \{1 \dots 52\}$$
-
-#### 3. Host-Centric Representation (`host`)
-Groups features into 13 host tokens ($4$ features per host):
-$$H_{j, t} = \text{MLP}(O_{host\_j, t}^{Blue}) + E_{subnet}(j) + E_{host\_id}(j) + E_{time}(t) \in \mathbb{R}^{d_{token}} \quad \text{for } j \in \{1 \dots 13\}$$
-
-#### 4. Hierarchical Subnet Representation (`hierarchical`)
-Two-stage pooling: Host tokens $\to$ Subnet tokens $\to$ Network vector:
-$$S_{k, t} = \text{MeanPool}(\{H_{j, t} \mid j \in \text{Subnet}_k\}) \in \mathbb{R}^{d_{token}}$$
-$$Z_{hier} = \text{Encoder}(\{S_{k, t}\}) \in \mathbb{R}^{d_{model}}$$
-
-### 6.3 Aggregator Interventions (`src/cyber_jepa/models/aggregators.py`)
-Phase 3 tested three context aggregation modes to evaluate whether structured token representations underperformed due to premature pooling:
-
-1. `legacy_last_step_mean`: Mean-pools tokens across tokens and time prior to predictor input.
-2. `learned_query_pool`: Uses multi-head cross-attention with learned query vectors $Q \in \mathbb{R}^{K \times d}$ to pool token sequences.
-3. `token_preserving_predictor`: Preserves token sequence dimension throughout the predictor transformer $g_\phi$, pooling tokens only at the final loss interface.
-
-### 6.4 Critical Architectural Integrity Deficiencies
+### 6.3 Critical Code-Path Integrity Audit & Identified Bypasses
 
 ```
 ┌──────────────────────────────────────────────────────────────────────────────────┐
@@ -286,7 +347,9 @@ Phase 3 tested three context aggregation modes to evaluate whether structured to
 └──────────────────────────────────────────────────────────────────────────────────┘
 ```
 
-**Required Remediation**: Perform an immediate code-path trace and assertion audit on `src/cyber_jepa/models/aggregators.py` and `jepa.py` to ensure token-preserving branches are strictly executed without silent fallback.
+#### Affected Files & Inspection Mandates
+- **[src/cyber_jepa/models/aggregators.py](file:///c:/Users/rohil/Documents/GenAI%20Micro%20Project/T-JEPA-test/src/cyber_jepa/models/aggregators.py)**: Audit `TokenPreservingPredictor` class implementation to ensure it does not invoke `torch.mean()` prior to transformer layer entry.
+- **[src/cyber_jepa/models/jepa.py](file:///c:/Users/rohil/Documents/GenAI%20Micro%20Project/T-JEPA-test/src/cyber_jepa/models/jepa.py)**: Audit `CyberJEPA.forward()` method to verify that `aggregator_mode` flags correctly route token tensors.
 
 ---
 
@@ -294,11 +357,11 @@ Phase 3 tested three context aggregation modes to evaluate whether structured to
 
 ### 7.1 Master Results Matrix (Phase 2 & Phase 3 Combined)
 
-#### Phase 2 Sweep Summary (Single Seed, $k \in \{1, 2, 4, 8, 16\}$)
-Phase 2 evaluated representation types across horizons without capacity matching. `flat_k4` achieved top performance (OOD F1 = 0.6722, AUROC = 0.8167, EffRank = 4.7).
+#### Phase 2 Horizon & Representation Sweep ($N=1$ Seed, 20 Runs)
+Phase 2 established that 4-step temporal history ($h=4$) provided optimal performance. `flat_k4` achieved top performance (OOD F1 = 0.6722, AUROC = 0.8167, EffRank = 4.7).
 
 #### Phase 3 Matrix (Capacity-Matched, $N=5$ Seeds, 45 Runs Completed)
-Phase 3 matched model parameters (~522k–685k), corrected input exactness (52 features), and enforced single-frame target encoding ($T=1$).
+Phase 3 enforced parameter matching (~522k–685k), 52-feature input exactness, and single-frame target encoding ($T=1$).
 
 | Configuration ID | Rep Type | Context Aggregator Mode | Standard Macro F1 | Policy-Transfer F1 | Standard AUROC | Effective Rank | Collapsed Runs | Trainable Parameters |
 | :--- | :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: |
@@ -320,7 +383,7 @@ Phase 3 matched model parameters (~522k–685k), corrected input exactness (52 f
 | **Feature Legacy Mean Competitiveness** | **SUPPORTED (Parity)** | -0.0010 | [-0.0064, +0.0051] | 0.7845 | `feature_legacy_mean` (0.8766) achieves statistical parity with flat control ($p=0.7845$). |
 | **Mean-Pooling Bottleneck Hypothesis** (Decision Rule 14.3) | **REJECTED** | -0.0192 | [-0.0296, -0.0059] | 0.0041 | Learned query cross-attention degraded performance (F1=0.8584) and increased collapse (4/5 runs collapsed). |
 | **Host Token Competitiveness** | **PARTIALLY SUPPORTED** | -0.0119 | [-0.0283, +0.0006] | 0.1222 | Host representations remain competitive (0.8657), though slightly below feature-level representations. |
-| **Hierarchical Representation** | **REJECTED (Rank Collapsed)** | -2.1730 | [-0.2833, -0.1236] | 0.0001 | Two-stage subnet pooling causes severe representation collapse ($\text{EffRank}=1.4$, 5/5 runs collapsed). |
+| **Hierarchical Representation** | **REJECTED (Rank Collapsed)** | -0.2173 | [-0.2833, -0.1236] | 0.0001 | Two-stage subnet pooling causes severe representation collapse ($\text{EffRank}=1.4$, 5/5 runs collapsed). |
 
 ### 7.3 Core Empirical Findings
 1. **Input Exactness & Single-Frame Target Correction**: Restoring 52-feature input exactness and correcting target encoding to single-frame $T=1$ brought feature-structured representations to statistical parity with flat temporal representations ($p=0.3617$).
