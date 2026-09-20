@@ -20,24 +20,82 @@ from torch.utils.data import Dataset
 
 
 SCALE_SPECS = {
+    # Phase 6B Standardized 8-Scale Suite:
+    "5": {
+        "num_hosts": 5,
+        "obs_dim": 20,
+        "feature_slice": slice(0, 20),
+        "host_indices": list(range(5)),
+        "name": "Micro Branch Subnet (5 hosts)",
+    },
+    "10": {
+        "num_hosts": 10,
+        "obs_dim": 40,
+        "feature_slice": slice(0, 40),
+        "host_indices": list(range(10)),
+        "name": "Core Subnet Tier (10 hosts)",
+    },
+    "13": {
+        "num_hosts": 13,
+        "obs_dim": 52,
+        "feature_slice": slice(0, 52),
+        "host_indices": list(range(13)),
+        "name": "CybORG Scenario 1b Standard (13 hosts)",
+    },
+    "25": {
+        "num_hosts": 25,
+        "obs_dim": 100,
+        "feature_slice": None,
+        "host_indices": list(range(25)),
+        "name": "Multi-Subnet Department (25 hosts)",
+    },
+    "50": {
+        "num_hosts": 50,
+        "obs_dim": 200,
+        "feature_slice": None,
+        "host_indices": list(range(50)),
+        "name": "CAGE-4 Enterprise Scale (50 hosts)",
+    },
+    "100": {
+        "num_hosts": 100,
+        "obs_dim": 400,
+        "feature_slice": None,
+        "host_indices": list(range(100)),
+        "name": "Campus Division Network (100 hosts)",
+    },
+    "250": {
+        "num_hosts": 250,
+        "obs_dim": 1000,
+        "feature_slice": None,
+        "host_indices": list(range(250)),
+        "name": "Large Multi-Building Enterprise (250 hosts)",
+    },
+    "500": {
+        "num_hosts": 500,
+        "obs_dim": 2000,
+        "feature_slice": None,
+        "host_indices": list(range(500)),
+        "name": "Global Corporate HQ / University (500 hosts)",
+    },
+    # Backward compatibility aliases for Phase 6A:
     "small": {
         "num_hosts": 3,
-        "obs_dim": 12, # 3 hosts * 4 features (Enterprise subnet: Enterprise0, Enterprise1, Enterprise2)
+        "obs_dim": 12,
         "feature_slice": slice(0, 12),
-        "host_indices": [0, 1, 2], # Indices within monitored hosts
+        "host_indices": [0, 1, 2],
         "name": "Small Subnet (3 hosts)",
     },
     "medium": {
         "num_hosts": 13,
-        "obs_dim": 52, # Scenario 1b network (13 hosts * 4 features = 52)
+        "obs_dim": 52,
         "feature_slice": slice(0, 52),
         "host_indices": list(range(13)),
         "name": "Medium Network (11-13 hosts)",
     },
     "large": {
         "num_hosts": 45,
-        "obs_dim": 180, # CAGE-4 Standard: 9 subnets * 5 hosts = 45 hosts * 4 features = 180
-        "feature_slice": None, # Generated via structured enterprise synthesis
+        "obs_dim": 180,
+        "feature_slice": None,
         "host_indices": list(range(45)),
         "name": "Large Enterprise (45 hosts)",
     },
@@ -47,12 +105,39 @@ SCALE_SPECS = {
 class ScaledDatasetWrapper(Dataset[dict[str, Any]]):
     """Wraps an existing CyberJEPADataset and projects/slices it to target network scale."""
 
-    def __init__(self, base_dataset: Any, scale: str = "medium", target_hosts: int | None = None):
+    def __init__(self, base_dataset: Any, scale: str = "13", target_hosts: int | None = None):
         self.base = base_dataset
         self.scale = scale
-        self.spec = SCALE_SPECS.get(scale, SCALE_SPECS["medium"])
-        self.num_hosts = target_hosts if target_hosts is not None else self.spec["num_hosts"]
-        self.obs_dim = self.num_hosts * 4
+        scale_key = str(scale)
+        if target_hosts is not None:
+            self.num_hosts = target_hosts
+            self.obs_dim = target_hosts * 4
+            self.spec = {
+                "num_hosts": target_hosts,
+                "obs_dim": self.obs_dim,
+                "feature_slice": slice(0, self.obs_dim) if self.obs_dim <= 52 else None,
+                "host_indices": list(range(target_hosts)),
+                "name": f"Custom Scale ({target_hosts} hosts)",
+            }
+        elif scale_key in SCALE_SPECS:
+            self.spec = SCALE_SPECS[scale_key]
+            self.num_hosts = self.spec["num_hosts"]
+            self.obs_dim = self.spec["obs_dim"]
+        elif scale_key.isdigit():
+            n = int(scale_key)
+            self.num_hosts = n
+            self.obs_dim = n * 4
+            self.spec = {
+                "num_hosts": n,
+                "obs_dim": self.obs_dim,
+                "feature_slice": slice(0, self.obs_dim) if self.obs_dim <= 52 else None,
+                "host_indices": list(range(n)),
+                "name": f"Dynamic Scale ({n} hosts)",
+            }
+        else:
+            self.spec = SCALE_SPECS["13"]
+            self.num_hosts = self.spec["num_hosts"]
+            self.obs_dim = self.spec["obs_dim"]
 
     def __len__(self) -> int:
         return len(self.base)
@@ -66,38 +151,25 @@ class ScaledDatasetWrapper(Dataset[dict[str, Any]]):
         item = self.base[idx]
         hist = item["history_flat"] # [T, 52]
         target = item["target_flat"] # [52]
+        base_comp = item.get("host_compromised", torch.zeros(11))
+        label = item["label"]
 
-        if self.scale == "small":
-            # Slice to Enterprise subnet (3 hosts, 12 features)
-            hist_scaled = hist[:, self.spec["feature_slice"]].clone() # [T, 12]
-            target_scaled = target[self.spec["feature_slice"]].clone() # [12]
-            label = item["label"]
-            base_comp = item.get("host_compromised", torch.zeros(11))
-            host_comp = base_comp[:3]
-        elif self.scale == "medium":
-            hist_scaled = hist.clone() # [T, 52]
-            target_scaled = target.clone() # [52]
-            label = item["label"]
-            base_comp = item.get("host_compromised", torch.zeros(11))
-            if len(base_comp) < 13:
-                host_comp = torch.cat([base_comp, torch.zeros(13 - len(base_comp))])
+        if self.obs_dim <= 52:
+            # Sliced / subset scale (e.g. 3, 5, 10, 13 hosts)
+            hist_scaled = hist[:, :self.obs_dim].clone()
+            target_scaled = target[:self.obs_dim].clone()
+            if len(base_comp) >= self.num_hosts:
+                host_comp = base_comp[:self.num_hosts]
             else:
-                host_comp = base_comp[:13]
-        elif self.scale == "large":
-            # CAGE-4 Enterprise scale (45 hosts, 180 dims):
+                host_comp = torch.cat([base_comp, torch.zeros(self.num_hosts - len(base_comp))])
+        else:
+            # Scaled / enterprise replication (e.g. 25, 45, 50, 100, 250, 500 hosts)
             repeats = int(np.ceil(self.obs_dim / 52))
             hist_rep = hist.repeat(1, repeats)[:, :self.obs_dim].clone()
             target_rep = target.repeat(repeats)[:self.obs_dim].clone()
             hist_scaled = hist_rep
             target_scaled = target_rep
-            label = item["label"]
-            base_comp = item.get("host_compromised", torch.zeros(11))
-            host_comp = base_comp.repeat(int(np.ceil(45 / len(base_comp))))[:45]
-        else:
-            hist_scaled = hist
-            target_scaled = target
-            label = item["label"]
-            host_comp = item.get("host_compromised", torch.zeros(11))
+            host_comp = base_comp.repeat(int(np.ceil(self.num_hosts / len(base_comp))))[:self.num_hosts]
 
         delta = target_scaled - hist_scaled[-1]
         rms_delta = float(torch.sqrt(torch.mean(delta ** 2)).item())
@@ -128,10 +200,9 @@ class ScaledDatasetWrapper(Dataset[dict[str, Any]]):
             if N == 0:
                 return torch.utils.data.WeightedRandomSampler([1.0], 1)
 
-            if self.scale == "small" and "feature_slice" in self.spec:
-                sl = self.spec["feature_slice"]
+            if self.obs_dim < 52:
                 deltas = np.array([
-                    float(torch.sqrt(torch.mean((s["target_flat"][sl] - s["history_flat"][-1, sl]) ** 2)).item())
+                    float(torch.sqrt(torch.mean((s["target_flat"][:self.obs_dim] - s["history_flat"][-1, :self.obs_dim]) ** 2)).item())
                     for s in self.base.samples
                 ])
                 is_dynamic = deltas >= thresh
