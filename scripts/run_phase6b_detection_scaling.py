@@ -54,10 +54,8 @@ from cyber_jepa.evaluation.detection_benchmarks import (
     evaluate_incident_early_detection,
     run_clever_hans_audit,
 )
-from cyber_jepa.evaluation.metrics import (
-    compute_effective_rank,
-    compute_wang_isola_uniformity,
-)
+from cyber_jepa.evaluation.diagnostics import compute_latent_geometry_diagnostics
+from cyber_jepa.evaluation.phase5_diagnostics import compute_wang_isola_uniformity
 from cyber_jepa.evaluation.scale_benchmarks import (
     SCALE_SPECS,
     ScaledDatasetWrapper,
@@ -281,7 +279,8 @@ def run_phase6b_benchmark(
         # 4. Latent Geometry Diagnostics (Wang-Isola Uniformity & Effective Rank)
         # -------------------------------------------------------------
         test_z_torch = torch.tensor(test_data["context_latents"], dtype=torch.float32)
-        eff_rank = float(compute_effective_rank(test_z_torch))
+        geom_diag = compute_latent_geometry_diagnostics(test_z_torch)
+        eff_rank = geom_diag["effective_rank"]
         uniformity = float(compute_wang_isola_uniformity(test_z_torch))
 
         # -------------------------------------------------------------
@@ -351,7 +350,12 @@ def run_phase6b_benchmark(
             },
             "latent_geometry": {
                 "effective_rank": eff_rank,
+                "effective_rank_fraction": geom_diag["effective_rank_fraction"],
+                "median_std": geom_diag["median_std"],
+                "near_constant_fraction": geom_diag["near_constant_fraction"],
+                "mean_pairwise_cosine_sim": geom_diag["mean_pairwise_cosine_sim"],
                 "wang_isola_uniformity": uniformity,
+                "is_collapsed": geom_diag["is_collapsed"],
             },
             "operational_detection": detection_metrics,
             "adversary_policy_breakdown": policy_breakdown,
