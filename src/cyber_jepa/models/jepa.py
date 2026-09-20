@@ -59,12 +59,21 @@ class CyberJEPA(nn.Module):
         aggregator_mode: str = "legacy_last_step_mean",
         ema_momentum_init: float = 0.996,
         ema_momentum_final: float = 1.000,
+        loss_norm_mode: str = "layer_norm",
+        vicreg_var_weight: float = 0.0,
+        vicreg_cov_weight: float = 0.0,
+        vicreg_target_std: float = 1.0,
     ):
         super().__init__()
         self.hidden_dim = hidden_dim
         self.aggregator_mode = aggregator_mode
         self.ema_momentum_init = ema_momentum_init
         self.ema_momentum_final = ema_momentum_final
+        self.loss_norm_mode = loss_norm_mode
+        self.vicreg_var_weight = vicreg_var_weight
+        self.vicreg_cov_weight = vicreg_cov_weight
+        self.vicreg_target_std = vicreg_target_std
+        self.last_loss_breakdown: dict[str, float] = {}
 
         # 1. Online context encoder f_theta
         self.online_encoder = online_encoder
@@ -130,25 +139,19 @@ class CyberJEPA(nn.Module):
             else:
                 return cast(torch.Tensor, target_out)
 
-    def forward(
+    def encode_context(
         self,
-        history_obs: torch.Tensor,         # [B, T_hist, 52]
-        action_seq: torch.Tensor,          # [B, k]
-        target_obs: torch.Tensor,          # [B, 52] single-frame target
-        target_spec: TargetSpec | None = None,
+        history_obs: torch.Tensor,
         host_known_mask: torch.Tensor | None = None,
-    ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+    ) -> tuple[ContextTokens | torch.Tensor, torch.Tensor]:
         """
-        Forward pass computing online predicted latent and single-frame target latent.
+        Encode history observations O_{t-H+1:t} and aggregate into context latent z_t.
 
         Returns:
-            loss: Layer-Normalized Smooth L1 loss scalar
-            pred_latent: [B, hidden_dim]
-            target_latent: [B, hidden_dim] (stop-gradient)
+            context_out: ContextTokens or raw token tensor
+            context_latent: Aggregated context latent [B, hidden_dim]
         """
         B = history_obs.shape[0]
-
-        # 1. Encode context via online encoder
         enc_fn = getattr(self.online_encoder, "encode_context", None)
         if callable(enc_fn):
             context_out = enc_fn(history_obs, host_known_mask=host_known_mask)
@@ -168,8 +171,27 @@ class CyberJEPA(nn.Module):
                     global_token=context_raw if context_raw.dim() == 2 else None,
                 )
 
-        # 2. Aggregate context
         agg_out = self.aggregator_module(context_out)
+        return context_out, agg_out.latent
+
+    def forward(
+        self,
+        history_obs: torch.Tensor,         # [B, T_hist, 52]
+        action_seq: torch.Tensor,          # [B, k]
+        target_obs: torch.Tensor,          # [B, 52] single-frame target
+        target_spec: TargetSpec | None = None,
+        host_known_mask: torch.Tensor | None = None,
+    ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+        """
+        Forward pass computing online predicted latent and single-frame target latent.
+
+        Returns:
+            loss: Layer-Normalized Smooth L1 loss scalar
+            pred_latent: [B, hidden_dim]
+            target_latent: [B, hidden_dim] (stop-gradient)
+        """
+        # 1 & 2. Encode and aggregate context
+        context_out, context_latent = self.encode_context(history_obs, host_known_mask=host_known_mask)
 
         # 3. Predict future representation
         if self.aggregator_mode == "token_preserving_predictor":
@@ -180,7 +202,7 @@ class CyberJEPA(nn.Module):
             )
         else:
             pred_latent = self.predictor(
-                z_t=agg_out.latent,
+                z_t=context_latent,
                 actions=action_seq,
                 target_spec=target_spec,
             )
@@ -192,8 +214,17 @@ class CyberJEPA(nn.Module):
         with torch.no_grad():
             target_latent = self._encode_target_single_frame(target_obs).detach()
 
-        # 5. Layer-Normalized Smooth L1 JEPA Loss
-        loss = compute_jepa_loss(pred_latent, target_latent)
+        # 5. Prediction Loss with Batch Centering and VICReg Regularization
+        loss, details = compute_jepa_loss(
+            pred_latent,
+            target_latent,
+            norm_mode=self.loss_norm_mode,
+            vicreg_var_weight=self.vicreg_var_weight,
+            vicreg_cov_weight=self.vicreg_cov_weight,
+            target_std=self.vicreg_target_std,
+            return_dict=True,
+        )
+        self.last_loss_breakdown = {k: v.detach().item() for k, v in details.items()}
         return loss, pred_latent, target_latent
 
     @torch.no_grad()

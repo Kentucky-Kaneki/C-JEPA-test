@@ -14,11 +14,87 @@ import torch.nn as nn
 from cyber_jepa.models.context import ContextTokens
 
 
-def compute_jepa_loss(pred: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
-    """Layer-Normalized Smooth L1 JEPA Loss."""
-    norm_pred = nn.functional.layer_norm(pred, pred.shape[-1:])
-    norm_target = nn.functional.layer_norm(target, target.shape[-1:])
-    return nn.functional.smooth_l1_loss(norm_pred, norm_target)
+def compute_jepa_loss(
+    pred: torch.Tensor,
+    target: torch.Tensor,
+    norm_mode: str = "layer_norm",
+    vicreg_var_weight: float = 0.0,
+    vicreg_cov_weight: float = 0.0,
+    target_std: float = 1.0,
+    epsilon: float = 1e-4,
+    return_dict: bool = False,
+) -> torch.Tensor | tuple[torch.Tensor, dict[str, torch.Tensor]]:
+    """
+    Compute JEPA prediction loss with optional batch centering and VICReg regularization.
+
+    Modes:
+    - 'layer_norm': Standard per-instance layer normalization across channels.
+    - 'batch_center': Mean subtraction across batch dimension (removes DC telemetry bias).
+    - 'none': Raw prediction loss without normalization.
+
+    VICReg Penalties (Bardes et al., ICLR 2022):
+    - Variance: forces std >= target_std across batch for every feature channel.
+    - Covariance: penalizes off-diagonal correlation between feature channels.
+    """
+    if pred.dim() > 2:
+        pred = pred.reshape(-1, pred.shape[-1])
+    if target.dim() > 2:
+        target = target.reshape(-1, target.shape[-1])
+
+    N, D = pred.shape
+
+    if norm_mode == "batch_center":
+        if N > 1:
+            norm_pred = pred - pred.mean(dim=0, keepdim=True)
+            norm_target = target - target.mean(dim=0, keepdim=True)
+        else:
+            norm_pred = pred
+            norm_target = target
+    elif norm_mode == "layer_norm":
+        norm_pred = nn.functional.layer_norm(pred, pred.shape[-1:])
+        norm_target = nn.functional.layer_norm(target, target.shape[-1:])
+    elif norm_mode == "none":
+        norm_pred = pred
+        norm_target = target
+    else:
+        norm_pred = nn.functional.layer_norm(pred, pred.shape[-1:])
+        norm_target = nn.functional.layer_norm(target, target.shape[-1:])
+
+    # Compute losses in float32 for AMP GradScaler stability (prevents float16 scale overflow)
+    norm_pred_f32 = norm_pred.float()
+    norm_target_f32 = norm_target.float()
+    pred_loss = nn.functional.smooth_l1_loss(norm_pred_f32, norm_target_f32, beta=1.0)
+
+    # VICReg variance penalty (applied to norm_pred representation)
+    if vicreg_var_weight > 0.0 and N > 1:
+        std_pred = torch.sqrt(torch.clamp(norm_pred_f32.var(dim=0, unbiased=False), min=0.0) + epsilon)
+        var_loss = torch.mean(nn.functional.relu(target_std - std_pred))
+    else:
+        var_loss = torch.tensor(0.0, device=pred.device, dtype=torch.float32)
+
+    # VICReg covariance penalty (Bardes et al., ICLR 2022 eq. 4)
+    if vicreg_cov_weight > 0.0 and N > 1:
+        pred_centered = norm_pred_f32 - norm_pred_f32.mean(dim=0, keepdim=True)
+        cov_pred = (pred_centered.T @ pred_centered) / max(1, N - 1)
+        diag = torch.diag(torch.diagonal(cov_pred))
+        off_diag = cov_pred - diag
+        cov_loss = (off_diag ** 2).sum() / D
+    else:
+        cov_loss = torch.tensor(0.0, device=pred.device, dtype=torch.float32)
+
+    total_loss = pred_loss + vicreg_var_weight * var_loss + vicreg_cov_weight * cov_loss
+
+    if return_dict:
+        details = {
+            "total_loss": total_loss,
+            "pred_loss": pred_loss,
+            "var_loss": var_loss,
+            "cov_loss": cov_loss,
+        }
+        return total_loss, details
+
+    return total_loss
+
 
 
 @dataclass

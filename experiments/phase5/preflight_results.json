@@ -1,0 +1,279 @@
+{
+  "num_seeds": 3,
+  "seeds": [
+    1001,
+    2003,
+    3005
+  ],
+  "metrics": {
+    "effective_rank": {
+      "mean": 13.19036531396467,
+      "std": 3.85274215387117,
+      "min": 10.0042903901016,
+      "max": 17.47232766121079
+    },
+    "spectral_alpha": {
+      "mean": 1.8496521074697931,
+      "std": 0.7410081372096972,
+      "min": 1.064557343436165,
+      "max": 2.536839469846065
+    },
+    "wang_isola_uniformity": {
+      "mean": -2.5219799677530923,
+      "std": 0.4510928281652742,
+      "min": -2.91135835647583,
+      "max": -2.0276691913604736
+    },
+    "latent_r2": {
+      "mean": 0.3415142053269878,
+      "std": 0.18073581117773224,
+      "min": 0.1411760122930994,
+      "max": 0.4923181687935967
+    },
+    "dynamic_persistence_gain": {
+      "mean": -0.5935547608143164,
+      "std": 0.6753697819212275,
+      "min": -1.358210642510898,
+      "max": -0.07856039892270349
+    },
+    "action_shuffled_degradation": {
+      "mean": 1.2088014811577381,
+      "std": 0.2111014270548556,
+      "min": 0.9982447447603694,
+      "max": 1.4204434148892837
+    },
+    "action_zeroed_degradation": {
+      "mean": 0.7618331164897866,
+      "std": 0.11487919997898818,
+      "min": 0.6515177978943021,
+      "max": 0.8807883341279146
+    },
+    "test_probe_macro_f1": {
+      "mean": 0.9003675376922246,
+      "std": 0.013730765394865214,
+      "min": 0.8866058568432289,
+      "max": 0.9140671773868738
+    },
+    "test_probe_auroc": {
+      "mean": 0.9622990609903178,
+      "std": 0.006437363534362757,
+      "min": 0.9558500115900391,
+      "max": 0.9687246746689326
+    },
+    "ood_transfer_macro_f1": {
+      "mean": 0.8520878033293423,
+      "std": 0.019140522526825927,
+      "min": 0.8374652444369504,
+      "max": 0.8737516149973739
+    },
+    "ood_transfer_auroc": {
+      "mean": 0.9347680517530059,
+      "std": 0.012242549412636479,
+      "min": 0.9253637798695523,
+      "max": 0.9486107439621274
+    },
+    "anticipation_delta_f1": {
+      "mean": -0.021211856132765772,
+      "std": 0.010804049138174643,
+      "min": -0.033664081449288785,
+      "max": -0.014326925381249578
+    },
+    "anticipation_delta_auroc": {
+      "mean": -0.009836726791396725,
+      "std": 0.004355154107216385,
+      "min": -0.014766116767178983,
+      "max": -0.006509939495456862
+    },
+    "host_top1_attribution_accuracy": {
+      "mean": 0.9320408404154863,
+      "std": 0.008326394164192029,
+      "min": 0.9229815864022662,
+      "max": 0.9393590651558074
+    },
+    "operational_tier_auroc": {
+      "mean": 0.9194654826422198,
+      "std": 0.009311697993383694,
+      "min": 0.911556309478502,
+      "max": 0.9297281160231863
+    },
+    "operational_tier_fpr95": {
+      "mean": 0.24694072771102213,
+      "std": 0.04795922071794077,
+      "min": 0.1982596418374138,
+      "max": 0.29414392054885347
+    }
+  },
+  "per_seed_results": [
+    {
+      "seed": 1001,
+      "epochs_trained": 10,
+      "final_train_loss": 0.7376386909046329,
+      "final_val_loss": 1.1613270691756545,
+      "final_val_pred_loss": 0.17114375614100832,
+      "loss_breakdown": {
+        "val_loss": 1.1613270691756545,
+        "val_pred_loss": 0.17114375614100832,
+        "val_var_loss": 0.21793399177406025,
+        "val_cov_loss": 19.306233425592556
+      },
+      "gate1_geometry": {
+        "effective_rank": 12.094477890581615,
+        "effective_rank_fraction": 0.18897621704033774,
+        "spectral_alpha_decay": 1.9475595091271503,
+        "wang_isola_uniformity": -2.6269123554229736,
+        "median_std": 1.086771011352539,
+        "is_collapsed": false
+      },
+      "gate2_predictive_causality": {
+        "latent_r2": 0.3910484348942672,
+        "mse_jepa": 0.6471837567954132,
+        "mse_persistence": 0.3509899547491612,
+        "dynamic_persistence_gain": -0.3438932410093476,
+        "action_shuffled_degradation": 1.207716283823561,
+        "action_zeroed_degradation": 0.7531932174471432
+      },
+      "gate3_oracle_separability": {
+        "knn_k5_macro_f1": 0.9027518573595861,
+        "val_probe_macro_f1": 0.9201046058535337,
+        "val_probe_auroc": 0.9694167730263356,
+        "test_probe_macro_f1": 0.9140671773868738,
+        "test_probe_auroc": 0.9687246746689326,
+        "ood_transfer_macro_f1": 0.8737516149973739,
+        "ood_transfer_auroc": 0.9486107439621274
+      },
+      "check2_anticipation_gap": {
+        "test_delta_macro_f1": -0.014326925381249578,
+        "test_delta_auroc": -0.006509939495456862,
+        "test_future_f1": 0.9140671773868738,
+        "test_current_f1": 0.9283941027681234,
+        "test_future_auroc": 0.9687246746689326,
+        "test_current_auroc": 0.9752346141643895,
+        "ood_delta_macro_f1": -0.017871592709344908,
+        "ood_delta_auroc": -0.008020414002581688
+      },
+      "check3_host_localization": {
+        "test_top1_attribution_accuracy": 0.9337818696883853,
+        "test_overall_mean_auroc": 0.9364051300835087,
+        "test_user_tier_auroc": 0.9538438684318462,
+        "test_enterprise_tier_auroc": 0.9462852397590674,
+        "test_operational_tier_auroc": 0.911556309478502,
+        "test_operational_tier_fpr95": 0.29414392054885347,
+        "ood_overall_mean_auroc": 0.8850531388271985
+      }
+    },
+    {
+      "seed": 2003,
+      "epochs_trained": 10,
+      "final_train_loss": 1.0265641474751572,
+      "final_val_loss": 1.5311472823565033,
+      "final_val_pred_loss": 0.17464420725002713,
+      "loss_breakdown": {
+        "val_loss": 1.5311472823565033,
+        "val_pred_loss": 0.17464420725002713,
+        "val_var_loss": 0.21451576917978196,
+        "val_cov_loss": 28.549683332785794
+      },
+      "gate1_geometry": {
+        "effective_rank": 10.0042903901016,
+        "effective_rank_fraction": 0.1563170373453375,
+        "spectral_alpha_decay": 2.536839469846065,
+        "wang_isola_uniformity": -2.0276691913604736,
+        "median_std": 1.0720398426055908,
+        "is_collapsed": false
+      },
+      "gate2_predictive_causality": {
+        "latent_r2": 0.1411760122930994,
+        "mse_jepa": 0.9213912760988219,
+        "mse_persistence": 0.268028760573266,
+        "dynamic_persistence_gain": -1.358210642510898,
+        "action_shuffled_degradation": 1.4204434148892837,
+        "action_zeroed_degradation": 0.8807883341279146
+      },
+      "gate3_oracle_separability": {
+        "knn_k5_macro_f1": 0.8905673263119501,
+        "val_probe_macro_f1": 0.8948018566756156,
+        "val_probe_auroc": 0.9559910557411648,
+        "test_probe_macro_f1": 0.8866058568432289,
+        "test_probe_auroc": 0.9558500115900391,
+        "ood_transfer_macro_f1": 0.8450465505537028,
+        "ood_transfer_auroc": 0.9253637798695523
+      },
+      "check2_anticipation_gap": {
+        "test_delta_macro_f1": -0.033664081449288785,
+        "test_delta_auroc": -0.014766116767178983,
+        "test_future_f1": 0.8866058568432289,
+        "test_current_f1": 0.9202699382925177,
+        "test_future_auroc": 0.9558500115900391,
+        "test_current_auroc": 0.9706161283572181,
+        "ood_delta_macro_f1": -0.03065669183528985,
+        "ood_delta_auroc": -0.021754363296286106
+      },
+      "check3_host_localization": {
+        "test_top1_attribution_accuracy": 0.9229815864022662,
+        "test_overall_mean_auroc": 0.9343371713469267,
+        "test_user_tier_auroc": 0.9477852264014437,
+        "test_enterprise_tier_auroc": 0.9393732965035108,
+        "test_operational_tier_auroc": 0.9171120224249716,
+        "test_operational_tier_fpr95": 0.248418620746799,
+        "ood_overall_mean_auroc": 0.8596238385604296
+      }
+    },
+    {
+      "seed": 3005,
+      "epochs_trained": 10,
+      "final_train_loss": 0.739345124700433,
+      "final_val_loss": 1.140200576562991,
+      "final_val_pred_loss": 0.1564532296796297,
+      "loss_breakdown": {
+        "val_loss": 1.140200576562991,
+        "val_pred_loss": 0.1564532296796297,
+        "val_var_loss": 0.21526228045595103,
+        "val_cov_loss": 19.212126960699585
+      },
+      "gate1_geometry": {
+        "effective_rank": 17.47232766121079,
+        "effective_rank_fraction": 0.2730051197064186,
+        "spectral_alpha_decay": 1.064557343436165,
+        "wang_isola_uniformity": -2.91135835647583,
+        "median_std": 0.9647760391235352,
+        "is_collapsed": false
+      },
+      "gate2_predictive_causality": {
+        "latent_r2": 0.4923181687935967,
+        "mse_jepa": 0.54524473881724,
+        "mse_persistence": 0.37031875170420314,
+        "dynamic_persistence_gain": -0.07856039892270349,
+        "action_shuffled_degradation": 0.9982447447603694,
+        "action_zeroed_degradation": 0.6515177978943021
+      },
+      "gate3_oracle_separability": {
+        "knn_k5_macro_f1": 0.8776867343563172,
+        "val_probe_macro_f1": 0.8999028845234607,
+        "val_probe_auroc": 0.9631433900999524,
+        "test_probe_macro_f1": 0.9004295788465708,
+        "test_probe_auroc": 0.9623224967119818,
+        "ood_transfer_macro_f1": 0.8374652444369504,
+        "ood_transfer_auroc": 0.9303296314273379
+      },
+      "check2_anticipation_gap": {
+        "test_delta_macro_f1": -0.015644561567758952,
+        "test_delta_auroc": -0.00823412411155433,
+        "test_future_f1": 0.9004295788465708,
+        "test_current_f1": 0.9160741404143298,
+        "test_future_auroc": 0.9623224967119818,
+        "test_current_auroc": 0.9705566208235361,
+        "ood_delta_macro_f1": -0.02338172330419197,
+        "ood_delta_auroc": -0.015048110916779489
+      },
+      "check3_host_localization": {
+        "test_top1_attribution_accuracy": 0.9393590651558074,
+        "test_overall_mean_auroc": 0.9417375929703524,
+        "test_user_tier_auroc": 0.9556688202218963,
+        "test_enterprise_tier_auroc": 0.9391752592311823,
+        "test_operational_tier_auroc": 0.9297281160231863,
+        "test_operational_tier_fpr95": 0.1982596418374138,
+        "ood_overall_mean_auroc": 0.8775532717060434
+      }
+    }
+  ]
+}

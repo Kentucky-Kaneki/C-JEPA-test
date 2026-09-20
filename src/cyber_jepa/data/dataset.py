@@ -118,39 +118,62 @@ def generate_policy_transfer_splits(
 generate_ood_splits = generate_policy_transfer_splits
 
 
+MONITORED_HOSTS = [
+    "Enterprise0",
+    "Enterprise1",
+    "Enterprise2",
+    "Op_Server0",
+    "Op_Host0",
+    "Op_Host1",
+    "Op_Host2",
+    "User1",
+    "User2",
+    "User3",
+    "User4",
+]
+
+
 class CyberJEPADataset(Dataset[dict[str, Any]]):
     """PyTorch Dataset exposing windowed observations, action sequences, and targets."""
 
     def __init__(
         self,
         shard_dirs: list[Path],
-        split_group_set: list[str] | set[str] | None = None,
-        trajectory_set: list[str] | set[str] | None = None,
-        horizon: int = 1,
+        split_group_set: set[str] | None = None,
+        trajectory_set: set[str] | None = None,
         history_len: int = 4,
+        horizon: int = 4,
         fit_normalizers: bool = False,
         normalizer_stats: dict[str, Any] | None = None,
     ):
-        self.horizon = horizon
+        self.shard_dirs = shard_dirs
+        self.split_group_set = split_group_set
+        self.trajectory_set = trajectory_set
         self.history_len = history_len
-        self.split_group_set = set(split_group_set) if split_group_set is not None else None
-        self.trajectory_set = set(trajectory_set) if trajectory_set is not None else None
+        self.horizon = horizon
 
         self.samples: list[dict[str, Any]] = []
         self._load_and_window_shards(shard_dirs)
 
-        if fit_normalizers:
-            self.normalizer_stats = self._fit_normalizers()
+        if fit_normalizers and self.samples:
+            all_hist = torch.stack([s["history_flat"] for s in self.samples])
+            mean = all_hist.mean(dim=(0, 1)).numpy().tolist()
+            std = (all_hist.std(dim=(0, 1)) + 1e-6).numpy().tolist()
+            self.normalizer_stats = {"mean": mean, "std": std}
         else:
             self.normalizer_stats = normalizer_stats or {}
 
     def _load_and_window_shards(self, shard_dirs: list[Path]) -> None:
         """Construct sliding windows over valid episodes without boundary crossing."""
+        comp_cols = [f"compromise_{h}" for h in MONITORED_HOSTS]
+
         for sdir in shard_dirs:
             trans_df = pd.read_parquet(sdir / "transitions.parquet")
             oracle_df = pd.read_parquet(sdir / "oracle_labels.parquet") if (sdir / "oracle_labels.parquet").exists() else None
             if oracle_df is not None:
-                trans_df = pd.merge(trans_df, oracle_df[["transition_id", "critical_server_compromised"]], on="transition_id", how="left")
+                avail_comp = [c for c in comp_cols if c in oracle_df.columns]
+                merge_cols = ["transition_id", "critical_server_compromised"] + avail_comp
+                trans_df = pd.merge(trans_df, oracle_df[merge_cols], on="transition_id", how="left")
 
             obs_data = np.load(sdir / "observations.npz")
             flats = obs_data["flat"]
@@ -175,6 +198,14 @@ class CyberJEPADataset(Dataset[dict[str, Any]]):
                 trans_ids = group["transition_id"].values
                 labels = group["critical_server_compromised"].values if "critical_server_compromised" in group.columns else [0] * L
 
+                host_comp_map = {}
+                for h in MONITORED_HOSTS:
+                    col = f"compromise_{h}"
+                    if col in group.columns:
+                        host_comp_map[h] = (group[col].values != "clean").astype(np.float32)
+                    else:
+                        host_comp_map[h] = np.zeros(L, dtype=np.float32)
+
                 # Window requirement: history_len history steps + horizon future action/target steps
                 for i in range(self.history_len - 1, L - self.horizon):
                     hist_idx_range = group_indices[i - self.history_len + 1 : i + 1]
@@ -188,6 +219,15 @@ class CyberJEPADataset(Dataset[dict[str, Any]]):
                     tid_ctx = str(trans_ids[i])
                     tgt_label = int(labels[i + self.horizon]) if i + self.horizon < len(labels) else 0
 
+                    delta = target_flat - hist_flats[-1]
+                    rms_delta = float(np.sqrt(np.mean(delta ** 2)))
+
+                    target_step = i + self.horizon
+                    host_vec = [
+                        float(host_comp_map[h][target_step]) if target_step < len(host_comp_map[h]) else 0.0
+                        for h in MONITORED_HOSTS
+                    ]
+
                     self.samples.append({
                         "trajectory_id": traj_id,
                         "transition_id": tid_ctx,
@@ -198,7 +238,45 @@ class CyberJEPADataset(Dataset[dict[str, Any]]):
                         "target_flat": torch.tensor(target_flat, dtype=torch.float32),
                         "label": tgt_label,
                         "horizon": self.horizon,
+                        "rms_delta": rms_delta,
+                        "host_compromised": torch.tensor(host_vec, dtype=torch.float32),
                     })
+
+    def compute_median_dynamic_rms(self) -> float:
+        """Compute median RMS delta of non-zero transitions."""
+        deltas = [s["rms_delta"] for s in self.samples if s["rms_delta"] > 1e-4]
+        return float(np.median(deltas)) if deltas else 0.25
+
+    def get_balanced_sampler(
+        self,
+        threshold: float = 0.25,
+        generator: torch.Generator | None = None,
+    ) -> torch.utils.data.WeightedRandomSampler:
+        """
+        Construct a WeightedRandomSampler enforcing static50_dynamic50 (1:1 balanced sampling).
+        Phase 5 Stage 1 proven balancing protocol.
+        """
+        N = len(self.samples)
+        if N == 0:
+            return torch.utils.data.WeightedRandomSampler([1.0], 1)
+
+        is_dynamic = np.array([s["rms_delta"] >= threshold for s in self.samples], dtype=bool)
+        n_dyn = int(np.sum(is_dynamic))
+        n_stat = N - n_dyn
+
+        weights = np.zeros(N, dtype=np.float64)
+        if n_dyn > 0 and n_stat > 0:
+            weights[is_dynamic] = 0.5 / n_dyn
+            weights[~is_dynamic] = 0.5 / n_stat
+        else:
+            weights[:] = 1.0 / N
+
+        return torch.utils.data.WeightedRandomSampler(
+            weights=torch.tensor(weights, dtype=torch.double),
+            num_samples=N,
+            replacement=True,
+            generator=generator,
+        )
 
     def _fit_normalizers(self) -> dict[str, Any]:
         """Fit feature mean and std on training split history observations only."""
@@ -209,6 +287,7 @@ class CyberJEPADataset(Dataset[dict[str, Any]]):
         std = np.std(all_hist, axis=0)
         std[std < 1e-6] = 1.0
         return {"mean": mean.tolist(), "std": std.tolist()}
+
 
     def __len__(self) -> int:
         return len(self.samples)
@@ -226,7 +305,7 @@ class CyberJEPADataset(Dataset[dict[str, Any]]):
             hist = (hist - mean) / std
             target = (target - mean) / std
 
-        return {
+        res = {
             "trajectory_id": sample["trajectory_id"],
             "transition_id": sample["transition_id"],
             "t_context": sample["t_context"],
@@ -236,4 +315,8 @@ class CyberJEPADataset(Dataset[dict[str, Any]]):
             "target_flat": target,
             "label": sample["label"],
             "horizon": sample["horizon"],
+            "rms_delta": sample["rms_delta"],
         }
+        if "host_compromised" in sample:
+            res["host_compromised"] = sample["host_compromised"]
+        return res

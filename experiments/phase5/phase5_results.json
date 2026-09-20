@@ -1,0 +1,43 @@
+[
+  {
+    "seed": 1001,
+    "epochs_trained": 11,
+    "final_train_loss": 0.3529993603407157,
+    "final_val_loss": 0.699489059119389,
+    "final_val_pred_loss": 0.13239697392644553,
+    "loss_breakdown": {
+      "val_loss": 0.699489059119389,
+      "val_pred_loss": 0.13239697392644553,
+      "val_var_loss": 0.2725477161249895,
+      "val_cov_loss": 7.363609425295358
+    },
+    "gate1_geometry": {
+      "effective_rank": 18.29502354695351,
+      "effective_rank_fraction": 0.2858597429211486,
+      "spectral_alpha_decay": 0.9491278973818738,
+      "wang_isola_uniformity": -2.9223639965057373,
+      "median_std": 0.9628926515579224,
+      "near_constant_fraction": 0.0,
+      "is_collapsed": false
+    },
+    "gate2_predictive_causality": {
+      "latent_r2": 0.5971112055698676,
+      "mse_jepa": 0.45122208076083653,
+      "mse_persistence": 0.45557406472985085,
+      "dynamic_persistence_gain": 0.20469380963422826,
+      "action_shuffled_degradation": 2.001014995545666,
+      "action_zeroed_degradation": 1.3142271417032554
+    },
+    "gate3_oracle_separability": {
+      "fisher_discriminant_ratio": 0.054310849700708194,
+      "knn_k5_macro_f1": 0.9021118586480601,
+      "knn_k20_macro_f1": 0.9081264856074001,
+      "val_probe_macro_f1": 0.9306417310013688,
+      "val_probe_auroc": 0.9751141045055182,
+      "test_probe_macro_f1": 0.9218965416073834,
+      "test_probe_auroc": 0.9732462455238268,
+      "ood_transfer_macro_f1": 0.8892146830029672,
+      "ood_transfer_auroc": 0.9576079390316696
+    }
+  }
+]
