@@ -63,9 +63,11 @@ class FlatVectorRepresentation(nn.Module):
         return_context_tokens: bool = True,
     ) -> ContextTokens | torch.Tensor:
         """
-        Input: x of shape [B, T_hist, 52]
+        Input: x of shape [B, T_hist, 52] or [B, 52]
         Returns: ContextTokens dataclass containing tokens [B, T_hist, D] and global_token [B, D]
         """
+        if x.dim() == 2:
+            x = x.unsqueeze(1) # [B, 1, obs_dim]
         B, T_hist, D = x.shape
         device = x.device
 
