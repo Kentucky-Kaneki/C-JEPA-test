@@ -39,11 +39,11 @@ from cyber_jepa.data.dataset import (
     CyberJEPADataset,
     MONITORED_HOSTS,
     generate_group_splits,
-    generate_policy_transfer_splits,
 )
 from cyber_jepa.evaluation.detection_optimization import (
     apply_temporal_smoothing,
     calibrate_decision_threshold,
+    evaluate_multi_target_probing,
     evaluate_optimized_detection,
 )
 from cyber_jepa.evaluation.emergent_ood import (
@@ -70,6 +70,7 @@ def extract_features_and_latents(
     rms_deltas = []
     t_contexts = []
     host_comp_list = []
+    action_types_list = []
 
     with torch.no_grad():
         for batch in loader:
@@ -87,6 +88,8 @@ def extract_features_and_latents(
                 t_contexts.append(batch["t_context"].numpy())
             if "host_compromised" in batch:
                 host_comp_list.append(batch["host_compromised"].numpy())
+            if "action_type" in batch:
+                action_types_list.extend(batch["action_type"])
 
     concat_labels = np.concatenate(labels_list, axis=0)
     n_samples = len(concat_labels)
@@ -98,6 +101,7 @@ def extract_features_and_latents(
         "rms_deltas": np.concatenate(rms_deltas, axis=0) if rms_deltas else np.zeros(n_samples),
         "t_contexts": np.concatenate(t_contexts, axis=0) if t_contexts else np.arange(n_samples),
         "host_compromised": np.concatenate(host_comp_list, axis=0) if host_comp_list else np.zeros((n_samples, len(MONITORED_HOSTS))),
+        "action_types": action_types_list if len(action_types_list) == n_samples else ["Unknown"] * n_samples,
     }
 
 
@@ -189,17 +193,27 @@ def run_phase7_pipeline(
         trajectory_ids=test_data["trajectory_ids"],
         rms_deltas=test_data["rms_deltas"],
         t_steps=test_data["t_contexts"],
+        action_types=test_data["action_types"],
     )
 
     p_audit = failure_diagnostics["perimeter_vs_crown_jewel_audit"]
     miss_audit = failure_diagnostics["borderline_miss_stratification"]
     pol_audit = failure_diagnostics["adversary_policy_analysis"]
+    blue_audit = failure_diagnostics.get("blue_defense_action_audit", {})
 
     print(f"Nominal Clean Steps (Op_Server0 clean): {p_audit['nominal_clean_steps']}")
     print(f"Nominal False Alarms: {p_audit['nominal_false_alarms']} ({p_audit['nominal_false_alarm_rate_pct']:.2f}%)")
     print(f"  -> Early Perimeter Detections (>=1 host compromised): {p_audit['early_perimeter_detections']} ({p_audit['early_perimeter_detection_pct_of_fps']:.1f}% of false alarms!)")
     print(f"  -> True False Alarms (0 hosts compromised): {p_audit['true_false_alarms_zero_hosts_comp']} (True FAR: {p_audit['true_false_alarm_rate_pct']:.2f}%)")
     print(f"  -> Avg hosts compromised when alert triggered: {p_audit['avg_hosts_compromised_on_false_alarms']:.2f} hosts")
+
+    if blue_audit and "disruptive_actions_restore_remove" in blue_audit:
+        disr = blue_audit["disruptive_actions_restore_remove"]
+        passv = blue_audit["passive_actions_other"]
+        print(f"\nBlue Defense Action Interference:")
+        print(f"  -> Disruptive actions (Restore/Remove) FAR: {disr['false_alarm_rate_pct']:.2f}% ({disr['false_alarms']}/{disr['clean_steps']})")
+        print(f"  -> Passive actions (Sleep/Monitor/etc) FAR: {passv['false_alarm_rate_pct']:.2f}% ({passv['false_alarms']}/{passv['clean_steps']})")
+        print(f"  -> Action disruption ratio: {blue_audit.get('disruption_far_ratio', 1.0):.2f}x")
 
     print(f"\nMissed Attacks (FN): {miss_audit['total_missed_attacks']}")
     print(f"  -> Borderline misses (prob in [0.30, 0.50)): {miss_audit['prob_bin_30_to_40']['count'] + miss_audit['prob_bin_40_to_50']['count']} ({miss_audit['recoverable_at_tau_035']['pct']:.1f}% recoverable at tau=0.35)")
@@ -215,16 +229,35 @@ def run_phase7_pipeline(
     tau_youden = calibrate_decision_threshold(val_data["labels"], val_probs, criterion="youden")
     tau_f2 = calibrate_decision_threshold(val_data["labels"], val_probs, criterion="f2")
     tau_rec95 = calibrate_decision_threshold(val_data["labels"], val_probs, criterion="recall_target_95")
+    tau_fpr05 = calibrate_decision_threshold(val_data["labels"], val_probs, criterion="fpr_target_05")
 
     opt_baseline = evaluate_optimized_detection(test_data["labels"], test_probs_baseline, test_data["trajectory_ids"], threshold=0.50)
     opt_youden = evaluate_optimized_detection(test_data["labels"], test_probs_baseline, test_data["trajectory_ids"], threshold=tau_youden)
     opt_f2 = evaluate_optimized_detection(test_data["labels"], test_probs_baseline, test_data["trajectory_ids"], threshold=tau_f2)
+    opt_fpr05 = evaluate_optimized_detection(test_data["labels"], test_probs_baseline, test_data["trajectory_ids"], threshold=tau_fpr05)
     opt_smoothed = evaluate_optimized_detection(test_data["labels"], test_probs_baseline, test_data["trajectory_ids"], threshold=tau_youden, temporal_alpha=0.60)
 
     print(f"Baseline (tau=0.50)        : Det Rate: {opt_baseline['attack_detection_rate_pct']:.2f}% | FAR: {opt_baseline['false_alarm_rate_pct']:.2f}% | F1: {opt_baseline['macro_f1']:.4f} | Missed: {opt_baseline['attacks_missed']}")
     print(f"Youden J (tau={tau_youden:.3f})     : Det Rate: {opt_youden['attack_detection_rate_pct']:.2f}% | FAR: {opt_youden['false_alarm_rate_pct']:.2f}% | F1: {opt_youden['macro_f1']:.4f} | Missed: {opt_youden['attacks_missed']}")
     print(f"F2 Recall (tau={tau_f2:.3f})    : Det Rate: {opt_f2['attack_detection_rate_pct']:.2f}% | FAR: {opt_f2['false_alarm_rate_pct']:.2f}% | F1: {opt_f2['macro_f1']:.4f} | Missed: {opt_f2['attacks_missed']}")
+    print(f"FPR<=5% Capped (tau={tau_fpr05:.3f}): Det Rate: {opt_fpr05['attack_detection_rate_pct']:.2f}% | FAR: {opt_fpr05['false_alarm_rate_pct']:.2f}% | F1: {opt_fpr05['macro_f1']:.4f} | Missed: {opt_fpr05['attacks_missed']}")
     print(f"Smoothed+Youden (alpha=0.60): Det Rate: {opt_smoothed['attack_detection_rate_pct']:.2f}% | FAR: {opt_smoothed['false_alarm_rate_pct']:.2f}% | F1: {opt_smoothed['macro_f1']:.4f} | Missed: {opt_smoothed['attacks_missed']}")
+
+    # Dual-Target Joint Probing Evaluation (Crown Jewel vs Perimeter Intrusion)
+    dual_target_results = evaluate_multi_target_probing(
+        train_latents=train_data["context_latents"],
+        train_labels=train_data["labels"],
+        train_host_comp=train_data["host_compromised"],
+        test_latents=test_data["context_latents"],
+        test_labels=test_data["labels"],
+        test_host_comp=test_data["host_compromised"],
+        seed=seed,
+    )
+    cj_res = dual_target_results["crown_jewel_probe"]
+    pi_res = dual_target_results["perimeter_intrusion_probe"]
+    print(f"\nDual-Target Joint Probing:")
+    print(f"  -> Crown Jewel (Op_Server0): Det {cj_res['detection_rate_pct']:.2f}% | FAR {cj_res['false_alarm_rate_pct']:.2f}% | F1 {cj_res['macro_f1']:.4f} | AUROC {cj_res['auroc']:.4f}")
+    print(f"  -> Perimeter (Any Host)   : Det {pi_res['detection_rate_pct']:.2f}% | FAR {pi_res['false_alarm_rate_pct']:.2f}% | F1 {pi_res['macro_f1']:.4f} | AUROC {pi_res['auroc']:.4f}")
 
     # =========================================================================
     # TRACK 3: Emergent Zero-Label Latent Anomaly Detection
@@ -235,7 +268,10 @@ def run_phase7_pipeline(
 
     # Clean reference: early steps (t <= 5) in training set where Op_Server0 is clean
     clean_ref_mask = (train_data["labels"] == 0) & (train_data["t_contexts"] <= 5)
+    if np.sum(clean_ref_mask) < 10:
+        clean_ref_mask = (train_data["labels"] == 0)
     clean_ref_latents = train_data["context_latents"][clean_ref_mask]
+    print(f"[+] Clean baseline reference pool: {len(clean_ref_latents)} samples.")
 
     zero_label_results = evaluate_zero_label_latent_anomaly(
         clean_reference_latents=clean_ref_latents,
@@ -332,13 +368,16 @@ def run_phase7_pipeline(
                 "youden_optimal_tau": tau_youden,
                 "f2_recall_optimal_tau": tau_f2,
                 "recall_95_optimal_tau": tau_rec95,
+                "fpr_05_optimal_tau": tau_fpr05,
             },
             "operating_points": {
                 "baseline_tau_050": opt_baseline,
                 "youden_calibrated": opt_youden,
                 "f2_recall_calibrated": opt_f2,
+                "fpr_05_calibrated": opt_fpr05,
                 "smoothed_and_youden": opt_smoothed,
             },
+            "dual_target_probing": dual_target_results,
         },
         "track3_zero_label_latent_anomaly": zero_label_results,
         "track4_cross_policy_transfer": {
@@ -353,6 +392,24 @@ def run_phase7_pipeline(
         json.dump(results, f, indent=2)
     print(f"\n[+] Full Phase 7 Results exported to {json_path}")
 
+    # Format Blue Defense Action Table for Scorecard
+    blue_md_block = ""
+    if blue_audit and "disruptive_actions_restore_remove" in blue_audit:
+        disr = blue_audit["disruptive_actions_restore_remove"]
+        passv = blue_audit["passive_actions_other"]
+        blue_md_block = f"""
+### Blue Defense Action Interference Audit
+
+| Defender Action Category | Clean Steps | False Alarms | False Alarm Rate (%) | Operational Impact |
+| :--- | :---: | :---: | :---: | :--- |
+| **Disruptive Actions (`Restore`, `Remove`)** | {disr['clean_steps']} | {disr['false_alarms']} | **{disr['false_alarm_rate_pct']:.2f}%** | Telemetry resets create transient false alerts |
+| **Passive Actions (`Sleep`, `Monitor`, etc.)** | {passv['clean_steps']} | {passv['false_alarms']} | **{passv['false_alarm_rate_pct']:.2f}%** | Stable background telemetry baseline |
+| **Disruption Amplification Ratio** | -- | -- | **{blue_audit.get('disruption_far_ratio', 1.0):.2f}x** | Relative false alarm multiplier during remediation |
+"""
+
+    euc_auroc = zero_label_results["euclidean_distance"]["auroc"]
+    euc_viable = "YES (AUROC >= 0.75)" if euc_auroc >= 0.75 else "NO (AUROC < 0.75)"
+
     # Generate Markdown Scorecard
     scorecard_md = f"""# Cyber-JEPA Phase 7: Failure Forensics & Emergent OOD Scorecard
 
@@ -362,20 +419,30 @@ def run_phase7_pipeline(
 | :--- | :---: | :--- |
 | **Nominal Clean Steps (`Op_Server0` Clean)** | {p_audit['nominal_clean_steps']} | Steps where crown jewel was uncompromised |
 | **Nominal False Alarms** | {p_audit['nominal_false_alarms']} ({p_audit['nominal_false_alarm_rate_pct']:.2f}%) | Flagged alerts when `Op_Server0` was clean |
-| **Early Perimeter Detections ($\ge 1$ host compromised)** | **{p_audit['early_perimeter_detections']} / {p_audit['nominal_false_alarms']} ({p_audit['early_perimeter_detection_pct_of_fps']:.1f}%)** | **Alerts where active intruder had breached User/Enterprise hosts!** |
+| **Early Perimeter Detections (>= 1 host compromised)** | **{p_audit['early_perimeter_detections']} / {p_audit['nominal_false_alarms']} ({p_audit['early_perimeter_detection_pct_of_fps']:.1f}%)** | **Alerts where active intruder had breached User/Enterprise hosts!** |
 | **True False Alarms (0 hosts compromised)** | **{p_audit['true_false_alarms_zero_hosts_comp']} ({p_audit['true_false_alarm_rate_pct']:.2f}%)** | **Genuine false alarms during completely benign operations** |
 | **Avg Hosts Compromised on False Alarm** | **{p_audit['avg_hosts_compromised_on_false_alarms']:.2f} hosts** | Average number of active compromised hosts during flagged alerts |
-
+{blue_md_block}
 ---
 
 ## Track 2: Detection Performance Optimization & Threshold Calibration
 
+### Operating Threshold Comparison
+
 | Operating Mode | Operating Threshold (tau) | Temporal Smoothing (alpha) | Attacks Caught / Total | Detection Rate (%) | Missed Attacks | False Alarms (%) | Macro F1 | Balanced Accuracy |
-| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | **Default Baseline** | 0.500 | None (1.0) | {opt_baseline['attacks_caught']} / {opt_baseline['total_attacks']} | {opt_baseline['attack_detection_rate_pct']:.2f}% | {opt_baseline['attacks_missed']} | {opt_baseline['false_alarm_rate_pct']:.2f}% | {opt_baseline['macro_f1']:.4f} | {opt_baseline['balanced_accuracy']:.4f} |
 | **Youden's J Calibrated** | **{tau_youden:.3f}** | None (1.0) | **{opt_youden['attacks_caught']} / {opt_youden['total_attacks']}** | **{opt_youden['attack_detection_rate_pct']:.2f}%** | **{opt_youden['attacks_missed']}** | {opt_youden['false_alarm_rate_pct']:.2f}% | **{opt_youden['macro_f1']:.4f}** | **{opt_youden['balanced_accuracy']:.4f}** |
 | **$F_2$ Recall Optimized** | **{tau_f2:.3f}** | None (1.0) | **{opt_f2['attacks_caught']} / {opt_f2['total_attacks']}** | **{opt_f2['attack_detection_rate_pct']:.2f}%** | **{opt_f2['attacks_missed']}** | {opt_f2['false_alarm_rate_pct']:.2f}% | {opt_f2['macro_f1']:.4f} | {opt_f2['balanced_accuracy']:.4f} |
+| **FPR <= 5% Capped** | **{tau_fpr05:.3f}** | None (1.0) | **{opt_fpr05['attacks_caught']} / {opt_fpr05['total_attacks']}** | **{opt_fpr05['attack_detection_rate_pct']:.2f}%** | **{opt_fpr05['attacks_missed']}** | {opt_fpr05['false_alarm_rate_pct']:.2f}% | {opt_fpr05['macro_f1']:.4f} | {opt_fpr05['balanced_accuracy']:.4f} |
 | **Smoothed + Calibrated** | **{tau_youden:.3f}** | **0.60** | **{opt_smoothed['attacks_caught']} / {opt_smoothed['total_attacks']}** | **{opt_smoothed['attack_detection_rate_pct']:.2f}%** | **{opt_smoothed['attacks_missed']}** | {opt_smoothed['false_alarm_rate_pct']:.2f}% | **{opt_smoothed['macro_f1']:.4f}** | **{opt_smoothed['balanced_accuracy']:.4f}** |
+
+### Dual-Target Evaluation (Perimeter vs Crown Jewel)
+
+| Probing Target | Detection Target | Test Positives | Detection Rate (%) | False Alarm Rate (%) | Macro F1 | AUROC |
+| :--- | :--- | :---: | :---: | :---: | :---: | :---: |
+| **Crown Jewel Probe** | `critical_server_compromised` | {cj_res['total_positive_test']} | {cj_res['detection_rate_pct']:.2f}% | {cj_res['false_alarm_rate_pct']:.2f}% | {cj_res['macro_f1']:.4f} | {cj_res['auroc']:.4f} |
+| **Perimeter Probe** | `any_host_compromised` | {pi_res['total_positive_test']} | {pi_res['detection_rate_pct']:.2f}% | {pi_res['false_alarm_rate_pct']:.2f}% | {pi_res['macro_f1']:.4f} | {pi_res['auroc']:.4f} |
 
 ---
 
@@ -384,7 +451,7 @@ def run_phase7_pipeline(
 | Anomaly Distance Metric | AUROC (Zero Supervision) | PR-AUC (Zero Supervision) | Detection Rate @ 95% Specificity | Emergent Detection Viable? |
 | :--- | :---: | :---: | :---: | :---: |
 | **Latent Cosine Distance** | **{cos_diag['auroc']:.4f}** | **{cos_diag['pr_auc']:.4f}** | **{cos_diag['tpr_at_95_specificity']*100:.2f}%** | **YES (AUROC >= 0.75)** |
-| **Latent Euclidean Distance** | {zero_label_results['euclidean_distance']['auroc']:.4f} | {zero_label_results['euclidean_distance']['pr_auc']:.4f} | -- | YES |
+| **Latent Euclidean Distance** | {zero_label_results['euclidean_distance']['auroc']:.4f} | {zero_label_results['euclidean_distance']['pr_auc']:.4f} | -- | {euc_viable} |
 
 ---
 

@@ -17,12 +17,14 @@ Provides:
 
 from typing import Any
 import numpy as np
+from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import (
     balanced_accuracy_score,
     confusion_matrix,
     f1_score,
     fbeta_score,
     precision_recall_curve,
+    roc_auc_score,
     roc_curve,
 )
 
@@ -171,7 +173,7 @@ def evaluate_optimized_detection(
 
     return {
         "operating_threshold": float(threshold),
-        "temporal_smoothing_alpha": float(temporal_alpha) if temporal_alpha is not None else 1.0,
+        "temporal_smoothing_alpha": float(temporal_alpha) if temporal_alpha is not None else None,
         "total_attacks": tot_att,
         "attacks_caught": tp,
         "attacks_missed": fn,
@@ -182,4 +184,86 @@ def evaluate_optimized_detection(
         "precision_pct": prec,
         "macro_f1": macro_f1,
         "balanced_accuracy": bal_acc,
+    }
+
+
+def evaluate_multi_target_probing(
+    train_latents: np.ndarray,
+    train_labels: np.ndarray,
+    train_host_comp: np.ndarray,
+    test_latents: np.ndarray,
+    test_labels: np.ndarray,
+    test_host_comp: np.ndarray,
+    seed: int = 42,
+) -> dict[str, Any]:
+    """
+    Train and evaluate dual-target detection probes:
+    Target 1: Critical Server Compromised (Crown jewel sabotage)
+    Target 2: Any Host Compromised (Early perimeter intrusion)
+
+    Args:
+        train_latents: [N_train, D] Context latent embeddings
+        train_labels: [N_train] Binary labels for Op_Server0 compromise
+        train_host_comp: [N_train, num_hosts] Per-host compromise indicator
+        test_latents: [N_test, D] Context latent embeddings
+        test_labels: [N_test] Binary labels for Op_Server0 compromise
+        test_host_comp: [N_test, num_hosts] Per-host compromise indicator
+        seed: Random seed for LogisticRegression
+
+    Returns:
+        Structured dictionary comparing both detection targets.
+    """
+    train_any = (np.sum(train_host_comp > 0, axis=1) > 0).astype(int)
+    test_any = (np.sum(test_host_comp > 0, axis=1) > 0).astype(int)
+
+    def _fit_and_eval(y_tr: np.ndarray, y_te: np.ndarray, target_name: str) -> dict[str, Any]:
+        has_train_variation = len(np.unique(y_tr)) > 1
+        has_test_variation = len(np.unique(y_te)) > 1
+        if not has_train_variation:
+            return {
+                "target_name": target_name,
+                "status": "constant_in_training",
+                "macro_f1": 1.0 if np.all(y_te == y_tr[0]) else 0.0,
+                "auroc": 0.5,
+                "detection_rate_pct": 0.0,
+                "false_alarm_rate_pct": 0.0,
+            }
+
+        clf = LogisticRegression(C=1.0, max_iter=500, random_state=seed)
+        clf.fit(train_latents, y_tr)
+
+        preds = clf.predict(test_latents)
+        probs = clf.predict_proba(test_latents)[:, 1] if has_train_variation else np.zeros(len(test_latents))
+
+        cm = confusion_matrix(y_te, preds, labels=[0, 1])
+        tn, fp, fn, tp = int(cm[0, 0]), int(cm[0, 1]), int(cm[1, 0]), int(cm[1, 1])
+        tot_pos = tp + fn
+        tot_neg = tn + fp
+
+        f1 = float(f1_score(y_te, preds, average="macro", zero_division=0))
+        auroc = float(roc_auc_score(y_te, probs)) if has_test_variation else 0.5
+        det_rate = float((tp / max(1, tot_pos)) * 100.0) if tot_pos > 0 else 100.0
+        far = float((fp / max(1, tot_neg)) * 100.0) if tot_neg > 0 else 0.0
+
+        return {
+            "target_name": target_name,
+            "total_positive_test": tot_pos,
+            "total_negative_test": tot_neg,
+            "attacks_caught": tp,
+            "attacks_missed": fn,
+            "false_alarms": fp,
+            "true_negatives": tn,
+            "detection_rate_pct": det_rate,
+            "false_alarm_rate_pct": far,
+            "macro_f1": f1,
+            "auroc": auroc,
+        }
+
+    crown_res = _fit_and_eval(train_labels, test_labels, "critical_server_compromised (Crown Jewel)")
+    perim_res = _fit_and_eval(train_any, test_any, "any_host_compromised (Perimeter Intrusion)")
+
+    return {
+        "crown_jewel_probe": crown_res,
+        "perimeter_intrusion_probe": perim_res,
+        "perimeter_detection_lead_pct": float(perim_res["detection_rate_pct"] - crown_res["detection_rate_pct"]),
     }

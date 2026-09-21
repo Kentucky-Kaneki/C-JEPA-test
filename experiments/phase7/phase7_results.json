@@ -3,7 +3,7 @@
     "scale": "13",
     "device": "cuda",
     "seed": 1001,
-    "timestamp": "2026-09-21T15:51:48Z"
+    "timestamp": "2026-09-21T16:07:15Z"
   },
   "track1_failure_diagnostics": {
     "perimeter_vs_crown_jewel_audit": {
@@ -56,6 +56,43 @@
       "quiet_transitions_count_rms_lt_1e4": 3481,
       "fn_quiet_transitions_count": 10
     },
+    "blue_defense_action_audit": {
+      "action_breakdown": {
+        "Unknown": {
+          "total_steps": 11352,
+          "clean_steps": 5155,
+          "false_alarms": 494,
+          "false_alarm_rate_pct": 9.582929194956353,
+          "early_perimeter_detections": 488,
+          "true_false_alarms": 6
+        }
+      },
+      "disruptive_actions_restore_remove": {
+        "clean_steps": 0,
+        "false_alarms": 0,
+        "false_alarm_rate_pct": 0.0
+      },
+      "passive_actions_other": {
+        "clean_steps": 5155,
+        "false_alarms": 494,
+        "false_alarm_rate_pct": 9.582929194956353
+      },
+      "disruption_far_ratio": 0.0
+    },
+    "temporal_killchain_diagnostics": {
+      "early_killchain_t_le_15": {
+        "total_attacks": 642,
+        "attacks_caught": 536,
+        "missed_attacks": 106,
+        "false_alarms": 81
+      },
+      "late_killchain_t_gt_15": {
+        "total_attacks": 5555,
+        "attacks_caught": 5306,
+        "missed_attacks": 249,
+        "false_alarms": 413
+      }
+    },
     "adversary_policy_analysis": {
       "bline_targeted": {
         "total_attacks": 4574,
@@ -85,12 +122,13 @@
     "calibrated_thresholds": {
       "youden_optimal_tau": 0.48699440468877037,
       "f2_recall_optimal_tau": 0.26999999999999996,
-      "recall_95_optimal_tau": 0.49615143912912346
+      "recall_95_optimal_tau": 0.49615143912912346,
+      "fpr_05_optimal_tau": 0.6629016342045239
     },
     "operating_points": {
       "baseline_tau_050": {
         "operating_threshold": 0.5,
-        "temporal_smoothing_alpha": 1.0,
+        "temporal_smoothing_alpha": null,
         "total_attacks": 6197,
         "attacks_caught": 5842,
         "attacks_missed": 355,
@@ -104,7 +142,7 @@
       },
       "youden_calibrated": {
         "operating_threshold": 0.48699440468877037,
-        "temporal_smoothing_alpha": 1.0,
+        "temporal_smoothing_alpha": null,
         "total_attacks": 6197,
         "attacks_caught": 5884,
         "attacks_missed": 313,
@@ -118,7 +156,7 @@
       },
       "f2_recall_calibrated": {
         "operating_threshold": 0.26999999999999996,
-        "temporal_smoothing_alpha": 1.0,
+        "temporal_smoothing_alpha": null,
         "total_attacks": 6197,
         "attacks_caught": 6015,
         "attacks_missed": 182,
@@ -129,6 +167,20 @@
         "precision_pct": 89.48229693543588,
         "macro_f1": 0.920166638696049,
         "balanced_accuracy": 0.9167412754239364
+      },
+      "fpr_05_calibrated": {
+        "operating_threshold": 0.6629016342045239,
+        "temporal_smoothing_alpha": null,
+        "total_attacks": 6197,
+        "attacks_caught": 5635,
+        "attacks_missed": 562,
+        "clean_steps": 5155,
+        "false_alarms": 356,
+        "attack_detection_rate_pct": 90.93109569146361,
+        "false_alarm_rate_pct": 6.905916585838991,
+        "precision_pct": 94.05775329661158,
+        "macro_f1": 0.9186922317445103,
+        "balanced_accuracy": 0.9201258955281231
       },
       "smoothed_and_youden": {
         "operating_threshold": 0.48699440468877037,
@@ -144,6 +196,35 @@
         "macro_f1": 0.9221594008828051,
         "balanced_accuracy": 0.9220631302621791
       }
+    },
+    "dual_target_probing": {
+      "crown_jewel_probe": {
+        "target_name": "critical_server_compromised (Crown Jewel)",
+        "total_positive_test": 6197,
+        "total_negative_test": 5155,
+        "attacks_caught": 5842,
+        "attacks_missed": 355,
+        "false_alarms": 494,
+        "true_negatives": 4661,
+        "detection_rate_pct": 94.27142165563983,
+        "false_alarm_rate_pct": 9.582929194956353,
+        "macro_f1": 0.9243931092214459,
+        "auroc": 0.9738896687753077
+      },
+      "perimeter_intrusion_probe": {
+        "target_name": "any_host_compromised (Perimeter Intrusion)",
+        "total_positive_test": 11296,
+        "total_negative_test": 56,
+        "attacks_caught": 11296,
+        "attacks_missed": 0,
+        "false_alarms": 56,
+        "true_negatives": 0,
+        "detection_rate_pct": 100.0,
+        "false_alarm_rate_pct": 100.0,
+        "macro_f1": 0.4987636877428471,
+        "auroc": 0.9760748115641441
+      },
+      "perimeter_detection_lead_pct": 5.728578344360173
     }
   },
   "track3_zero_label_latent_anomaly": {

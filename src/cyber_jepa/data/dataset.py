@@ -228,6 +228,8 @@ class CyberJEPADataset(Dataset[dict[str, Any]]):
                         for h in MONITORED_HOSTS
                     ]
 
+                    act_type = str(group["action_type"].values[i]) if "action_type" in group.columns else "Unknown"
+
                     self.samples.append({
                         "trajectory_id": traj_id,
                         "transition_id": tid_ctx,
@@ -240,6 +242,7 @@ class CyberJEPADataset(Dataset[dict[str, Any]]):
                         "horizon": self.horizon,
                         "rms_delta": rms_delta,
                         "host_compromised": torch.tensor(host_vec, dtype=torch.float32),
+                        "action_type": act_type,
                     })
 
     def compute_median_dynamic_rms(self) -> float:

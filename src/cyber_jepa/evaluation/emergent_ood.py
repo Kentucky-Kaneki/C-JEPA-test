@@ -18,7 +18,6 @@ Provides:
 
 from typing import Any
 import numpy as np
-import torch
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import (
     average_precision_score,

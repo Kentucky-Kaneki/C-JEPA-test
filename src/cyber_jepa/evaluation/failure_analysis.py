@@ -28,6 +28,7 @@ def run_comprehensive_failure_analysis(
     trajectory_ids: list[str],
     rms_deltas: np.ndarray | None = None,
     t_steps: np.ndarray | None = None,
+    action_types: list[str] | None = None,
 ) -> dict[str, Any]:
     """
     Execute exhaustive forensic root-cause analysis on model predictions.
@@ -40,6 +41,7 @@ def run_comprehensive_failure_analysis(
         trajectory_ids: Trajectory ID for each sample [N]
         rms_deltas: Optional RMS shift magnitude [N]
         t_steps: Optional step index within trajectory [N]
+        action_types: Optional defender action type strings [N] (Restore, Remove, etc.)
 
     Returns:
         Structured dictionary of failure mode diagnostics.
@@ -102,7 +104,7 @@ def run_comprehensive_failure_analysis(
         b_00_20 = int(np.sum(fn_probs < 0.20))
         b_20_30 = int(np.sum((fn_probs >= 0.20) & (fn_probs < 0.30)))
         b_30_40 = int(np.sum((fn_probs >= 0.30) & (fn_probs < 0.40)))
-        b_40_50 = int(np.sum(fn_probs >= 0.40))
+        b_40_50 = int(np.sum((fn_probs >= 0.40) & (fn_probs < 0.50)))
         recov_035 = int(np.sum(fn_probs >= 0.35))
         recov_040 = int(np.sum(fn_probs >= 0.40))
 
@@ -146,7 +148,75 @@ def run_comprehensive_failure_analysis(
     else:
         telemetry_diagnostics = {}
 
-    # 4. Adversary Policy Stratification (B-line vs. Meander)
+    # 4. Blue Defense Action Interference Audit
+    # Evaluates whether Blue actions (Restore, Remove, Sleep, Monitor, etc.) trigger false alarms
+    if action_types is not None and len(action_types) == N:
+        act_arr = np.array([str(a) for a in action_types])
+        unique_actions = sorted(list(set(act_arr)))
+        action_breakdown = {}
+        for act in unique_actions:
+            act_mask = (act_arr == act)
+            act_clean_steps = int(np.sum(act_mask & (y_true == 0)))
+            act_fps = int(np.sum(act_mask & fp_mask))
+            act_far = float((act_fps / max(1, act_clean_steps)) * 100.0) if act_clean_steps > 0 else 0.0
+            act_early_perim = int(np.sum(act_mask & fp_mask & (any_host_comp == 1)))
+            act_true_fp = int(np.sum(act_mask & fp_mask & (any_host_comp == 0)))
+            action_breakdown[act] = {
+                "total_steps": int(np.sum(act_mask)),
+                "clean_steps": act_clean_steps,
+                "false_alarms": act_fps,
+                "false_alarm_rate_pct": act_far,
+                "early_perimeter_detections": act_early_perim,
+                "true_false_alarms": act_true_fp,
+            }
+        active_disruptive_mask = np.isin(act_arr, ["Restore", "Remove"])
+        disruptive_clean = int(np.sum(active_disruptive_mask & (y_true == 0)))
+        disruptive_fps = int(np.sum(active_disruptive_mask & fp_mask))
+        disruptive_far = float((disruptive_fps / max(1, disruptive_clean)) * 100.0) if disruptive_clean > 0 else 0.0
+
+        passive_mask = ~active_disruptive_mask
+        passive_clean = int(np.sum(passive_mask & (y_true == 0)))
+        passive_fps = int(np.sum(passive_mask & fp_mask))
+        passive_far = float((passive_fps / max(1, passive_clean)) * 100.0) if passive_clean > 0 else 0.0
+
+        blue_action_audit = {
+            "action_breakdown": action_breakdown,
+            "disruptive_actions_restore_remove": {
+                "clean_steps": disruptive_clean,
+                "false_alarms": disruptive_fps,
+                "false_alarm_rate_pct": disruptive_far,
+            },
+            "passive_actions_other": {
+                "clean_steps": passive_clean,
+                "false_alarms": passive_fps,
+                "false_alarm_rate_pct": passive_far,
+            },
+            "disruption_far_ratio": float(disruptive_far / max(1e-6, passive_far)),
+        }
+    else:
+        blue_action_audit = {}
+
+    # 5. Temporal Killchain Progression Diagnostics (using t_steps)
+    if t_steps is not None and len(t_steps) == N:
+        t_arr = np.asarray(t_steps, dtype=int)
+        temporal_diagnostics = {
+            "early_killchain_t_le_15": {
+                "total_attacks": int(np.sum((y_true == 1) & (t_arr <= 15))),
+                "attacks_caught": int(np.sum(tp_mask & (t_arr <= 15))),
+                "missed_attacks": int(np.sum(fn_mask & (t_arr <= 15))),
+                "false_alarms": int(np.sum(fp_mask & (t_arr <= 15))),
+            },
+            "late_killchain_t_gt_15": {
+                "total_attacks": int(np.sum((y_true == 1) & (t_arr > 15))),
+                "attacks_caught": int(np.sum(tp_mask & (t_arr > 15))),
+                "missed_attacks": int(np.sum(fn_mask & (t_arr > 15))),
+                "false_alarms": int(np.sum(fp_mask & (t_arr > 15))),
+            },
+        }
+    else:
+        temporal_diagnostics = {}
+
+    # 6. Adversary Policy Stratification (B-line vs. Meander)
     bline_mask = np.array(["bline" in str(tid) for tid in trajectory_ids], dtype=bool)
     meander_mask = np.array(["meander" in str(tid) for tid in trajectory_ids], dtype=bool)
 
@@ -178,6 +248,8 @@ def run_comprehensive_failure_analysis(
         "perimeter_vs_crown_jewel_audit": perimeter_audit,
         "borderline_miss_stratification": miss_stratification,
         "telemetry_shift_diagnostics": telemetry_diagnostics,
+        "blue_defense_action_audit": blue_action_audit,
+        "temporal_killchain_diagnostics": temporal_diagnostics,
         "adversary_policy_analysis": {
             "bline_targeted": _policy_failure_stats(bline_mask),
             "meander_stealth": _policy_failure_stats(meander_mask),
