@@ -1,0 +1,2523 @@
+{
+  "metadata": {
+    "device": "cuda",
+    "seed": 1001,
+    "scales_evaluated": [
+      "5",
+      "10",
+      "13",
+      "25",
+      "50",
+      "100",
+      "250",
+      "500"
+    ],
+    "timestamp": "2026-09-21T18:00:38Z"
+  },
+  "by_scale": {
+    "5": {
+      "scale_spec": {
+        "name": "Micro Branch Subnet (5 hosts)",
+        "num_hosts": 5,
+        "obs_dim": 20
+      },
+      "zero_day_anomaly": {
+        "auroc": 0.8363694175101466,
+        "pr_auc": 0.8440250386738612,
+        "clean_mean_distance": 0.010573247447609901,
+        "test_clean_mean_distance": 0.6050539612770081,
+        "test_attack_mean_distance": 1.1760993003845215,
+        "operating_points": {
+          "q_80": {
+            "calibration_quantile": 0.8,
+            "threshold_value": 0.00020456314086914062,
+            "crown_jewel_attacks_caught": 6197,
+            "crown_jewel_attacks_missed": 0,
+            "crown_jewel_total_attacks": 6197,
+            "crown_jewel_detection_rate_pct": 100.0,
+            "nominal_clean_steps": 5155,
+            "nominal_false_alarms": 5136,
+            "nominal_false_alarm_rate_pct": 99.63142580019398,
+            "macro_f1": 0.35718047872430736,
+            "precision_pct": 54.68102003000088,
+            "balanced_accuracy": 0.50184287099903,
+            "perimeter_intrusions_caught": 10036,
+            "perimeter_intrusions_missed": 4,
+            "perimeter_total_intrusions": 10040,
+            "perimeter_detection_rate_pct": 99.9601593625498,
+            "true_benign_steps": 1312,
+            "true_benign_false_alarms": 1297,
+            "true_benign_false_alarm_rate_pct": 98.85670731707317
+          },
+          "q_85": {
+            "calibration_quantile": 0.85,
+            "threshold_value": 0.00020456314086914062,
+            "crown_jewel_attacks_caught": 6197,
+            "crown_jewel_attacks_missed": 0,
+            "crown_jewel_total_attacks": 6197,
+            "crown_jewel_detection_rate_pct": 100.0,
+            "nominal_clean_steps": 5155,
+            "nominal_false_alarms": 5136,
+            "nominal_false_alarm_rate_pct": 99.63142580019398,
+            "macro_f1": 0.35718047872430736,
+            "precision_pct": 54.68102003000088,
+            "balanced_accuracy": 0.50184287099903,
+            "perimeter_intrusions_caught": 10036,
+            "perimeter_intrusions_missed": 4,
+            "perimeter_total_intrusions": 10040,
+            "perimeter_detection_rate_pct": 99.9601593625498,
+            "true_benign_steps": 1312,
+            "true_benign_false_alarms": 1297,
+            "true_benign_false_alarm_rate_pct": 98.85670731707317
+          },
+          "q_90": {
+            "calibration_quantile": 0.9,
+            "threshold_value": 0.0018552541732788086,
+            "crown_jewel_attacks_caught": 6050,
+            "crown_jewel_attacks_missed": 147,
+            "crown_jewel_total_attacks": 6197,
+            "crown_jewel_detection_rate_pct": 97.62788446022269,
+            "nominal_clean_steps": 5155,
+            "nominal_false_alarms": 3880,
+            "nominal_false_alarm_rate_pct": 75.26673132880698,
+            "macro_f1": 0.5690046503408464,
+            "precision_pct": 60.92648539778449,
+            "balanced_accuracy": 0.6118057656570786,
+            "perimeter_intrusions_caught": 9423,
+            "perimeter_intrusions_missed": 617,
+            "perimeter_total_intrusions": 10040,
+            "perimeter_detection_rate_pct": 93.85458167330677,
+            "true_benign_steps": 1312,
+            "true_benign_false_alarms": 507,
+            "true_benign_false_alarm_rate_pct": 38.64329268292683
+          },
+          "q_95": {
+            "calibration_quantile": 0.95,
+            "threshold_value": 0.02301645278930664,
+            "crown_jewel_attacks_caught": 6016,
+            "crown_jewel_attacks_missed": 181,
+            "crown_jewel_total_attacks": 6197,
+            "crown_jewel_detection_rate_pct": 97.07923188639664,
+            "nominal_clean_steps": 5155,
+            "nominal_false_alarms": 3804,
+            "nominal_false_alarm_rate_pct": 73.79243452958293,
+            "macro_f1": 0.5776347209376265,
+            "precision_pct": 61.262729124236245,
+            "balanced_accuracy": 0.6164339867840686,
+            "perimeter_intrusions_caught": 9362,
+            "perimeter_intrusions_missed": 678,
+            "perimeter_total_intrusions": 10040,
+            "perimeter_detection_rate_pct": 93.24701195219124,
+            "true_benign_steps": 1312,
+            "true_benign_false_alarms": 458,
+            "true_benign_false_alarm_rate_pct": 34.90853658536585
+          },
+          "q_98": {
+            "calibration_quantile": 0.98,
+            "threshold_value": 0.06941413879394531,
+            "crown_jewel_attacks_caught": 5995,
+            "crown_jewel_attacks_missed": 202,
+            "crown_jewel_total_attacks": 6197,
+            "crown_jewel_detection_rate_pct": 96.74035823785702,
+            "nominal_clean_steps": 5155,
+            "nominal_false_alarms": 3617,
+            "nominal_false_alarm_rate_pct": 70.16488845780795,
+            "macro_f1": 0.6022745601029256,
+            "precision_pct": 62.3699542238868,
+            "balanced_accuracy": 0.6328773489002454,
+            "perimeter_intrusions_caught": 9245,
+            "perimeter_intrusions_missed": 795,
+            "perimeter_total_intrusions": 10040,
+            "perimeter_detection_rate_pct": 92.0816733067729,
+            "true_benign_steps": 1312,
+            "true_benign_false_alarms": 367,
+            "true_benign_false_alarm_rate_pct": 27.972560975609756
+          }
+        }
+      },
+      "energy_anomaly": {
+        "auroc": 0.5247615042289948,
+        "pr_auc": 0.5246070895399236,
+        "clean_mean_energy": 0.5293664336204529,
+        "attack_mean_energy": 0.86905837059021,
+        "benign_mean_energy": 0.826359212398529,
+        "operating_points": {
+          "q_80": {
+            "calibration_quantile": 0.8,
+            "threshold_value": 0.9232614040374756,
+            "attacks_caught": 3548,
+            "attacks_missed": 2649,
+            "total_attacks": 6197,
+            "detection_rate_pct": 57.25350976278845,
+            "false_alarms": 2264,
+            "false_alarm_rate_pct": 43.91852570320078,
+            "macro_f1": 0.5657583133360592
+          },
+          "q_85": {
+            "calibration_quantile": 0.85,
+            "threshold_value": 0.9232614040374756,
+            "attacks_caught": 3548,
+            "attacks_missed": 2649,
+            "total_attacks": 6197,
+            "detection_rate_pct": 57.25350976278845,
+            "false_alarms": 2264,
+            "false_alarm_rate_pct": 43.91852570320078,
+            "macro_f1": 0.5657583133360592
+          },
+          "q_90": {
+            "calibration_quantile": 0.9,
+            "threshold_value": 0.9344805479049683,
+            "attacks_caught": 3399,
+            "attacks_missed": 2798,
+            "total_attacks": 6197,
+            "detection_rate_pct": 54.84912054219784,
+            "false_alarms": 2094,
+            "false_alarm_rate_pct": 40.62075654704171,
+            "macro_f1": 0.568680346640243
+          },
+          "q_95": {
+            "calibration_quantile": 0.95,
+            "threshold_value": 0.9727757573127747,
+            "attacks_caught": 2384,
+            "attacks_missed": 3813,
+            "total_attacks": 6197,
+            "detection_rate_pct": 38.47022752944974,
+            "false_alarms": 1905,
+            "false_alarm_rate_pct": 36.954413191076625,
+            "macro_f1": 0.49335173554293893
+          },
+          "q_98": {
+            "calibration_quantile": 0.98,
+            "threshold_value": 1.5922346115112305,
+            "attacks_caught": 0,
+            "attacks_missed": 6197,
+            "total_attacks": 6197,
+            "detection_rate_pct": 0.0,
+            "false_alarms": 68,
+            "false_alarm_rate_pct": 1.3191076624636275,
+            "macro_f1": 0.30944704665733924
+          }
+        }
+      },
+      "ood_bline_to_meander": {
+        "source_policy": "bline_targeted",
+        "target_policy_unseen": "meander_stealth",
+        "in_distribution": {
+          "macro_f1": 0.898054852093324,
+          "auroc": 0.9614897031037102,
+          "detection_rate_pct": 95.9554000874508
+        },
+        "zero_shot_ood": {
+          "macro_f1": 0.6514983399067784,
+          "auroc": 0.841572287948697,
+          "detection_rate_pct": 98.64448552064079,
+          "false_alarm_rate_pct": 47.865778435726625,
+          "attacks_caught": 1601,
+          "attacks_missed": 22,
+          "total_attacks": 1623
+        },
+        "calibrated_ood": {
+          "calibrated_tau_youden": 0.9000065670903648,
+          "calibrated_tau_f2": 0.29,
+          "baseline_tau_050": {
+            "threshold": 0.5,
+            "macro_f1": 0.6514983399067784,
+            "detection_rate_pct": 98.64448552064079,
+            "false_alarm_rate_pct": 47.865778435726625,
+            "attacks_caught": 1601,
+            "attacks_missed": 22,
+            "total_attacks": 1623,
+            "false_alarms": 1940
+          },
+          "youden_calibrated": {
+            "threshold": 0.9000065670903648,
+            "macro_f1": 0.7495971414880684,
+            "detection_rate_pct": 92.9143561306223,
+            "false_alarm_rate_pct": 30.347890451517394,
+            "attacks_caught": 1508,
+            "attacks_missed": 115,
+            "total_attacks": 1623,
+            "false_alarms": 1230
+          },
+          "f2_recall_calibrated": {
+            "threshold": 0.29,
+            "macro_f1": 0.412119005412781,
+            "detection_rate_pct": 99.50708564386937,
+            "false_alarm_rate_pct": 80.40957315568714,
+            "attacks_caught": 1615,
+            "attacks_missed": 8,
+            "total_attacks": 1623,
+            "false_alarms": 3259
+          },
+          "smoothed_and_youden": {
+            "threshold": 0.9000065670903648,
+            "macro_f1": 0.7764226967721134,
+            "detection_rate_pct": 91.06592729513248,
+            "false_alarm_rate_pct": 25.41327411793733,
+            "attacks_caught": 1478,
+            "attacks_missed": 145,
+            "total_attacks": 1623,
+            "false_alarms": 1030
+          }
+        },
+        "zero_shot_retention_rate_pct": 83.4689707138481,
+        "generalization_penalty_delta_f1": -0.1484577106052556
+      },
+      "ood_meander_to_bline": {
+        "source_policy": "meander_stealth",
+        "target_policy_unseen": "bline_targeted",
+        "in_distribution": {
+          "macro_f1": 0.8616685561726777,
+          "auroc": 0.94519786276081,
+          "detection_rate_pct": 79.72889710412817
+        },
+        "zero_shot_ood": {
+          "macro_f1": 0.7295460831453981,
+          "auroc": 0.9230059906184802,
+          "detection_rate_pct": 72.73721031919546,
+          "false_alarm_rate_pct": 3.901996370235935,
+          "attacks_caught": 3327,
+          "attacks_missed": 1247,
+          "total_attacks": 4574
+        },
+        "calibrated_ood": {
+          "calibrated_tau_youden": 0.3068019969608522,
+          "calibrated_tau_f2": 0.12,
+          "baseline_tau_050": {
+            "threshold": 0.5,
+            "macro_f1": 0.7295460831453981,
+            "detection_rate_pct": 72.73721031919546,
+            "false_alarm_rate_pct": 3.901996370235935,
+            "attacks_caught": 3327,
+            "attacks_missed": 1247,
+            "total_attacks": 4574,
+            "false_alarms": 43
+          },
+          "youden_calibrated": {
+            "threshold": 0.3068019969608522,
+            "macro_f1": 0.7360856450305429,
+            "detection_rate_pct": 75.14210756449498,
+            "false_alarm_rate_pct": 7.985480943738657,
+            "attacks_caught": 3437,
+            "attacks_missed": 1137,
+            "total_attacks": 4574,
+            "false_alarms": 88
+          },
+          "f2_recall_calibrated": {
+            "threshold": 0.12,
+            "macro_f1": 0.8027404042992823,
+            "detection_rate_pct": 85.37385220813293,
+            "false_alarm_rate_pct": 13.430127041742287,
+            "attacks_caught": 3905,
+            "attacks_missed": 669,
+            "total_attacks": 4574,
+            "false_alarms": 148
+          },
+          "smoothed_and_youden": {
+            "threshold": 0.3068019969608522,
+            "macro_f1": 0.7474982025843893,
+            "detection_rate_pct": 75.90730214254482,
+            "false_alarm_rate_pct": 6.0798548094373865,
+            "attacks_caught": 3472,
+            "attacks_missed": 1102,
+            "total_attacks": 4574,
+            "false_alarms": 67
+          }
+        },
+        "zero_shot_retention_rate_pct": 85.42561287138716,
+        "generalization_penalty_delta_f1": -0.12558291114213482
+      }
+    },
+    "10": {
+      "scale_spec": {
+        "name": "Core Subnet Tier (10 hosts)",
+        "num_hosts": 10,
+        "obs_dim": 40
+      },
+      "zero_day_anomaly": {
+        "auroc": 0.8473523295196027,
+        "pr_auc": 0.8410688735029733,
+        "clean_mean_distance": 0.15996064245700836,
+        "test_clean_mean_distance": 0.690302312374115,
+        "test_attack_mean_distance": 1.1251752376556396,
+        "operating_points": {
+          "q_80": {
+            "calibration_quantile": 0.8,
+            "threshold_value": 0.17276734113693237,
+            "crown_jewel_attacks_caught": 6195,
+            "crown_jewel_attacks_missed": 2,
+            "crown_jewel_total_attacks": 6197,
+            "crown_jewel_detection_rate_pct": 99.9677263191867,
+            "nominal_clean_steps": 5155,
+            "nominal_false_alarms": 4162,
+            "nominal_false_alarm_rate_pct": 80.73714839961202,
+            "macro_f1": 0.5356932080375534,
+            "precision_pct": 59.8146181326639,
+            "balanced_accuracy": 0.5961528895978734,
+            "perimeter_intrusions_caught": 10275,
+            "perimeter_intrusions_missed": 833,
+            "perimeter_total_intrusions": 11108,
+            "perimeter_detection_rate_pct": 92.50090025207058,
+            "true_benign_steps": 244,
+            "true_benign_false_alarms": 82,
+            "true_benign_false_alarm_rate_pct": 33.60655737704918
+          },
+          "q_85": {
+            "calibration_quantile": 0.85,
+            "threshold_value": 0.1901395320892334,
+            "crown_jewel_attacks_caught": 6195,
+            "crown_jewel_attacks_missed": 2,
+            "crown_jewel_total_attacks": 6197,
+            "crown_jewel_detection_rate_pct": 99.9677263191867,
+            "nominal_clean_steps": 5155,
+            "nominal_false_alarms": 4095,
+            "nominal_false_alarm_rate_pct": 79.43743937924346,
+            "macro_f1": 0.546250832648949,
+            "precision_pct": 60.204081632653065,
+            "balanced_accuracy": 0.6026514346997163,
+            "perimeter_intrusions_caught": 10225,
+            "perimeter_intrusions_missed": 883,
+            "perimeter_total_intrusions": 11108,
+            "perimeter_detection_rate_pct": 92.0507742167807,
+            "true_benign_steps": 244,
+            "true_benign_false_alarms": 65,
+            "true_benign_false_alarm_rate_pct": 26.639344262295083
+          },
+          "q_90": {
+            "calibration_quantile": 0.9,
+            "threshold_value": 0.6550304889678955,
+            "crown_jewel_attacks_caught": 5974,
+            "crown_jewel_attacks_missed": 223,
+            "crown_jewel_total_attacks": 6197,
+            "crown_jewel_detection_rate_pct": 96.4014845893174,
+            "nominal_clean_steps": 5155,
+            "nominal_false_alarms": 3099,
+            "nominal_false_alarm_rate_pct": 60.11639185257032,
+            "macro_f1": 0.6677917474694139,
+            "precision_pct": 65.84371211286233,
+            "balanced_accuracy": 0.6814254636837355,
+            "perimeter_intrusions_caught": 9057,
+            "perimeter_intrusions_missed": 2051,
+            "perimeter_total_intrusions": 11108,
+            "perimeter_detection_rate_pct": 81.53583003240908,
+            "true_benign_steps": 244,
+            "true_benign_false_alarms": 16,
+            "true_benign_false_alarm_rate_pct": 6.557377049180328
+          },
+          "q_95": {
+            "calibration_quantile": 0.95,
+            "threshold_value": 0.735281229019165,
+            "crown_jewel_attacks_caught": 5685,
+            "crown_jewel_attacks_missed": 512,
+            "crown_jewel_total_attacks": 6197,
+            "crown_jewel_detection_rate_pct": 91.73793771179602,
+            "nominal_clean_steps": 5155,
+            "nominal_false_alarms": 2760,
+            "nominal_false_alarm_rate_pct": 53.54025218234724,
+            "macro_f1": 0.6853393169200139,
+            "precision_pct": 67.31793960923623,
+            "balanced_accuracy": 0.690988427647244,
+            "perimeter_intrusions_caught": 8440,
+            "perimeter_intrusions_missed": 2668,
+            "perimeter_total_intrusions": 11108,
+            "perimeter_detection_rate_pct": 75.98127475693194,
+            "true_benign_steps": 244,
+            "true_benign_false_alarms": 5,
+            "true_benign_false_alarm_rate_pct": 2.0491803278688523
+          },
+          "q_98": {
+            "calibration_quantile": 0.98,
+            "threshold_value": 0.735281229019165,
+            "crown_jewel_attacks_caught": 5685,
+            "crown_jewel_attacks_missed": 512,
+            "crown_jewel_total_attacks": 6197,
+            "crown_jewel_detection_rate_pct": 91.73793771179602,
+            "nominal_clean_steps": 5155,
+            "nominal_false_alarms": 2760,
+            "nominal_false_alarm_rate_pct": 53.54025218234724,
+            "macro_f1": 0.6853393169200139,
+            "precision_pct": 67.31793960923623,
+            "balanced_accuracy": 0.690988427647244,
+            "perimeter_intrusions_caught": 8440,
+            "perimeter_intrusions_missed": 2668,
+            "perimeter_total_intrusions": 11108,
+            "perimeter_detection_rate_pct": 75.98127475693194,
+            "true_benign_steps": 244,
+            "true_benign_false_alarms": 5,
+            "true_benign_false_alarm_rate_pct": 2.0491803278688523
+          }
+        }
+      },
+      "energy_anomaly": {
+        "auroc": 0.1485682740952687,
+        "pr_auc": 0.37008176520969166,
+        "clean_mean_energy": 0.3941238820552826,
+        "attack_mean_energy": 0.15848475694656372,
+        "benign_mean_energy": 0.3662959039211273,
+        "operating_points": {
+          "q_80": {
+            "calibration_quantile": 0.8,
+            "threshold_value": 0.5671685934066772,
+            "attacks_caught": 63,
+            "attacks_missed": 6134,
+            "total_attacks": 6197,
+            "detection_rate_pct": 1.0166209456188477,
+            "false_alarms": 989,
+            "false_alarm_rate_pct": 19.185257032007762,
+            "macro_f1": 0.2782476316527154
+          },
+          "q_85": {
+            "calibration_quantile": 0.85,
+            "threshold_value": 0.626876711845398,
+            "attacks_caught": 49,
+            "attacks_missed": 6148,
+            "total_attacks": 6197,
+            "detection_rate_pct": 0.7907051799257705,
+            "false_alarms": 758,
+            "false_alarm_rate_pct": 14.704170708050437,
+            "macro_f1": 0.2870596965519248
+          },
+          "q_90": {
+            "calibration_quantile": 0.9,
+            "threshold_value": 0.7364912033081055,
+            "attacks_caught": 27,
+            "attacks_missed": 6170,
+            "total_attacks": 6197,
+            "detection_rate_pct": 0.4356946909795062,
+            "false_alarms": 475,
+            "false_alarm_rate_pct": 9.21435499515034,
+            "macro_f1": 0.2964390746118439
+          },
+          "q_95": {
+            "calibration_quantile": 0.95,
+            "threshold_value": 0.8454528450965881,
+            "attacks_caught": 16,
+            "attacks_missed": 6181,
+            "total_attacks": 6197,
+            "detection_rate_pct": 0.25818944650637404,
+            "false_alarms": 294,
+            "false_alarm_rate_pct": 5.703200775945684,
+            "macro_f1": 0.30257619609958564
+          },
+          "q_98": {
+            "calibration_quantile": 0.98,
+            "threshold_value": 0.8926205635070801,
+            "attacks_caught": 11,
+            "attacks_missed": 6186,
+            "total_attacks": 6197,
+            "detection_rate_pct": 0.17750524447313218,
+            "false_alarms": 226,
+            "false_alarm_rate_pct": 4.384093113482057,
+            "macro_f1": 0.30465988251183257
+          }
+        }
+      },
+      "ood_bline_to_meander": {
+        "source_policy": "bline_targeted",
+        "target_policy_unseen": "meander_stealth",
+        "in_distribution": {
+          "macro_f1": 0.9375400867760799,
+          "auroc": 0.9698194521706767,
+          "detection_rate_pct": 99.36598163533013
+        },
+        "zero_shot_ood": {
+          "macro_f1": 0.7589508628935671,
+          "auroc": 0.8836595029597817,
+          "detection_rate_pct": 88.4781269254467,
+          "false_alarm_rate_pct": 26.671601283000246,
+          "attacks_caught": 1436,
+          "attacks_missed": 187,
+          "total_attacks": 1623
+        },
+        "calibrated_ood": {
+          "calibrated_tau_youden": 0.7307787468155063,
+          "calibrated_tau_f2": 0.18,
+          "baseline_tau_050": {
+            "threshold": 0.5,
+            "macro_f1": 0.7589508628935671,
+            "detection_rate_pct": 88.4781269254467,
+            "false_alarm_rate_pct": 26.671601283000246,
+            "attacks_caught": 1436,
+            "attacks_missed": 187,
+            "total_attacks": 1623,
+            "false_alarms": 1081
+          },
+          "youden_calibrated": {
+            "threshold": 0.7307787468155063,
+            "macro_f1": 0.7877085143872912,
+            "detection_rate_pct": 73.25939617991374,
+            "false_alarm_rate_pct": 14.187021959042683,
+            "attacks_caught": 1189,
+            "attacks_missed": 434,
+            "total_attacks": 1623,
+            "false_alarms": 575
+          },
+          "f2_recall_calibrated": {
+            "threshold": 0.18,
+            "macro_f1": 0.6358159668771166,
+            "detection_rate_pct": 97.65865680837955,
+            "false_alarm_rate_pct": 49.740932642487046,
+            "attacks_caught": 1585,
+            "attacks_missed": 38,
+            "total_attacks": 1623,
+            "false_alarms": 2016
+          },
+          "smoothed_and_youden": {
+            "threshold": 0.7307787468155063,
+            "macro_f1": 0.7868456897620881,
+            "detection_rate_pct": 69.13123844731977,
+            "false_alarm_rate_pct": 11.941771527263755,
+            "attacks_caught": 1122,
+            "attacks_missed": 501,
+            "total_attacks": 1623,
+            "false_alarms": 484
+          }
+        },
+        "zero_shot_retention_rate_pct": 84.01864896209241,
+        "generalization_penalty_delta_f1": -0.14983157238878875
+      },
+      "ood_meander_to_bline": {
+        "source_policy": "meander_stealth",
+        "target_policy_unseen": "bline_targeted",
+        "in_distribution": {
+          "macro_f1": 0.8880274942199583,
+          "auroc": 0.9605182046448939,
+          "detection_rate_pct": 85.45902649414664
+        },
+        "zero_shot_ood": {
+          "macro_f1": 0.8756847939948962,
+          "auroc": 0.9542528907571161,
+          "detection_rate_pct": 90.53344993441189,
+          "false_alarm_rate_pct": 5.626134301270418,
+          "attacks_caught": 4141,
+          "attacks_missed": 433,
+          "total_attacks": 4574
+        },
+        "calibrated_ood": {
+          "calibrated_tau_youden": 0.3136075128038281,
+          "calibrated_tau_f2": 0.3,
+          "baseline_tau_050": {
+            "threshold": 0.5,
+            "macro_f1": 0.8756847939948962,
+            "detection_rate_pct": 90.53344993441189,
+            "false_alarm_rate_pct": 5.626134301270418,
+            "attacks_caught": 4141,
+            "attacks_missed": 433,
+            "total_attacks": 4574,
+            "false_alarms": 62
+          },
+          "youden_calibrated": {
+            "threshold": 0.3136075128038281,
+            "macro_f1": 0.891325916447241,
+            "detection_rate_pct": 92.30432881504154,
+            "false_alarm_rate_pct": 6.352087114337568,
+            "attacks_caught": 4222,
+            "attacks_missed": 352,
+            "total_attacks": 4574,
+            "false_alarms": 70
+          },
+          "f2_recall_calibrated": {
+            "threshold": 0.3,
+            "macro_f1": 0.8922311442839401,
+            "detection_rate_pct": 92.39177962396153,
+            "false_alarm_rate_pct": 6.352087114337568,
+            "attacks_caught": 4226,
+            "attacks_missed": 348,
+            "total_attacks": 4574,
+            "false_alarms": 70
+          },
+          "smoothed_and_youden": {
+            "threshold": 0.3136075128038281,
+            "macro_f1": 0.8942750417198615,
+            "detection_rate_pct": 92.58854394403149,
+            "false_alarm_rate_pct": 6.352087114337568,
+            "attacks_caught": 4235,
+            "attacks_missed": 339,
+            "total_attacks": 4574,
+            "false_alarms": 70
+          }
+        },
+        "zero_shot_retention_rate_pct": 100.37143244423757,
+        "generalization_penalty_delta_f1": 0.0032984222272827157
+      }
+    },
+    "13": {
+      "scale_spec": {
+        "name": "CybORG Scenario 1b Standard (13 hosts)",
+        "num_hosts": 13,
+        "obs_dim": 52
+      },
+      "zero_day_anomaly": {
+        "auroc": 0.79591208912294,
+        "pr_auc": 0.7823077826656037,
+        "clean_mean_distance": 0.20132704079151154,
+        "test_clean_mean_distance": 0.6183031797409058,
+        "test_attack_mean_distance": 0.9691714644432068,
+        "operating_points": {
+          "q_80": {
+            "calibration_quantile": 0.8,
+            "threshold_value": 0.3799782991409302,
+            "crown_jewel_attacks_caught": 6149,
+            "crown_jewel_attacks_missed": 48,
+            "crown_jewel_total_attacks": 6197,
+            "crown_jewel_detection_rate_pct": 99.22543166048088,
+            "nominal_clean_steps": 5155,
+            "nominal_false_alarms": 3856,
+            "nominal_false_alarm_rate_pct": 74.8011639185257,
+            "macro_f1": 0.5793057284207672,
+            "precision_pct": 61.459270364817584,
+            "balanced_accuracy": 0.6221213387097759,
+            "perimeter_intrusions_caught": 10002,
+            "perimeter_intrusions_missed": 1294,
+            "perimeter_total_intrusions": 11296,
+            "perimeter_detection_rate_pct": 88.54461756373938,
+            "true_benign_steps": 56,
+            "true_benign_false_alarms": 3,
+            "true_benign_false_alarm_rate_pct": 5.357142857142857
+          },
+          "q_85": {
+            "calibration_quantile": 0.85,
+            "threshold_value": 0.3887428641319275,
+            "crown_jewel_attacks_caught": 6100,
+            "crown_jewel_attacks_missed": 97,
+            "crown_jewel_total_attacks": 6197,
+            "crown_jewel_detection_rate_pct": 98.43472648055511,
+            "nominal_clean_steps": 5155,
+            "nominal_false_alarms": 3783,
+            "nominal_false_alarm_rate_pct": 73.3850630455868,
+            "macro_f1": 0.5864788376955801,
+            "precision_pct": 61.722149144996465,
+            "balanced_accuracy": 0.6252483171748415,
+            "perimeter_intrusions_caught": 9882,
+            "perimeter_intrusions_missed": 1414,
+            "perimeter_total_intrusions": 11296,
+            "perimeter_detection_rate_pct": 87.48229461756374,
+            "true_benign_steps": 56,
+            "true_benign_false_alarms": 1,
+            "true_benign_false_alarm_rate_pct": 1.7857142857142856
+          },
+          "q_90": {
+            "calibration_quantile": 0.9,
+            "threshold_value": 0.4288501739501953,
+            "crown_jewel_attacks_caught": 6069,
+            "crown_jewel_attacks_missed": 128,
+            "crown_jewel_total_attacks": 6197,
+            "crown_jewel_detection_rate_pct": 97.934484427949,
+            "nominal_clean_steps": 5155,
+            "nominal_false_alarms": 3645,
+            "nominal_false_alarm_rate_pct": 70.70805043646945,
+            "macro_f1": 0.603721876943146,
+            "precision_pct": 62.47683755404571,
+            "balanced_accuracy": 0.6361321699573979,
+            "perimeter_intrusions_caught": 9714,
+            "perimeter_intrusions_missed": 1582,
+            "perimeter_total_intrusions": 11296,
+            "perimeter_detection_rate_pct": 85.99504249291785,
+            "true_benign_steps": 56,
+            "true_benign_false_alarms": 0,
+            "true_benign_false_alarm_rate_pct": 0.0
+          },
+          "q_95": {
+            "calibration_quantile": 0.95,
+            "threshold_value": 0.46092820167541504,
+            "crown_jewel_attacks_caught": 6051,
+            "crown_jewel_attacks_missed": 146,
+            "crown_jewel_total_attacks": 6197,
+            "crown_jewel_detection_rate_pct": 97.64402130062933,
+            "nominal_clean_steps": 5155,
+            "nominal_false_alarms": 3470,
+            "nominal_false_alarm_rate_pct": 67.31328806983511,
+            "macro_f1": 0.6261693219023072,
+            "precision_pct": 63.55424850330847,
+            "balanced_accuracy": 0.6516536661539711,
+            "perimeter_intrusions_caught": 9521,
+            "perimeter_intrusions_missed": 1775,
+            "perimeter_total_intrusions": 11296,
+            "perimeter_detection_rate_pct": 84.28647308781869,
+            "true_benign_steps": 56,
+            "true_benign_false_alarms": 0,
+            "true_benign_false_alarm_rate_pct": 0.0
+          },
+          "q_98": {
+            "calibration_quantile": 0.98,
+            "threshold_value": 0.4632152318954468,
+            "crown_jewel_attacks_caught": 6051,
+            "crown_jewel_attacks_missed": 146,
+            "crown_jewel_total_attacks": 6197,
+            "crown_jewel_detection_rate_pct": 97.64402130062933,
+            "nominal_clean_steps": 5155,
+            "nominal_false_alarms": 3432,
+            "nominal_false_alarm_rate_pct": 66.57613967022309,
+            "macro_f1": 0.6312074345683604,
+            "precision_pct": 63.80892122745967,
+            "balanced_accuracy": 0.6553394081520313,
+            "perimeter_intrusions_caught": 9483,
+            "perimeter_intrusions_missed": 1813,
+            "perimeter_total_intrusions": 11296,
+            "perimeter_detection_rate_pct": 83.95007082152975,
+            "true_benign_steps": 56,
+            "true_benign_false_alarms": 0,
+            "true_benign_false_alarm_rate_pct": 0.0
+          }
+        }
+      },
+      "energy_anomaly": {
+        "auroc": 0.3716904882012463,
+        "pr_auc": 0.4407164072240675,
+        "clean_mean_energy": 0.36690664291381836,
+        "attack_mean_energy": 0.3482246994972229,
+        "benign_mean_energy": 0.4399217963218689,
+        "operating_points": {
+          "q_80": {
+            "calibration_quantile": 0.8,
+            "threshold_value": 0.6025308966636658,
+            "attacks_caught": 194,
+            "attacks_missed": 6003,
+            "total_attacks": 6197,
+            "detection_rate_pct": 3.130547038889785,
+            "false_alarms": 991,
+            "false_alarm_rate_pct": 19.224054316197865,
+            "macro_f1": 0.2980462288613002
+          },
+          "q_85": {
+            "calibration_quantile": 0.85,
+            "threshold_value": 0.706017255783081,
+            "attacks_caught": 86,
+            "attacks_missed": 6111,
+            "total_attacks": 6197,
+            "detection_rate_pct": 1.3877682749717604,
+            "false_alarms": 634,
+            "false_alarm_rate_pct": 12.298739088263822,
+            "macro_f1": 0.2988080011480725
+          },
+          "q_90": {
+            "calibration_quantile": 0.9,
+            "threshold_value": 0.7521743178367615,
+            "attacks_caught": 59,
+            "attacks_missed": 6138,
+            "total_attacks": 6197,
+            "detection_rate_pct": 0.9520735839922544,
+            "false_alarms": 478,
+            "false_alarm_rate_pct": 9.2725509214355,
+            "macro_f1": 0.3016231242906259
+          },
+          "q_95": {
+            "calibration_quantile": 0.95,
+            "threshold_value": 0.8238794803619385,
+            "attacks_caught": 30,
+            "attacks_missed": 6167,
+            "total_attacks": 6197,
+            "detection_rate_pct": 0.48410521219945135,
+            "false_alarms": 287,
+            "false_alarm_rate_pct": 5.567410281280311,
+            "macro_f1": 0.30528489689997296
+          },
+          "q_98": {
+            "calibration_quantile": 0.98,
+            "threshold_value": 0.8951374292373657,
+            "attacks_caught": 16,
+            "attacks_missed": 6181,
+            "total_attacks": 6197,
+            "detection_rate_pct": 0.25818944650637404,
+            "false_alarms": 163,
+            "false_alarm_rate_pct": 3.1619786614936953,
+            "macro_f1": 0.3082418943650153
+          }
+        }
+      },
+      "ood_bline_to_meander": {
+        "source_policy": "bline_targeted",
+        "target_policy_unseen": "meander_stealth",
+        "in_distribution": {
+          "macro_f1": 0.9336066735820533,
+          "auroc": 0.9651775957693488,
+          "detection_rate_pct": 98.97245299519021
+        },
+        "zero_shot_ood": {
+          "macro_f1": 0.6814637469414446,
+          "auroc": 0.9323331994024341,
+          "detection_rate_pct": 97.90511398644486,
+          "false_alarm_rate_pct": 43.054527510486054,
+          "attacks_caught": 1589,
+          "attacks_missed": 34,
+          "total_attacks": 1623
+        },
+        "calibrated_ood": {
+          "calibrated_tau_youden": 0.7726918884437899,
+          "calibrated_tau_f2": 0.35999999999999993,
+          "baseline_tau_050": {
+            "threshold": 0.5,
+            "macro_f1": 0.6814637469414446,
+            "detection_rate_pct": 97.90511398644486,
+            "false_alarm_rate_pct": 43.054527510486054,
+            "attacks_caught": 1589,
+            "attacks_missed": 34,
+            "total_attacks": 1623,
+            "false_alarms": 1745
+          },
+          "youden_calibrated": {
+            "threshold": 0.7726918884437899,
+            "macro_f1": 0.7656549598683414,
+            "detection_rate_pct": 95.13247073321011,
+            "false_alarm_rate_pct": 29.064890204786575,
+            "attacks_caught": 1544,
+            "attacks_missed": 79,
+            "total_attacks": 1623,
+            "false_alarms": 1178
+          },
+          "f2_recall_calibrated": {
+            "threshold": 0.35999999999999993,
+            "macro_f1": 0.6461870100034726,
+            "detection_rate_pct": 98.70609981515712,
+            "false_alarm_rate_pct": 48.67999013076733,
+            "attacks_caught": 1602,
+            "attacks_missed": 21,
+            "total_attacks": 1623,
+            "false_alarms": 1973
+          },
+          "smoothed_and_youden": {
+            "threshold": 0.7726918884437899,
+            "macro_f1": 0.7914717270331013,
+            "detection_rate_pct": 93.28404189772027,
+            "false_alarm_rate_pct": 24.327658524549715,
+            "attacks_caught": 1514,
+            "attacks_missed": 109,
+            "total_attacks": 1623,
+            "false_alarms": 986
+          }
+        },
+        "zero_shot_retention_rate_pct": 82.01044203451157,
+        "generalization_penalty_delta_f1": -0.16795171371371187
+      },
+      "ood_meander_to_bline": {
+        "source_policy": "meander_stealth",
+        "target_policy_unseen": "bline_targeted",
+        "in_distribution": {
+          "macro_f1": 0.8869184859090038,
+          "auroc": 0.9603232371326382,
+          "detection_rate_pct": 84.65804066543437
+        },
+        "zero_shot_ood": {
+          "macro_f1": 0.8335034224302104,
+          "auroc": 0.9578020088291987,
+          "detection_rate_pct": 86.13904678618277,
+          "false_alarm_rate_pct": 5.807622504537205,
+          "attacks_caught": 3940,
+          "attacks_missed": 634,
+          "total_attacks": 4574
+        },
+        "calibrated_ood": {
+          "calibrated_tau_youden": 0.2702192465512204,
+          "calibrated_tau_f2": 0.26999999999999996,
+          "baseline_tau_050": {
+            "threshold": 0.5,
+            "macro_f1": 0.8335034224302104,
+            "detection_rate_pct": 86.13904678618277,
+            "false_alarm_rate_pct": 5.807622504537205,
+            "attacks_caught": 3940,
+            "attacks_missed": 634,
+            "total_attacks": 4574,
+            "false_alarms": 64
+          },
+          "youden_calibrated": {
+            "threshold": 0.2702192465512204,
+            "macro_f1": 0.8841591504110173,
+            "detection_rate_pct": 91.88893747267161,
+            "false_alarm_rate_pct": 7.259528130671507,
+            "attacks_caught": 4203,
+            "attacks_missed": 371,
+            "total_attacks": 4574,
+            "false_alarms": 80
+          },
+          "f2_recall_calibrated": {
+            "threshold": 0.26999999999999996,
+            "macro_f1": 0.8841591504110173,
+            "detection_rate_pct": 91.88893747267161,
+            "false_alarm_rate_pct": 7.259528130671507,
+            "attacks_caught": 4203,
+            "attacks_missed": 371,
+            "total_attacks": 4574,
+            "false_alarms": 80
+          },
+          "smoothed_and_youden": {
+            "threshold": 0.2702192465512204,
+            "macro_f1": 0.8854500602215527,
+            "detection_rate_pct": 91.84521206821164,
+            "false_alarm_rate_pct": 6.715063520871143,
+            "attacks_caught": 4201,
+            "attacks_missed": 373,
+            "total_attacks": 4574,
+            "false_alarms": 74
+          }
+        },
+        "zero_shot_retention_rate_pct": 99.68888510705035,
+        "generalization_penalty_delta_f1": -0.0027593354979864593
+      }
+    },
+    "25": {
+      "scale_spec": {
+        "name": "Multi-Subnet Department (25 hosts)",
+        "num_hosts": 25,
+        "obs_dim": 100
+      },
+      "zero_day_anomaly": {
+        "auroc": 0.7786946908229898,
+        "pr_auc": 0.7478787044143913,
+        "clean_mean_distance": 0.2625386714935303,
+        "test_clean_mean_distance": 0.7239948511123657,
+        "test_attack_mean_distance": 1.0845158100128174,
+        "operating_points": {
+          "q_80": {
+            "calibration_quantile": 0.8,
+            "threshold_value": 0.48403728008270264,
+            "crown_jewel_attacks_caught": 6153,
+            "crown_jewel_attacks_missed": 44,
+            "crown_jewel_total_attacks": 6197,
+            "crown_jewel_detection_rate_pct": 99.28997902210746,
+            "nominal_clean_steps": 5155,
+            "nominal_false_alarms": 3678,
+            "nominal_false_alarm_rate_pct": 71.34820562560621,
+            "macro_f1": 0.6051309549211588,
+            "precision_pct": 62.5877326823314,
+            "balanced_accuracy": 0.6397088669825063,
+            "perimeter_intrusions_caught": 9827,
+            "perimeter_intrusions_missed": 1469,
+            "perimeter_total_intrusions": 11296,
+            "perimeter_detection_rate_pct": 86.99539660056658,
+            "true_benign_steps": 56,
+            "true_benign_false_alarms": 4,
+            "true_benign_false_alarm_rate_pct": 7.142857142857142
+          },
+          "q_85": {
+            "calibration_quantile": 0.85,
+            "threshold_value": 0.4990357756614685,
+            "crown_jewel_attacks_caught": 6133,
+            "crown_jewel_attacks_missed": 64,
+            "crown_jewel_total_attacks": 6197,
+            "crown_jewel_detection_rate_pct": 98.9672422139745,
+            "nominal_clean_steps": 5155,
+            "nominal_false_alarms": 3622,
+            "nominal_false_alarm_rate_pct": 70.26188166828322,
+            "macro_f1": 0.6115097365556386,
+            "precision_pct": 62.87032291132753,
+            "balanced_accuracy": 0.6435268027284564,
+            "perimeter_intrusions_caught": 9751,
+            "perimeter_intrusions_missed": 1545,
+            "perimeter_total_intrusions": 11296,
+            "perimeter_detection_rate_pct": 86.32259206798867,
+            "true_benign_steps": 56,
+            "true_benign_false_alarms": 4,
+            "true_benign_false_alarm_rate_pct": 7.142857142857142
+          },
+          "q_90": {
+            "calibration_quantile": 0.9,
+            "threshold_value": 0.5056378245353699,
+            "crown_jewel_attacks_caught": 6133,
+            "crown_jewel_attacks_missed": 64,
+            "crown_jewel_total_attacks": 6197,
+            "crown_jewel_detection_rate_pct": 98.9672422139745,
+            "nominal_clean_steps": 5155,
+            "nominal_false_alarms": 3564,
+            "nominal_false_alarm_rate_pct": 69.13676042677012,
+            "macro_f1": 0.6194959004284442,
+            "precision_pct": 63.246364855109825,
+            "balanced_accuracy": 0.6491524089360219,
+            "perimeter_intrusions_caught": 9694,
+            "perimeter_intrusions_missed": 1602,
+            "perimeter_total_intrusions": 11296,
+            "perimeter_detection_rate_pct": 85.81798866855524,
+            "true_benign_steps": 56,
+            "true_benign_false_alarms": 3,
+            "true_benign_false_alarm_rate_pct": 5.357142857142857
+          },
+          "q_95": {
+            "calibration_quantile": 0.95,
+            "threshold_value": 0.524157702922821,
+            "crown_jewel_attacks_caught": 6105,
+            "crown_jewel_attacks_missed": 92,
+            "crown_jewel_total_attacks": 6197,
+            "crown_jewel_detection_rate_pct": 98.51541068258834,
+            "nominal_clean_steps": 5155,
+            "nominal_false_alarms": 3474,
+            "nominal_false_alarm_rate_pct": 67.39088263821532,
+            "macro_f1": 0.6296187912530625,
+            "precision_pct": 63.73316630128406,
+            "balanced_accuracy": 0.6556226402218651,
+            "perimeter_intrusions_caught": 9577,
+            "perimeter_intrusions_missed": 1719,
+            "perimeter_total_intrusions": 11296,
+            "perimeter_detection_rate_pct": 84.78222379603399,
+            "true_benign_steps": 56,
+            "true_benign_false_alarms": 2,
+            "true_benign_false_alarm_rate_pct": 3.571428571428571
+          },
+          "q_98": {
+            "calibration_quantile": 0.98,
+            "threshold_value": 0.548920214176178,
+            "crown_jewel_attacks_caught": 6037,
+            "crown_jewel_attacks_missed": 160,
+            "crown_jewel_total_attacks": 6197,
+            "crown_jewel_detection_rate_pct": 97.41810553493626,
+            "nominal_clean_steps": 5155,
+            "nominal_false_alarms": 3401,
+            "nominal_false_alarm_rate_pct": 65.97478176527643,
+            "macro_f1": 0.6342465015345335,
+            "precision_pct": 63.96482305573215,
+            "balanced_accuracy": 0.6572166188482992,
+            "perimeter_intrusions_caught": 9438,
+            "perimeter_intrusions_missed": 1858,
+            "perimeter_total_intrusions": 11296,
+            "perimeter_detection_rate_pct": 83.55169971671388,
+            "true_benign_steps": 56,
+            "true_benign_false_alarms": 0,
+            "true_benign_false_alarm_rate_pct": 0.0
+          }
+        }
+      },
+      "energy_anomaly": {
+        "auroc": 0.1648040641673398,
+        "pr_auc": 0.373432770368226,
+        "clean_mean_energy": 0.3063647150993347,
+        "attack_mean_energy": 0.15402144193649292,
+        "benign_mean_energy": 0.32657963037490845,
+        "operating_points": {
+          "q_80": {
+            "calibration_quantile": 0.8,
+            "threshold_value": 0.4930952191352844,
+            "attacks_caught": 64,
+            "attacks_missed": 6133,
+            "total_attacks": 6197,
+            "detection_rate_pct": 1.0327577860254962,
+            "false_alarms": 1007,
+            "false_alarm_rate_pct": 19.53443258971872,
+            "macro_f1": 0.27752819068077067
+          },
+          "q_85": {
+            "calibration_quantile": 0.85,
+            "threshold_value": 0.5355421304702759,
+            "attacks_caught": 43,
+            "attacks_missed": 6154,
+            "total_attacks": 6197,
+            "detection_rate_pct": 0.6938841374858802,
+            "false_alarms": 822,
+            "false_alarm_rate_pct": 15.94568380213385,
+            "macro_f1": 0.28309953910332475
+          },
+          "q_90": {
+            "calibration_quantile": 0.9,
+            "threshold_value": 0.5989651679992676,
+            "attacks_caught": 25,
+            "attacks_missed": 6172,
+            "total_attacks": 6197,
+            "detection_rate_pct": 0.40342101016620946,
+            "false_alarms": 608,
+            "false_alarm_rate_pct": 11.794374393792435,
+            "macro_f1": 0.29010356262743336
+          },
+          "q_95": {
+            "calibration_quantile": 0.95,
+            "threshold_value": 0.6717571020126343,
+            "attacks_caught": 8,
+            "attacks_missed": 6189,
+            "total_attacks": 6197,
+            "detection_rate_pct": 0.12909472325318702,
+            "false_alarms": 415,
+            "false_alarm_rate_pct": 8.050436469447138,
+            "macro_f1": 0.29591126946070895
+          },
+          "q_98": {
+            "calibration_quantile": 0.98,
+            "threshold_value": 0.7649785876274109,
+            "attacks_caught": 4,
+            "attacks_missed": 6193,
+            "total_attacks": 6197,
+            "detection_rate_pct": 0.06454736162659351,
+            "false_alarms": 228,
+            "false_alarm_rate_pct": 4.4228903976721625,
+            "macro_f1": 0.3033564357358255
+          }
+        }
+      },
+      "ood_bline_to_meander": {
+        "source_policy": "bline_targeted",
+        "target_policy_unseen": "meander_stealth",
+        "in_distribution": {
+          "macro_f1": 0.9335568775967433,
+          "auroc": 0.9714610395536358,
+          "detection_rate_pct": 98.9943156974202
+        },
+        "zero_shot_ood": {
+          "macro_f1": 0.7370618140433716,
+          "auroc": 0.8864015899011541,
+          "detection_rate_pct": 90.32655576093653,
+          "false_alarm_rate_pct": 30.915371329879104,
+          "attacks_caught": 1466,
+          "attacks_missed": 157,
+          "total_attacks": 1623
+        },
+        "calibrated_ood": {
+          "calibrated_tau_youden": 0.6945048450382862,
+          "calibrated_tau_f2": 0.24,
+          "baseline_tau_050": {
+            "threshold": 0.5,
+            "macro_f1": 0.7370618140433716,
+            "detection_rate_pct": 90.32655576093653,
+            "false_alarm_rate_pct": 30.915371329879104,
+            "attacks_caught": 1466,
+            "attacks_missed": 157,
+            "total_attacks": 1623,
+            "false_alarms": 1253
+          },
+          "youden_calibrated": {
+            "threshold": 0.6945048450382862,
+            "macro_f1": 0.7849660615627466,
+            "detection_rate_pct": 82.2550831792976,
+            "false_alarm_rate_pct": 19.541080680977053,
+            "attacks_caught": 1335,
+            "attacks_missed": 288,
+            "total_attacks": 1623,
+            "false_alarms": 792
+          },
+          "f2_recall_calibrated": {
+            "threshold": 0.24,
+            "macro_f1": 0.6547689472971823,
+            "detection_rate_pct": 97.22735674676525,
+            "false_alarm_rate_pct": 46.730816679003205,
+            "attacks_caught": 1578,
+            "attacks_missed": 45,
+            "total_attacks": 1623,
+            "false_alarms": 1894
+          },
+          "smoothed_and_youden": {
+            "threshold": 0.6945048450382862,
+            "macro_f1": 0.8041653163453224,
+            "detection_rate_pct": 81.08441158348737,
+            "false_alarm_rate_pct": 16.160868492474712,
+            "attacks_caught": 1316,
+            "attacks_missed": 307,
+            "total_attacks": 1623,
+            "false_alarms": 655
+          }
+        },
+        "zero_shot_retention_rate_pct": 84.08336764477444,
+        "generalization_penalty_delta_f1": -0.1485908160339967
+      },
+      "ood_meander_to_bline": {
+        "source_policy": "meander_stealth",
+        "target_policy_unseen": "bline_targeted",
+        "in_distribution": {
+          "macro_f1": 0.8887329656067489,
+          "auroc": 0.9566955492223418,
+          "detection_rate_pct": 85.95194085027727
+        },
+        "zero_shot_ood": {
+          "macro_f1": 0.8565974517535018,
+          "auroc": 0.9472200244894008,
+          "detection_rate_pct": 88.80629645824224,
+          "false_alarm_rate_pct": 6.352087114337568,
+          "attacks_caught": 4062,
+          "attacks_missed": 512,
+          "total_attacks": 4574
+        },
+        "calibrated_ood": {
+          "calibrated_tau_youden": 0.28164097627868573,
+          "calibrated_tau_f2": 0.15999999999999998,
+          "baseline_tau_050": {
+            "threshold": 0.5,
+            "macro_f1": 0.8565974517535018,
+            "detection_rate_pct": 88.80629645824224,
+            "false_alarm_rate_pct": 6.352087114337568,
+            "attacks_caught": 4062,
+            "attacks_missed": 512,
+            "total_attacks": 4574,
+            "false_alarms": 70
+          },
+          "youden_calibrated": {
+            "threshold": 0.28164097627868573,
+            "macro_f1": 0.8780847750806866,
+            "detection_rate_pct": 91.23305640577175,
+            "false_alarm_rate_pct": 7.078039927404718,
+            "attacks_caught": 4173,
+            "attacks_missed": 401,
+            "total_attacks": 4574,
+            "false_alarms": 78
+          },
+          "f2_recall_calibrated": {
+            "threshold": 0.15999999999999998,
+            "macro_f1": 0.8989573213059432,
+            "detection_rate_pct": 93.72540445999125,
+            "false_alarm_rate_pct": 8.620689655172415,
+            "attacks_caught": 4287,
+            "attacks_missed": 287,
+            "total_attacks": 4574,
+            "false_alarms": 95
+          },
+          "smoothed_and_youden": {
+            "threshold": 0.28164097627868573,
+            "macro_f1": 0.8739936963147192,
+            "detection_rate_pct": 90.79580236117184,
+            "false_alarm_rate_pct": 6.987295825771326,
+            "attacks_caught": 4153,
+            "attacks_missed": 421,
+            "total_attacks": 4574,
+            "false_alarms": 77
+          }
+        },
+        "zero_shot_retention_rate_pct": 98.80186839712954,
+        "generalization_penalty_delta_f1": -0.010648190526062251
+      }
+    },
+    "50": {
+      "scale_spec": {
+        "name": "CAGE-4 Enterprise Scale (50 hosts)",
+        "num_hosts": 50,
+        "obs_dim": 200
+      },
+      "zero_day_anomaly": {
+        "auroc": 0.8235624008175164,
+        "pr_auc": 0.825001891557807,
+        "clean_mean_distance": 0.2483471781015396,
+        "test_clean_mean_distance": 0.6224539279937744,
+        "test_attack_mean_distance": 0.986945390701294,
+        "operating_points": {
+          "q_80": {
+            "calibration_quantile": 0.8,
+            "threshold_value": 0.4376426935195923,
+            "crown_jewel_attacks_caught": 6157,
+            "crown_jewel_attacks_missed": 40,
+            "crown_jewel_total_attacks": 6197,
+            "crown_jewel_detection_rate_pct": 99.35452638373407,
+            "nominal_clean_steps": 5155,
+            "nominal_false_alarms": 3676,
+            "nominal_false_alarm_rate_pct": 71.3094083414161,
+            "macro_f1": 0.6056985600306288,
+            "precision_pct": 62.61568188752161,
+            "balanced_accuracy": 0.6402255902115899,
+            "perimeter_intrusions_caught": 9826,
+            "perimeter_intrusions_missed": 1470,
+            "perimeter_total_intrusions": 11296,
+            "perimeter_detection_rate_pct": 86.98654390934844,
+            "true_benign_steps": 56,
+            "true_benign_false_alarms": 7,
+            "true_benign_false_alarm_rate_pct": 12.5
+          },
+          "q_85": {
+            "calibration_quantile": 0.85,
+            "threshold_value": 0.5195729732513428,
+            "crown_jewel_attacks_caught": 6128,
+            "crown_jewel_attacks_missed": 69,
+            "crown_jewel_total_attacks": 6197,
+            "crown_jewel_detection_rate_pct": 98.88655801194126,
+            "nominal_clean_steps": 5155,
+            "nominal_false_alarms": 3286,
+            "nominal_false_alarm_rate_pct": 63.743937924345296,
+            "macro_f1": 0.65604294376,
+            "precision_pct": 65.0945400467389,
+            "balanced_accuracy": 0.6757131004379798,
+            "perimeter_intrusions_caught": 9409,
+            "perimeter_intrusions_missed": 1887,
+            "perimeter_total_intrusions": 11296,
+            "perimeter_detection_rate_pct": 83.29497167138811,
+            "true_benign_steps": 56,
+            "true_benign_false_alarms": 5,
+            "true_benign_false_alarm_rate_pct": 8.928571428571429
+          },
+          "q_90": {
+            "calibration_quantile": 0.9,
+            "threshold_value": 0.5240647792816162,
+            "crown_jewel_attacks_caught": 6078,
+            "crown_jewel_attacks_missed": 119,
+            "crown_jewel_total_attacks": 6197,
+            "crown_jewel_detection_rate_pct": 98.07971599160884,
+            "nominal_clean_steps": 5155,
+            "nominal_false_alarms": 3255,
+            "nominal_false_alarm_rate_pct": 63.14258001939864,
+            "macro_f1": 0.6562168135595898,
+            "precision_pct": 65.1237544198007,
+            "balanced_accuracy": 0.674685679861051,
+            "perimeter_intrusions_caught": 9330,
+            "perimeter_intrusions_missed": 1966,
+            "perimeter_total_intrusions": 11296,
+            "perimeter_detection_rate_pct": 82.59560906515581,
+            "true_benign_steps": 56,
+            "true_benign_false_alarms": 3,
+            "true_benign_false_alarm_rate_pct": 5.357142857142857
+          },
+          "q_95": {
+            "calibration_quantile": 0.95,
+            "threshold_value": 0.5788701772689819,
+            "crown_jewel_attacks_caught": 5969,
+            "crown_jewel_attacks_missed": 228,
+            "crown_jewel_total_attacks": 6197,
+            "crown_jewel_detection_rate_pct": 96.32080038728417,
+            "nominal_clean_steps": 5155,
+            "nominal_false_alarms": 2949,
+            "nominal_false_alarm_rate_pct": 57.20659553831232,
+            "macro_f1": 0.6855896073617005,
+            "precision_pct": 66.93204754429244,
+            "balanced_accuracy": 0.6955710242448593,
+            "perimeter_intrusions_caught": 8918,
+            "perimeter_intrusions_missed": 2378,
+            "perimeter_total_intrusions": 11296,
+            "perimeter_detection_rate_pct": 78.94830028328612,
+            "true_benign_steps": 56,
+            "true_benign_false_alarms": 0,
+            "true_benign_false_alarm_rate_pct": 0.0
+          },
+          "q_98": {
+            "calibration_quantile": 0.98,
+            "threshold_value": 0.5906521677970886,
+            "crown_jewel_attacks_caught": 5942,
+            "crown_jewel_attacks_missed": 255,
+            "crown_jewel_total_attacks": 6197,
+            "crown_jewel_detection_rate_pct": 95.88510569630466,
+            "nominal_clean_steps": 5155,
+            "nominal_false_alarms": 2877,
+            "nominal_false_alarm_rate_pct": 55.80989330746847,
+            "macro_f1": 0.692017172664108,
+            "precision_pct": 67.3772536568772,
+            "balanced_accuracy": 0.7003760619441809,
+            "perimeter_intrusions_caught": 8819,
+            "perimeter_intrusions_missed": 2477,
+            "perimeter_total_intrusions": 11296,
+            "perimeter_detection_rate_pct": 78.07188385269122,
+            "true_benign_steps": 56,
+            "true_benign_false_alarms": 0,
+            "true_benign_false_alarm_rate_pct": 0.0
+          }
+        }
+      },
+      "energy_anomaly": {
+        "auroc": 0.2001343693257915,
+        "pr_auc": 0.38313015470488326,
+        "clean_mean_energy": 0.27722033858299255,
+        "attack_mean_energy": 0.14750365912914276,
+        "benign_mean_energy": 0.3027929961681366,
+        "operating_points": {
+          "q_80": {
+            "calibration_quantile": 0.8,
+            "threshold_value": 0.41698455810546875,
+            "attacks_caught": 112,
+            "attacks_missed": 6085,
+            "total_attacks": 6197,
+            "detection_rate_pct": 1.8073261255446185,
+            "false_alarms": 1147,
+            "false_alarm_rate_pct": 22.250242483026188,
+            "macro_f1": 0.277875604033344
+          },
+          "q_85": {
+            "calibration_quantile": 0.85,
+            "threshold_value": 0.5723583102226257,
+            "attacks_caught": 39,
+            "attacks_missed": 6158,
+            "total_attacks": 6197,
+            "detection_rate_pct": 0.6293367758592867,
+            "false_alarms": 633,
+            "false_alarm_rate_pct": 12.279340446168769,
+            "macro_f1": 0.29124762234726725
+          },
+          "q_90": {
+            "calibration_quantile": 0.9,
+            "threshold_value": 0.6402472257614136,
+            "attacks_caught": 19,
+            "attacks_missed": 6178,
+            "total_attacks": 6197,
+            "detection_rate_pct": 0.3065999677263192,
+            "false_alarms": 471,
+            "false_alarm_rate_pct": 9.136760426770126,
+            "macro_f1": 0.2952806171930435
+          },
+          "q_95": {
+            "calibration_quantile": 0.95,
+            "threshold_value": 0.831137478351593,
+            "attacks_caught": 7,
+            "attacks_missed": 6190,
+            "total_attacks": 6197,
+            "detection_rate_pct": 0.11295788284653865,
+            "false_alarms": 184,
+            "false_alarm_rate_pct": 3.5693501454898158,
+            "macro_f1": 0.30576606695288405
+          },
+          "q_98": {
+            "calibration_quantile": 0.98,
+            "threshold_value": 0.9489123225212097,
+            "attacks_caught": 0,
+            "attacks_missed": 6197,
+            "total_attacks": 6197,
+            "detection_rate_pct": 0.0,
+            "false_alarms": 90,
+            "false_alarm_rate_pct": 1.7458777885548011,
+            "macro_f1": 0.3085216543826521
+          }
+        }
+      },
+      "ood_bline_to_meander": {
+        "source_policy": "bline_targeted",
+        "target_policy_unseen": "meander_stealth",
+        "in_distribution": {
+          "macro_f1": 0.9393246557253347,
+          "auroc": 0.9701032506782992,
+          "detection_rate_pct": 99.43156974202012
+        },
+        "zero_shot_ood": {
+          "macro_f1": 0.7042184807616407,
+          "auroc": 0.9134264434322856,
+          "detection_rate_pct": 93.22242760320394,
+          "false_alarm_rate_pct": 37.35504564520109,
+          "attacks_caught": 1513,
+          "attacks_missed": 110,
+          "total_attacks": 1623
+        },
+        "calibrated_ood": {
+          "calibrated_tau_youden": 0.846910308585617,
+          "calibrated_tau_f2": 0.37999999999999995,
+          "baseline_tau_050": {
+            "threshold": 0.5,
+            "macro_f1": 0.7042184807616407,
+            "detection_rate_pct": 93.22242760320394,
+            "false_alarm_rate_pct": 37.35504564520109,
+            "attacks_caught": 1513,
+            "attacks_missed": 110,
+            "total_attacks": 1623,
+            "false_alarms": 1514
+          },
+          "youden_calibrated": {
+            "threshold": 0.846910308585617,
+            "macro_f1": 0.8113431968857431,
+            "detection_rate_pct": 85.39741219963032,
+            "false_alarm_rate_pct": 17.419195657537625,
+            "attacks_caught": 1386,
+            "attacks_missed": 237,
+            "total_attacks": 1623,
+            "false_alarms": 706
+          },
+          "f2_recall_calibrated": {
+            "threshold": 0.37999999999999995,
+            "macro_f1": 0.6636441469489415,
+            "detection_rate_pct": 94.0234134319162,
+            "false_alarm_rate_pct": 43.89341228719467,
+            "attacks_caught": 1526,
+            "attacks_missed": 97,
+            "total_attacks": 1623,
+            "false_alarms": 1779
+          },
+          "smoothed_and_youden": {
+            "threshold": 0.846910308585617,
+            "macro_f1": 0.8216962171818147,
+            "detection_rate_pct": 82.74799753542823,
+            "false_alarm_rate_pct": 14.581791265729088,
+            "attacks_caught": 1343,
+            "attacks_missed": 280,
+            "total_attacks": 1623,
+            "false_alarms": 591
+          }
+        },
+        "zero_shot_retention_rate_pct": 86.37516240423115,
+        "generalization_penalty_delta_f1": -0.12798145883959167
+      },
+      "ood_meander_to_bline": {
+        "source_policy": "meander_stealth",
+        "target_policy_unseen": "bline_targeted",
+        "in_distribution": {
+          "macro_f1": 0.8936680201796481,
+          "auroc": 0.9606748627512326,
+          "detection_rate_pct": 84.22674060382008
+        },
+        "zero_shot_ood": {
+          "macro_f1": 0.8748384941337448,
+          "auroc": 0.9592314169014956,
+          "detection_rate_pct": 90.62090074333187,
+          "false_alarm_rate_pct": 6.170598911070781,
+          "attacks_caught": 4145,
+          "attacks_missed": 429,
+          "total_attacks": 4574
+        },
+        "calibrated_ood": {
+          "calibrated_tau_youden": 0.30526862569639657,
+          "calibrated_tau_f2": 0.18,
+          "baseline_tau_050": {
+            "threshold": 0.5,
+            "macro_f1": 0.8748384941337448,
+            "detection_rate_pct": 90.62090074333187,
+            "false_alarm_rate_pct": 6.170598911070781,
+            "attacks_caught": 4145,
+            "attacks_missed": 429,
+            "total_attacks": 4574,
+            "false_alarms": 68
+          },
+          "youden_calibrated": {
+            "threshold": 0.30526862569639657,
+            "macro_f1": 0.8936338459101573,
+            "detection_rate_pct": 92.61040664626148,
+            "false_alarm_rate_pct": 6.624319419237749,
+            "attacks_caught": 4236,
+            "attacks_missed": 338,
+            "total_attacks": 4574,
+            "false_alarms": 73
+          },
+          "f2_recall_calibrated": {
+            "threshold": 0.18,
+            "macro_f1": 0.9003801431127012,
+            "detection_rate_pct": 93.63795365107127,
+            "false_alarm_rate_pct": 7.894736842105263,
+            "attacks_caught": 4283,
+            "attacks_missed": 291,
+            "total_attacks": 4574,
+            "false_alarms": 87
+          },
+          "smoothed_and_youden": {
+            "threshold": 0.30526862569639657,
+            "macro_f1": 0.8945027551823668,
+            "detection_rate_pct": 92.61040664626148,
+            "false_alarm_rate_pct": 6.352087114337568,
+            "attacks_caught": 4236,
+            "attacks_missed": 338,
+            "total_attacks": 4574,
+            "false_alarms": 70
+          }
+        },
+        "zero_shot_retention_rate_pct": 99.9961759547484,
+        "generalization_penalty_delta_f1": -3.417426949081648e-05
+      }
+    },
+    "100": {
+      "scale_spec": {
+        "name": "Campus Division Network (100 hosts)",
+        "num_hosts": 100,
+        "obs_dim": 400
+      },
+      "zero_day_anomaly": {
+        "auroc": 0.7664229915072639,
+        "pr_auc": 0.7529466839342669,
+        "clean_mean_distance": 0.198118194937706,
+        "test_clean_mean_distance": 0.6340798735618591,
+        "test_attack_mean_distance": 0.9329082369804382,
+        "operating_points": {
+          "q_80": {
+            "calibration_quantile": 0.8,
+            "threshold_value": 0.37599337100982666,
+            "crown_jewel_attacks_caught": 6128,
+            "crown_jewel_attacks_missed": 69,
+            "crown_jewel_total_attacks": 6197,
+            "crown_jewel_detection_rate_pct": 98.88655801194126,
+            "nominal_clean_steps": 5155,
+            "nominal_false_alarms": 3925,
+            "nominal_false_alarm_rate_pct": 76.1396702230844,
+            "macro_f1": 0.5676871778980239,
+            "precision_pct": 60.956928280115385,
+            "balanced_accuracy": 0.6137344389442844,
+            "perimeter_intrusions_caught": 10047,
+            "perimeter_intrusions_missed": 1249,
+            "perimeter_total_intrusions": 11296,
+            "perimeter_detection_rate_pct": 88.94298866855524,
+            "true_benign_steps": 56,
+            "true_benign_false_alarms": 6,
+            "true_benign_false_alarm_rate_pct": 10.714285714285714
+          },
+          "q_85": {
+            "calibration_quantile": 0.85,
+            "threshold_value": 0.3819723129272461,
+            "crown_jewel_attacks_caught": 6120,
+            "crown_jewel_attacks_missed": 77,
+            "crown_jewel_total_attacks": 6197,
+            "crown_jewel_detection_rate_pct": 98.75746328868807,
+            "nominal_clean_steps": 5155,
+            "nominal_false_alarms": 3877,
+            "nominal_false_alarm_rate_pct": 75.20853540252183,
+            "macro_f1": 0.5742311113691194,
+            "precision_pct": 61.2183655096529,
+            "balanced_accuracy": 0.6177446394308312,
+            "perimeter_intrusions_caught": 9992,
+            "perimeter_intrusions_missed": 1304,
+            "perimeter_total_intrusions": 11296,
+            "perimeter_detection_rate_pct": 88.45609065155807,
+            "true_benign_steps": 56,
+            "true_benign_false_alarms": 5,
+            "true_benign_false_alarm_rate_pct": 8.928571428571429
+          },
+          "q_90": {
+            "calibration_quantile": 0.9,
+            "threshold_value": 0.3923411965370178,
+            "crown_jewel_attacks_caught": 6097,
+            "crown_jewel_attacks_missed": 100,
+            "crown_jewel_total_attacks": 6197,
+            "crown_jewel_detection_rate_pct": 98.38631595933516,
+            "nominal_clean_steps": 5155,
+            "nominal_false_alarms": 3827,
+            "nominal_false_alarm_rate_pct": 74.23860329776916,
+            "macro_f1": 0.5799340780200108,
+            "precision_pct": 61.43692059653365,
+            "balanced_accuracy": 0.62073856330783,
+            "perimeter_intrusions_caught": 9920,
+            "perimeter_intrusions_missed": 1376,
+            "perimeter_total_intrusions": 11296,
+            "perimeter_detection_rate_pct": 87.81869688385268,
+            "true_benign_steps": 56,
+            "true_benign_false_alarms": 4,
+            "true_benign_false_alarm_rate_pct": 7.142857142857142
+          },
+          "q_95": {
+            "calibration_quantile": 0.95,
+            "threshold_value": 0.48504137992858887,
+            "crown_jewel_attacks_caught": 6005,
+            "crown_jewel_attacks_missed": 192,
+            "crown_jewel_total_attacks": 6197,
+            "crown_jewel_detection_rate_pct": 96.90172664192352,
+            "nominal_clean_steps": 5155,
+            "nominal_false_alarms": 3519,
+            "nominal_false_alarm_rate_pct": 68.26382153249273,
+            "macro_f1": 0.6162564162679812,
+            "precision_pct": 63.05123897522049,
+            "balanced_accuracy": 0.6431895255471539,
+            "perimeter_intrusions_caught": 9520,
+            "perimeter_intrusions_missed": 1776,
+            "perimeter_total_intrusions": 11296,
+            "perimeter_detection_rate_pct": 84.27762039660055,
+            "true_benign_steps": 56,
+            "true_benign_false_alarms": 4,
+            "true_benign_false_alarm_rate_pct": 7.142857142857142
+          },
+          "q_98": {
+            "calibration_quantile": 0.98,
+            "threshold_value": 0.48504137992858887,
+            "crown_jewel_attacks_caught": 6005,
+            "crown_jewel_attacks_missed": 192,
+            "crown_jewel_total_attacks": 6197,
+            "crown_jewel_detection_rate_pct": 96.90172664192352,
+            "nominal_clean_steps": 5155,
+            "nominal_false_alarms": 3519,
+            "nominal_false_alarm_rate_pct": 68.26382153249273,
+            "macro_f1": 0.6162564162679812,
+            "precision_pct": 63.05123897522049,
+            "balanced_accuracy": 0.6431895255471539,
+            "perimeter_intrusions_caught": 9520,
+            "perimeter_intrusions_missed": 1776,
+            "perimeter_total_intrusions": 11296,
+            "perimeter_detection_rate_pct": 84.27762039660055,
+            "true_benign_steps": 56,
+            "true_benign_false_alarms": 4,
+            "true_benign_false_alarm_rate_pct": 7.142857142857142
+          }
+        }
+      },
+      "energy_anomaly": {
+        "auroc": 0.21024607977296356,
+        "pr_auc": 0.3863648857796861,
+        "clean_mean_energy": 0.33846306800842285,
+        "attack_mean_energy": 0.16453418135643005,
+        "benign_mean_energy": 0.3266320824623108,
+        "operating_points": {
+          "q_80": {
+            "calibration_quantile": 0.8,
+            "threshold_value": 0.5464153289794922,
+            "attacks_caught": 70,
+            "attacks_missed": 6127,
+            "total_attacks": 6197,
+            "detection_rate_pct": 1.1295788284653865,
+            "false_alarms": 832,
+            "false_alarm_rate_pct": 16.139670223084384,
+            "macro_f1": 0.2868871377789264
+          },
+          "q_85": {
+            "calibration_quantile": 0.85,
+            "threshold_value": 0.6362455487251282,
+            "attacks_caught": 48,
+            "attacks_missed": 6149,
+            "total_attacks": 6197,
+            "detection_rate_pct": 0.7745683395191222,
+            "false_alarms": 591,
+            "false_alarm_rate_pct": 11.464597478176527,
+            "macro_f1": 0.2946445389206418
+          },
+          "q_90": {
+            "calibration_quantile": 0.9,
+            "threshold_value": 0.6862978935241699,
+            "attacks_caught": 35,
+            "attacks_missed": 6162,
+            "total_attacks": 6197,
+            "detection_rate_pct": 0.5647894142326932,
+            "false_alarms": 449,
+            "false_alarm_rate_pct": 8.709990300678951,
+            "macro_f1": 0.2989415389378666
+          },
+          "q_95": {
+            "calibration_quantile": 0.95,
+            "threshold_value": 0.8021489381790161,
+            "attacks_caught": 14,
+            "attacks_missed": 6183,
+            "total_attacks": 6197,
+            "detection_rate_pct": 0.2259157656930773,
+            "false_alarms": 237,
+            "false_alarm_rate_pct": 4.597478176527643,
+            "macro_f1": 0.30470566469979093
+          },
+          "q_98": {
+            "calibration_quantile": 0.98,
+            "threshold_value": 0.9015131592750549,
+            "attacks_caught": 7,
+            "attacks_missed": 6190,
+            "total_attacks": 6197,
+            "detection_rate_pct": 0.11295788284653865,
+            "false_alarms": 104,
+            "false_alarm_rate_pct": 2.017458777885548,
+            "macro_f1": 0.30917264414677753
+          }
+        }
+      },
+      "ood_bline_to_meander": {
+        "source_policy": "bline_targeted",
+        "target_policy_unseen": "meander_stealth",
+        "in_distribution": {
+          "macro_f1": 0.9364144456350387,
+          "auroc": 0.9709051476149022,
+          "detection_rate_pct": 99.14735461303017
+        },
+        "zero_shot_ood": {
+          "macro_f1": 0.575216363662607,
+          "auroc": 0.8861650445217626,
+          "detection_rate_pct": 99.63031423290202,
+          "false_alarm_rate_pct": 59.33876141130027,
+          "attacks_caught": 1617,
+          "attacks_missed": 6,
+          "total_attacks": 1623
+        },
+        "calibrated_ood": {
+          "calibrated_tau_youden": 0.8489477140135674,
+          "calibrated_tau_f2": 0.20999999999999996,
+          "baseline_tau_050": {
+            "threshold": 0.5,
+            "macro_f1": 0.575216363662607,
+            "detection_rate_pct": 99.63031423290202,
+            "false_alarm_rate_pct": 59.33876141130027,
+            "attacks_caught": 1617,
+            "attacks_missed": 6,
+            "total_attacks": 1623,
+            "false_alarms": 2405
+          },
+          "youden_calibrated": {
+            "threshold": 0.8489477140135674,
+            "macro_f1": 0.6734116837414414,
+            "detection_rate_pct": 98.70609981515712,
+            "false_alarm_rate_pct": 44.63360473723168,
+            "attacks_caught": 1602,
+            "attacks_missed": 21,
+            "total_attacks": 1623,
+            "false_alarms": 1809
+          },
+          "f2_recall_calibrated": {
+            "threshold": 0.20999999999999996,
+            "macro_f1": 0.5057415193674287,
+            "detection_rate_pct": 99.93838570548367,
+            "false_alarm_rate_pct": 68.9119170984456,
+            "attacks_caught": 1622,
+            "attacks_missed": 1,
+            "total_attacks": 1623,
+            "false_alarms": 2793
+          },
+          "smoothed_and_youden": {
+            "threshold": 0.8489477140135674,
+            "macro_f1": 0.7027930484533587,
+            "detection_rate_pct": 98.15157116451016,
+            "false_alarm_rate_pct": 39.97039230199852,
+            "attacks_caught": 1593,
+            "attacks_missed": 30,
+            "total_attacks": 1623,
+            "false_alarms": 1620
+          }
+        },
+        "zero_shot_retention_rate_pct": 71.91385041959286,
+        "generalization_penalty_delta_f1": -0.2630027618935973
+      },
+      "ood_meander_to_bline": {
+        "source_policy": "meander_stealth",
+        "target_policy_unseen": "bline_targeted",
+        "in_distribution": {
+          "macro_f1": 0.881917212642725,
+          "auroc": 0.9571683359382209,
+          "detection_rate_pct": 84.41158348736907
+        },
+        "zero_shot_ood": {
+          "macro_f1": 0.8693690007668013,
+          "auroc": 0.9591264679951464,
+          "detection_rate_pct": 90.09619588981198,
+          "false_alarm_rate_pct": 6.261343012704174,
+          "attacks_caught": 4121,
+          "attacks_missed": 453,
+          "total_attacks": 4574
+        },
+        "calibrated_ood": {
+          "calibrated_tau_youden": 0.3137231906950985,
+          "calibrated_tau_f2": 0.30999999999999994,
+          "baseline_tau_050": {
+            "threshold": 0.5,
+            "macro_f1": 0.8693690007668013,
+            "detection_rate_pct": 90.09619588981198,
+            "false_alarm_rate_pct": 6.261343012704174,
+            "attacks_caught": 4121,
+            "attacks_missed": 453,
+            "total_attacks": 4574,
+            "false_alarms": 69
+          },
+          "youden_calibrated": {
+            "threshold": 0.3137231906950985,
+            "macro_f1": 0.8883330804418719,
+            "detection_rate_pct": 92.04197638828158,
+            "false_alarm_rate_pct": 6.442831215970962,
+            "attacks_caught": 4210,
+            "attacks_missed": 364,
+            "total_attacks": 4574,
+            "false_alarms": 71
+          },
+          "f2_recall_calibrated": {
+            "threshold": 0.30999999999999994,
+            "macro_f1": 0.8885577357376138,
+            "detection_rate_pct": 92.06383909051159,
+            "false_alarm_rate_pct": 6.442831215970962,
+            "attacks_caught": 4211,
+            "attacks_missed": 363,
+            "total_attacks": 4574,
+            "false_alarms": 71
+          },
+          "smoothed_and_youden": {
+            "threshold": 0.3137231906950985,
+            "macro_f1": 0.8860278764275451,
+            "detection_rate_pct": 91.84521206821164,
+            "false_alarm_rate_pct": 6.533575317604355,
+            "attacks_caught": 4201,
+            "attacks_missed": 373,
+            "total_attacks": 4574,
+            "false_alarms": 72
+          }
+        },
+        "zero_shot_retention_rate_pct": 100.72749093760413,
+        "generalization_penalty_delta_f1": 0.006415867799146824
+      }
+    },
+    "250": {
+      "scale_spec": {
+        "name": "Large Multi-Building Enterprise (250 hosts)",
+        "num_hosts": 250,
+        "obs_dim": 1000
+      },
+      "zero_day_anomaly": {
+        "auroc": 0.8191353815173232,
+        "pr_auc": 0.8177764386188908,
+        "clean_mean_distance": 0.2924094498157501,
+        "test_clean_mean_distance": 0.6795023083686829,
+        "test_attack_mean_distance": 1.0130964517593384,
+        "operating_points": {
+          "q_80": {
+            "calibration_quantile": 0.8,
+            "threshold_value": 0.48324108123779297,
+            "crown_jewel_attacks_caught": 6168,
+            "crown_jewel_attacks_missed": 29,
+            "crown_jewel_total_attacks": 6197,
+            "crown_jewel_detection_rate_pct": 99.53203162820719,
+            "nominal_clean_steps": 5155,
+            "nominal_false_alarms": 4028,
+            "nominal_false_alarm_rate_pct": 78.13773035887488,
+            "macro_f1": 0.5548352465950743,
+            "precision_pct": 60.4943114947038,
+            "balanced_accuracy": 0.6069715063466616,
+            "perimeter_intrusions_caught": 10188,
+            "perimeter_intrusions_missed": 1108,
+            "perimeter_total_intrusions": 11296,
+            "perimeter_detection_rate_pct": 90.19121813031161,
+            "true_benign_steps": 56,
+            "true_benign_false_alarms": 8,
+            "true_benign_false_alarm_rate_pct": 14.285714285714285
+          },
+          "q_85": {
+            "calibration_quantile": 0.85,
+            "threshold_value": 0.49608635902404785,
+            "crown_jewel_attacks_caught": 6157,
+            "crown_jewel_attacks_missed": 40,
+            "crown_jewel_total_attacks": 6197,
+            "crown_jewel_detection_rate_pct": 99.35452638373407,
+            "nominal_clean_steps": 5155,
+            "nominal_false_alarms": 3939,
+            "nominal_false_alarm_rate_pct": 76.41125121241514,
+            "macro_f1": 0.5675663442226855,
+            "precision_pct": 60.984548335974644,
+            "balanced_accuracy": 0.6147163758565947,
+            "perimeter_intrusions_caught": 10089,
+            "perimeter_intrusions_missed": 1207,
+            "perimeter_total_intrusions": 11296,
+            "perimeter_detection_rate_pct": 89.31480169971671,
+            "true_benign_steps": 56,
+            "true_benign_false_alarms": 7,
+            "true_benign_false_alarm_rate_pct": 12.5
+          },
+          "q_90": {
+            "calibration_quantile": 0.9,
+            "threshold_value": 0.5857092142105103,
+            "crown_jewel_attacks_caught": 5868,
+            "crown_jewel_attacks_missed": 329,
+            "crown_jewel_total_attacks": 6197,
+            "crown_jewel_detection_rate_pct": 94.69097950621268,
+            "nominal_clean_steps": 5155,
+            "nominal_false_alarms": 3395,
+            "nominal_false_alarm_rate_pct": 65.8583899127061,
+            "macro_f1": 0.6225198460179027,
+            "precision_pct": 63.348807081938894,
+            "balanced_accuracy": 0.6441629479675328,
+            "perimeter_intrusions_caught": 9261,
+            "perimeter_intrusions_missed": 2035,
+            "perimeter_total_intrusions": 11296,
+            "perimeter_detection_rate_pct": 81.98477337110481,
+            "true_benign_steps": 56,
+            "true_benign_false_alarms": 2,
+            "true_benign_false_alarm_rate_pct": 3.571428571428571
+          },
+          "q_95": {
+            "calibration_quantile": 0.95,
+            "threshold_value": 0.6894032955169678,
+            "crown_jewel_attacks_caught": 5617,
+            "crown_jewel_attacks_missed": 580,
+            "crown_jewel_total_attacks": 6197,
+            "crown_jewel_detection_rate_pct": 90.64063256414394,
+            "nominal_clean_steps": 5155,
+            "nominal_false_alarms": 2678,
+            "nominal_false_alarm_rate_pct": 51.94956353055286,
+            "macro_f1": 0.6892249132463899,
+            "precision_pct": 67.71549125979506,
+            "balanced_accuracy": 0.6934553451679554,
+            "perimeter_intrusions_caught": 8295,
+            "perimeter_intrusions_missed": 3001,
+            "perimeter_total_intrusions": 11296,
+            "perimeter_detection_rate_pct": 73.43307365439094,
+            "true_benign_steps": 56,
+            "true_benign_false_alarms": 0,
+            "true_benign_false_alarm_rate_pct": 0.0
+          },
+          "q_98": {
+            "calibration_quantile": 0.98,
+            "threshold_value": 0.7019901871681213,
+            "crown_jewel_attacks_caught": 5601,
+            "crown_jewel_attacks_missed": 596,
+            "crown_jewel_total_attacks": 6197,
+            "crown_jewel_detection_rate_pct": 90.38244311763756,
+            "nominal_clean_steps": 5155,
+            "nominal_false_alarms": 2595,
+            "nominal_false_alarm_rate_pct": 50.33947623666344,
+            "macro_f1": 0.6971730106204534,
+            "precision_pct": 68.33821376281112,
+            "balanced_accuracy": 0.7002148344048706,
+            "perimeter_intrusions_caught": 8196,
+            "perimeter_intrusions_missed": 3100,
+            "perimeter_total_intrusions": 11296,
+            "perimeter_detection_rate_pct": 72.55665722379604,
+            "true_benign_steps": 56,
+            "true_benign_false_alarms": 0,
+            "true_benign_false_alarm_rate_pct": 0.0
+          }
+        }
+      },
+      "energy_anomaly": {
+        "auroc": 0.20354395379510784,
+        "pr_auc": 0.3843166213214391,
+        "clean_mean_energy": 0.3234099745750427,
+        "attack_mean_energy": 0.15693365037441254,
+        "benign_mean_energy": 0.3335268199443817,
+        "operating_points": {
+          "q_80": {
+            "calibration_quantile": 0.8,
+            "threshold_value": 0.57436203956604,
+            "attacks_caught": 46,
+            "attacks_missed": 6151,
+            "total_attacks": 6197,
+            "detection_rate_pct": 0.7422946587058254,
+            "false_alarms": 904,
+            "false_alarm_rate_pct": 17.536372453928227,
+            "macro_f1": 0.27968946488249646
+          },
+          "q_85": {
+            "calibration_quantile": 0.85,
+            "threshold_value": 0.6592531800270081,
+            "attacks_caught": 23,
+            "attacks_missed": 6174,
+            "total_attacks": 6197,
+            "detection_rate_pct": 0.3711473293529127,
+            "false_alarms": 598,
+            "false_alarm_rate_pct": 11.6003879728419,
+            "macro_f1": 0.2902297747957571
+          },
+          "q_90": {
+            "calibration_quantile": 0.9,
+            "threshold_value": 0.7383895516395569,
+            "attacks_caught": 13,
+            "attacks_missed": 6184,
+            "total_attacks": 6197,
+            "detection_rate_pct": 0.2097789252864289,
+            "false_alarms": 374,
+            "false_alarm_rate_pct": 7.255092143549952,
+            "macro_f1": 0.29856257292662264
+          },
+          "q_95": {
+            "calibration_quantile": 0.95,
+            "threshold_value": 0.8293318748474121,
+            "attacks_caught": 6,
+            "attacks_missed": 6191,
+            "total_attacks": 6197,
+            "detection_rate_pct": 0.09682104243989027,
+            "false_alarms": 199,
+            "false_alarm_rate_pct": 3.8603297769156155,
+            "macro_f1": 0.3049489848187623
+          },
+          "q_98": {
+            "calibration_quantile": 0.98,
+            "threshold_value": 0.8712973594665527,
+            "attacks_caught": 5,
+            "attacks_missed": 6192,
+            "total_attacks": 6197,
+            "detection_rate_pct": 0.08068420203324189,
+            "false_alarms": 144,
+            "false_alarm_rate_pct": 2.7934044616876816,
+            "macro_f1": 0.3071211904669885
+          }
+        }
+      },
+      "ood_bline_to_meander": {
+        "source_policy": "bline_targeted",
+        "target_policy_unseen": "meander_stealth",
+        "in_distribution": {
+          "macro_f1": 0.9339988126806953,
+          "auroc": 0.9672825256301497,
+          "detection_rate_pct": 99.08176650634019
+        },
+        "zero_shot_ood": {
+          "macro_f1": 0.637439167517282,
+          "auroc": 0.9261211468072682,
+          "detection_rate_pct": 99.07578558225508,
+          "false_alarm_rate_pct": 50.13570194917345,
+          "attacks_caught": 1608,
+          "attacks_missed": 15,
+          "total_attacks": 1623
+        },
+        "calibrated_ood": {
+          "calibrated_tau_youden": 0.7804803096372313,
+          "calibrated_tau_f2": 0.32999999999999996,
+          "baseline_tau_050": {
+            "threshold": 0.5,
+            "macro_f1": 0.637439167517282,
+            "detection_rate_pct": 99.07578558225508,
+            "false_alarm_rate_pct": 50.13570194917345,
+            "attacks_caught": 1608,
+            "attacks_missed": 15,
+            "total_attacks": 1623,
+            "false_alarms": 2032
+          },
+          "youden_calibrated": {
+            "threshold": 0.7804803096372313,
+            "macro_f1": 0.7205365656445311,
+            "detection_rate_pct": 95.87184226740604,
+            "false_alarm_rate_pct": 36.19541080680977,
+            "attacks_caught": 1556,
+            "attacks_missed": 67,
+            "total_attacks": 1623,
+            "false_alarms": 1467
+          },
+          "f2_recall_calibrated": {
+            "threshold": 0.32999999999999996,
+            "macro_f1": 0.5741592496775284,
+            "detection_rate_pct": 99.44547134935306,
+            "false_alarm_rate_pct": 59.41278065630398,
+            "attacks_caught": 1614,
+            "attacks_missed": 9,
+            "total_attacks": 1623,
+            "false_alarms": 2408
+          },
+          "smoothed_and_youden": {
+            "threshold": 0.7804803096372313,
+            "macro_f1": 0.7574147591317327,
+            "detection_rate_pct": 95.19408502772643,
+            "false_alarm_rate_pct": 30.32321736984949,
+            "attacks_caught": 1545,
+            "attacks_missed": 78,
+            "total_attacks": 1623,
+            "false_alarms": 1229
+          }
+        },
+        "zero_shot_retention_rate_pct": 77.14534064304638,
+        "generalization_penalty_delta_f1": -0.21346224703616423
+      },
+      "ood_meander_to_bline": {
+        "source_policy": "meander_stealth",
+        "target_policy_unseen": "bline_targeted",
+        "in_distribution": {
+          "macro_f1": 0.8807469166599551,
+          "auroc": 0.9559202398168809,
+          "detection_rate_pct": 82.74799753542823
+        },
+        "zero_shot_ood": {
+          "macro_f1": 0.8640933044791586,
+          "auroc": 0.9519425268839815,
+          "detection_rate_pct": 89.70266724967206,
+          "false_alarm_rate_pct": 6.715063520871143,
+          "attacks_caught": 4103,
+          "attacks_missed": 471,
+          "total_attacks": 4574
+        },
+        "calibrated_ood": {
+          "calibrated_tau_youden": 0.29315297458912587,
+          "calibrated_tau_f2": 0.20999999999999996,
+          "baseline_tau_050": {
+            "threshold": 0.5,
+            "macro_f1": 0.8640933044791586,
+            "detection_rate_pct": 89.70266724967206,
+            "false_alarm_rate_pct": 6.715063520871143,
+            "attacks_caught": 4103,
+            "attacks_missed": 471,
+            "total_attacks": 4574,
+            "false_alarms": 74
+          },
+          "youden_calibrated": {
+            "threshold": 0.29315297458912587,
+            "macro_f1": 0.8886493240064758,
+            "detection_rate_pct": 92.5229558373415,
+            "false_alarm_rate_pct": 7.894736842105263,
+            "attacks_caught": 4232,
+            "attacks_missed": 342,
+            "total_attacks": 4574,
+            "false_alarms": 87
+          },
+          "f2_recall_calibrated": {
+            "threshold": 0.20999999999999996,
+            "macro_f1": 0.8912221468602672,
+            "detection_rate_pct": 93.13511149978137,
+            "false_alarm_rate_pct": 9.074410163339383,
+            "attacks_caught": 4260,
+            "attacks_missed": 314,
+            "total_attacks": 4574,
+            "false_alarms": 100
+          },
+          "smoothed_and_youden": {
+            "threshold": 0.29315297458912587,
+            "macro_f1": 0.8844731100946615,
+            "detection_rate_pct": 91.9763882815916,
+            "false_alarm_rate_pct": 7.441016333938294,
+            "attacks_caught": 4207,
+            "attacks_missed": 367,
+            "total_attacks": 4574,
+            "false_alarms": 82
+          }
+        },
+        "zero_shot_retention_rate_pct": 100.89723928600158,
+        "generalization_penalty_delta_f1": 0.007902407346520701
+      }
+    },
+    "500": {
+      "scale_spec": {
+        "name": "Global Corporate HQ / University (500 hosts)",
+        "num_hosts": 500,
+        "obs_dim": 2000
+      },
+      "zero_day_anomaly": {
+        "auroc": 0.8228085395971613,
+        "pr_auc": 0.8026587293721543,
+        "clean_mean_distance": 0.32149073481559753,
+        "test_clean_mean_distance": 0.7426907420158386,
+        "test_attack_mean_distance": 1.0996863842010498,
+        "operating_points": {
+          "q_80": {
+            "calibration_quantile": 0.8,
+            "threshold_value": 0.4792446494102478,
+            "crown_jewel_attacks_caught": 6192,
+            "crown_jewel_attacks_missed": 5,
+            "crown_jewel_total_attacks": 6197,
+            "crown_jewel_detection_rate_pct": 99.91931579796676,
+            "nominal_clean_steps": 5155,
+            "nominal_false_alarms": 3889,
+            "nominal_false_alarm_rate_pct": 75.44131910766247,
+            "macro_f1": 0.5774028495782144,
+            "precision_pct": 61.42247792877691,
+            "balanced_accuracy": 0.6223899834515214,
+            "perimeter_intrusions_caught": 10074,
+            "perimeter_intrusions_missed": 1222,
+            "perimeter_total_intrusions": 11296,
+            "perimeter_detection_rate_pct": 89.18201133144476,
+            "true_benign_steps": 56,
+            "true_benign_false_alarms": 7,
+            "true_benign_false_alarm_rate_pct": 12.5
+          },
+          "q_85": {
+            "calibration_quantile": 0.85,
+            "threshold_value": 0.4858015179634094,
+            "crown_jewel_attacks_caught": 6192,
+            "crown_jewel_attacks_missed": 5,
+            "crown_jewel_total_attacks": 6197,
+            "crown_jewel_detection_rate_pct": 99.91931579796676,
+            "nominal_clean_steps": 5155,
+            "nominal_false_alarms": 3849,
+            "nominal_false_alarm_rate_pct": 74.66537342386033,
+            "macro_f1": 0.5833073352471532,
+            "precision_pct": 61.66716462503735,
+            "balanced_accuracy": 0.6262697118705322,
+            "perimeter_intrusions_caught": 10034,
+            "perimeter_intrusions_missed": 1262,
+            "perimeter_total_intrusions": 11296,
+            "perimeter_detection_rate_pct": 88.82790368271955,
+            "true_benign_steps": 56,
+            "true_benign_false_alarms": 7,
+            "true_benign_false_alarm_rate_pct": 12.5
+          },
+          "q_90": {
+            "calibration_quantile": 0.9,
+            "threshold_value": 0.4959282875061035,
+            "crown_jewel_attacks_caught": 6192,
+            "crown_jewel_attacks_missed": 5,
+            "crown_jewel_total_attacks": 6197,
+            "crown_jewel_detection_rate_pct": 99.91931579796676,
+            "nominal_clean_steps": 5155,
+            "nominal_false_alarms": 3793,
+            "nominal_false_alarm_rate_pct": 73.57904946653734,
+            "macro_f1": 0.5914790327185577,
+            "precision_pct": 62.01301952929394,
+            "balanced_accuracy": 0.631701331657147,
+            "perimeter_intrusions_caught": 9978,
+            "perimeter_intrusions_missed": 1318,
+            "perimeter_total_intrusions": 11296,
+            "perimeter_detection_rate_pct": 88.33215297450425,
+            "true_benign_steps": 56,
+            "true_benign_false_alarms": 7,
+            "true_benign_false_alarm_rate_pct": 12.5
+          },
+          "q_95": {
+            "calibration_quantile": 0.95,
+            "threshold_value": 0.4964967966079712,
+            "crown_jewel_attacks_caught": 6192,
+            "crown_jewel_attacks_missed": 5,
+            "crown_jewel_total_attacks": 6197,
+            "crown_jewel_detection_rate_pct": 99.91931579796676,
+            "nominal_clean_steps": 5155,
+            "nominal_false_alarms": 3765,
+            "nominal_false_alarm_rate_pct": 73.03588748787585,
+            "macro_f1": 0.5955243755948235,
+            "precision_pct": 62.18740584513408,
+            "balanced_accuracy": 0.6344171415504545,
+            "perimeter_intrusions_caught": 9953,
+            "perimeter_intrusions_missed": 1343,
+            "perimeter_total_intrusions": 11296,
+            "perimeter_detection_rate_pct": 88.11083569405099,
+            "true_benign_steps": 56,
+            "true_benign_false_alarms": 4,
+            "true_benign_false_alarm_rate_pct": 7.142857142857142
+          },
+          "q_98": {
+            "calibration_quantile": 0.98,
+            "threshold_value": 0.5176989436149597,
+            "crown_jewel_attacks_caught": 6190,
+            "crown_jewel_attacks_missed": 7,
+            "crown_jewel_total_attacks": 6197,
+            "crown_jewel_detection_rate_pct": 99.88704211715346,
+            "nominal_clean_steps": 5155,
+            "nominal_false_alarms": 3701,
+            "nominal_false_alarm_rate_pct": 71.79437439379244,
+            "macro_f1": 0.6045290803843673,
+            "precision_pct": 62.582145384693156,
+            "balanced_accuracy": 0.640463338616805,
+            "perimeter_intrusions_caught": 9888,
+            "perimeter_intrusions_missed": 1408,
+            "perimeter_total_intrusions": 11296,
+            "perimeter_detection_rate_pct": 87.53541076487252,
+            "true_benign_steps": 56,
+            "true_benign_false_alarms": 3,
+            "true_benign_false_alarm_rate_pct": 5.357142857142857
+          }
+        }
+      },
+      "energy_anomaly": {
+        "auroc": 0.21959342674962243,
+        "pr_auc": 0.38899428004431347,
+        "clean_mean_energy": 0.31499794125556946,
+        "attack_mean_energy": 0.1498754620552063,
+        "benign_mean_energy": 0.2993803918361664,
+        "operating_points": {
+          "q_80": {
+            "calibration_quantile": 0.8,
+            "threshold_value": 0.5672532916069031,
+            "attacks_caught": 43,
+            "attacks_missed": 6154,
+            "total_attacks": 6197,
+            "detection_rate_pct": 0.6938841374858802,
+            "false_alarms": 656,
+            "false_alarm_rate_pct": 12.725509214354997,
+            "macro_f1": 0.2908382316334295
+          },
+          "q_85": {
+            "calibration_quantile": 0.85,
+            "threshold_value": 0.6222050189971924,
+            "attacks_caught": 25,
+            "attacks_missed": 6172,
+            "total_attacks": 6197,
+            "detection_rate_pct": 0.40342101016620946,
+            "false_alarms": 491,
+            "false_alarm_rate_pct": 9.524733268671193,
+            "macro_f1": 0.2953881784185117
+          },
+          "q_90": {
+            "calibration_quantile": 0.9,
+            "threshold_value": 0.6807305812835693,
+            "attacks_caught": 15,
+            "attacks_missed": 6182,
+            "total_attacks": 6197,
+            "detection_rate_pct": 0.24205260609972568,
+            "false_alarms": 311,
+            "false_alarm_rate_pct": 6.03297769156159,
+            "macro_f1": 0.30166300638028926
+          },
+          "q_95": {
+            "calibration_quantile": 0.95,
+            "threshold_value": 0.7907392978668213,
+            "attacks_caught": 7,
+            "attacks_missed": 6190,
+            "total_attacks": 6197,
+            "detection_rate_pct": 0.11295788284653865,
+            "false_alarms": 147,
+            "false_alarm_rate_pct": 2.851600387972842,
+            "macro_f1": 0.3073456913529248
+          },
+          "q_98": {
+            "calibration_quantile": 0.98,
+            "threshold_value": 0.8709204196929932,
+            "attacks_caught": 3,
+            "attacks_missed": 6194,
+            "total_attacks": 6197,
+            "detection_rate_pct": 0.048410521219945137,
+            "false_alarms": 71,
+            "false_alarm_rate_pct": 1.3773035887487877,
+            "macro_f1": 0.30985586476053983
+          }
+        }
+      },
+      "ood_bline_to_meander": {
+        "source_policy": "bline_targeted",
+        "target_policy_unseen": "meander_stealth",
+        "in_distribution": {
+          "macro_f1": 0.9297493606763177,
+          "auroc": 0.9693221848100643,
+          "detection_rate_pct": 98.97245299519021
+        },
+        "zero_shot_ood": {
+          "macro_f1": 0.6857121712151883,
+          "auroc": 0.923783969003434,
+          "detection_rate_pct": 97.84349969192853,
+          "false_alarm_rate_pct": 42.38835430545275,
+          "attacks_caught": 1588,
+          "attacks_missed": 35,
+          "total_attacks": 1623
+        },
+        "calibrated_ood": {
+          "calibrated_tau_youden": 0.8363598112569556,
+          "calibrated_tau_f2": 0.18,
+          "baseline_tau_050": {
+            "threshold": 0.5,
+            "macro_f1": 0.6857121712151883,
+            "detection_rate_pct": 97.84349969192853,
+            "false_alarm_rate_pct": 42.38835430545275,
+            "attacks_caught": 1588,
+            "attacks_missed": 35,
+            "total_attacks": 1623,
+            "false_alarms": 1718
+          },
+          "youden_calibrated": {
+            "threshold": 0.8363598112569556,
+            "macro_f1": 0.7720139684965892,
+            "detection_rate_pct": 94.70117067159582,
+            "false_alarm_rate_pct": 27.905255366395266,
+            "attacks_caught": 1537,
+            "attacks_missed": 86,
+            "total_attacks": 1623,
+            "false_alarms": 1131
+          },
+          "f2_recall_calibrated": {
+            "threshold": 0.18,
+            "macro_f1": 0.6114792190011032,
+            "detection_rate_pct": 99.38385705483672,
+            "false_alarm_rate_pct": 54.0587219343696,
+            "attacks_caught": 1613,
+            "attacks_missed": 10,
+            "total_attacks": 1623,
+            "false_alarms": 2191
+          },
+          "smoothed_and_youden": {
+            "threshold": 0.8363598112569556,
+            "macro_f1": 0.7963337196282085,
+            "detection_rate_pct": 93.46888478126925,
+            "false_alarm_rate_pct": 23.710831482852207,
+            "attacks_caught": 1517,
+            "attacks_missed": 106,
+            "total_attacks": 1623,
+            "false_alarms": 961
+          }
+        },
+        "zero_shot_retention_rate_pct": 83.03463289665628,
+        "generalization_penalty_delta_f1": -0.15773539217972854
+      },
+      "ood_meander_to_bline": {
+        "source_policy": "meander_stealth",
+        "target_policy_unseen": "bline_targeted",
+        "in_distribution": {
+          "macro_f1": 0.8917553789256452,
+          "auroc": 0.9614764718678983,
+          "detection_rate_pct": 85.21256931608133
+        },
+        "zero_shot_ood": {
+          "macro_f1": 0.8751543188877038,
+          "auroc": 0.9551798732994903,
+          "detection_rate_pct": 90.88325317009182,
+          "false_alarm_rate_pct": 6.896551724137931,
+          "attacks_caught": 4157,
+          "attacks_missed": 417,
+          "total_attacks": 4574
+        },
+        "calibrated_ood": {
+          "calibrated_tau_youden": 0.34097736336328766,
+          "calibrated_tau_f2": 0.25999999999999995,
+          "baseline_tau_050": {
+            "threshold": 0.5,
+            "macro_f1": 0.8751543188877038,
+            "detection_rate_pct": 90.88325317009182,
+            "false_alarm_rate_pct": 6.896551724137931,
+            "attacks_caught": 4157,
+            "attacks_missed": 417,
+            "total_attacks": 4574,
+            "false_alarms": 76
+          },
+          "youden_calibrated": {
+            "threshold": 0.34097736336328766,
+            "macro_f1": 0.8957152106604189,
+            "detection_rate_pct": 93.0039352864014,
+            "false_alarm_rate_pct": 7.259528130671507,
+            "attacks_caught": 4254,
+            "attacks_missed": 320,
+            "total_attacks": 4574,
+            "false_alarms": 80
+          },
+          "f2_recall_calibrated": {
+            "threshold": 0.25999999999999995,
+            "macro_f1": 0.8966905187835421,
+            "detection_rate_pct": 93.4849147354613,
+            "false_alarm_rate_pct": 8.52994555353902,
+            "attacks_caught": 4276,
+            "attacks_missed": 298,
+            "total_attacks": 4574,
+            "false_alarms": 94
+          },
+          "smoothed_and_youden": {
+            "threshold": 0.34097736336328766,
+            "macro_f1": 0.8985420529196626,
+            "detection_rate_pct": 93.24442501093135,
+            "false_alarm_rate_pct": 7.168784029038113,
+            "attacks_caught": 4265,
+            "attacks_missed": 309,
+            "total_attacks": 4574,
+            "false_alarms": 79
+          }
+        },
+        "zero_shot_retention_rate_pct": 100.44404910005078,
+        "generalization_penalty_delta_f1": 0.003959831734773767
+      }
+    }
+  }
+}

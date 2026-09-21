@@ -13,9 +13,11 @@ from cyber_jepa.evaluation.detection_optimization import (
     evaluate_optimized_detection,
 )
 from cyber_jepa.evaluation.emergent_ood import (
-    evaluate_zero_label_latent_anomaly,
     evaluate_cross_policy_transfer,
+    evaluate_jepa_energy_anomaly,
     evaluate_mitre_tier_summary,
+    evaluate_operational_zero_day_detection,
+    evaluate_zero_label_latent_anomaly,
 )
 
 
@@ -285,3 +287,71 @@ def test_evaluate_mitre_tier_summary():
     assert "mean_macro_f1" in res["tier_summary"]["user_tier"]
     assert "mean_auroc" in res["tier_summary"]["enterprise_tier"]
     assert 0.0 <= res["tier_summary"]["operational_tier"]["mean_auroc"] <= 1.0
+
+
+def test_evaluate_operational_zero_day_detection():
+    """Verify operational zero-day detection computes raw counts and benign false alarm audit."""
+    np.random.seed(42)
+    N_clean, N_test, D = 100, 200, 64
+    clean_ref = np.random.normal(1.0, 0.2, (N_clean, D))
+
+    test_clean = np.random.normal(1.0, 0.2, (100, D))
+    test_attack = np.random.normal(1.0, 0.2, (100, D))
+    test_attack[:, :10] += 2.0
+    test_z = np.vstack([test_clean, test_attack])
+    test_y = np.array([0] * 100 + [1] * 100)
+
+    # Perimeter indicators: 50 of the clean samples have a perimeter host compromised
+    host_comp = np.zeros((200, 4))
+    host_comp[50:100, 0] = 1.0   # 50 early perimeter intrusions while crown jewel clean
+    host_comp[100:200, 3] = 1.0  # All attacks have crown jewel compromised
+
+    res = evaluate_operational_zero_day_detection(
+        clean_reference_latents=clean_ref,
+        test_latents=test_z,
+        test_labels=test_y,
+        test_host_comp=host_comp,
+        quantiles=[0.90, 0.95],
+    )
+
+    assert "auroc" in res
+    assert res["auroc"] > 0.85
+    assert "operating_points" in res
+    assert "q_90" in res["operating_points"]
+    assert "q_95" in res["operating_points"]
+
+    q90 = res["operating_points"]["q_90"]
+    assert "crown_jewel_attacks_caught" in q90
+    assert "crown_jewel_detection_rate_pct" in q90
+    assert "perimeter_detection_rate_pct" in q90
+    assert "true_benign_steps" in q90
+    assert q90["true_benign_steps"] == 50  # 100 clean - 50 perimeter = 50 true benign
+
+
+def test_evaluate_jepa_energy_anomaly():
+    """Verify JEPA prediction energy anomaly detection computes operational points."""
+    np.random.seed(42)
+    N_clean, N_test = 100, 200
+
+    # Low prediction error energy on clean transitions (0.05 +- 0.02)
+    clean_energy = np.random.normal(0.05, 0.02, N_clean)
+
+    # Test set: 100 low energy clean, 100 high energy attack (0.35 +- 0.05)
+    test_clean_energy = np.random.normal(0.05, 0.02, 100)
+    test_attack_energy = np.random.normal(0.35, 0.05, 100)
+    test_energy = np.concatenate([test_clean_energy, test_attack_energy])
+    test_y = np.array([0] * 100 + [1] * 100)
+
+    res = evaluate_jepa_energy_anomaly(
+        clean_energies=clean_energy,
+        test_energies=test_energy,
+        test_labels=test_y,
+        quantiles=[0.90, 0.95],
+    )
+
+    assert "auroc" in res
+    assert res["auroc"] > 0.95
+    assert "operating_points" in res
+    assert "q_90" in res["operating_points"]
+    assert res["operating_points"]["q_90"]["detection_rate_pct"] > 90.0
+
