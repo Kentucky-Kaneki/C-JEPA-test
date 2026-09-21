@@ -1,0 +1,346 @@
+{
+  "metadata": {
+    "scale": "13",
+    "device": "cuda",
+    "seed": 1001,
+    "timestamp": "2026-09-21T15:51:48Z"
+  },
+  "track1_failure_diagnostics": {
+    "perimeter_vs_crown_jewel_audit": {
+      "nominal_clean_steps": 5155,
+      "nominal_false_alarms": 494,
+      "nominal_false_alarm_rate_pct": 9.582929194956353,
+      "true_benign_steps_zero_hosts_comp": 56,
+      "early_perimeter_detections": 488,
+      "early_perimeter_detection_pct_of_fps": 98.78542510121457,
+      "true_false_alarms_zero_hosts_comp": 6,
+      "true_false_alarm_rate_pct": 10.714285714285714,
+      "avg_hosts_compromised_on_false_alarms": 4.006072874493927,
+      "avg_hosts_compromised_on_true_negatives": 3.136665951512551
+    },
+    "borderline_miss_stratification": {
+      "total_missed_attacks": 355,
+      "mean_fn_predicted_probability": 0.2561490222121084,
+      "min_fn_probability": 0.00036509590792652337,
+      "max_fn_probability": 0.49850712310747286,
+      "prob_bin_00_to_20": {
+        "count": 161,
+        "pct": 45.352112676056336
+      },
+      "prob_bin_20_to_30": {
+        "count": 41,
+        "pct": 11.549295774647888
+      },
+      "prob_bin_30_to_40": {
+        "count": 39,
+        "pct": 10.985915492957748
+      },
+      "prob_bin_40_to_50": {
+        "count": 114,
+        "pct": 32.11267605633803
+      },
+      "recoverable_at_tau_035": {
+        "count": 135,
+        "pct": 38.028169014084504
+      },
+      "recoverable_at_tau_040": {
+        "count": 114,
+        "pct": 32.11267605633803
+      }
+    },
+    "telemetry_shift_diagnostics": {
+      "tp_mean_rms_delta": 0.4126098240913491,
+      "fn_mean_rms_delta": 1.1702642143612176,
+      "fp_mean_rms_delta": 0.9474985249612012,
+      "tn_mean_rms_delta": 1.1050804575237434,
+      "quiet_transitions_count_rms_lt_1e4": 3481,
+      "fn_quiet_transitions_count": 10
+    },
+    "adversary_policy_analysis": {
+      "bline_targeted": {
+        "total_attacks": 4574,
+        "attacks_caught": 4443,
+        "attacks_missed": 131,
+        "detection_rate_pct": 97.13598600787059,
+        "clean_steps": 1102,
+        "nominal_false_alarms": 149,
+        "nominal_false_alarm_rate_pct": 13.520871143375683,
+        "early_perimeter_detections": 143,
+        "true_false_alarms": 6
+      },
+      "meander_stealth": {
+        "total_attacks": 1623,
+        "attacks_caught": 1399,
+        "attacks_missed": 224,
+        "detection_rate_pct": 86.19839802834257,
+        "clean_steps": 4053,
+        "nominal_false_alarms": 345,
+        "nominal_false_alarm_rate_pct": 8.512213175425611,
+        "early_perimeter_detections": 345,
+        "true_false_alarms": 0
+      }
+    }
+  },
+  "track2_detection_optimization": {
+    "calibrated_thresholds": {
+      "youden_optimal_tau": 0.48699440468877037,
+      "f2_recall_optimal_tau": 0.26999999999999996,
+      "recall_95_optimal_tau": 0.49615143912912346
+    },
+    "operating_points": {
+      "baseline_tau_050": {
+        "operating_threshold": 0.5,
+        "temporal_smoothing_alpha": 1.0,
+        "total_attacks": 6197,
+        "attacks_caught": 5842,
+        "attacks_missed": 355,
+        "clean_steps": 5155,
+        "false_alarms": 494,
+        "attack_detection_rate_pct": 94.27142165563983,
+        "false_alarm_rate_pct": 9.582929194956353,
+        "precision_pct": 92.20328282828282,
+        "macro_f1": 0.9243931092214459,
+        "balanced_accuracy": 0.9234424623034174
+      },
+      "youden_calibrated": {
+        "operating_threshold": 0.48699440468877037,
+        "temporal_smoothing_alpha": 1.0,
+        "total_attacks": 6197,
+        "attacks_caught": 5884,
+        "attacks_missed": 313,
+        "clean_steps": 5155,
+        "false_alarms": 518,
+        "attack_detection_rate_pct": 94.94916895271905,
+        "false_alarm_rate_pct": 10.048496605237634,
+        "precision_pct": 91.90877850671664,
+        "macro_f1": 0.9259029338701315,
+        "balanced_accuracy": 0.9245033617374071
+      },
+      "f2_recall_calibrated": {
+        "operating_threshold": 0.26999999999999996,
+        "temporal_smoothing_alpha": 1.0,
+        "total_attacks": 6197,
+        "attacks_caught": 6015,
+        "attacks_missed": 182,
+        "clean_steps": 5155,
+        "false_alarms": 707,
+        "attack_detection_rate_pct": 97.06309504599,
+        "false_alarm_rate_pct": 13.714839961202715,
+        "precision_pct": 89.48229693543588,
+        "macro_f1": 0.920166638696049,
+        "balanced_accuracy": 0.9167412754239364
+      },
+      "smoothed_and_youden": {
+        "operating_threshold": 0.48699440468877037,
+        "temporal_smoothing_alpha": 0.6,
+        "total_attacks": 6197,
+        "attacks_caught": 5766,
+        "attacks_missed": 431,
+        "clean_steps": 5155,
+        "false_alarms": 445,
+        "attack_detection_rate_pct": 93.04502178473454,
+        "false_alarm_rate_pct": 8.63239573229874,
+        "precision_pct": 92.83529222347448,
+        "macro_f1": 0.9221594008828051,
+        "balanced_accuracy": 0.9220631302621791
+      }
+    }
+  },
+  "track3_zero_label_latent_anomaly": {
+    "cosine_distance": {
+      "auroc": 0.79591208912294,
+      "pr_auc": 0.7823077886546881,
+      "tpr_at_95_specificity": 0.16233661449088269,
+      "clean_mean_distance": 0.6183031797409058,
+      "attack_mean_distance": 0.9691714644432068
+    },
+    "euclidean_distance": {
+      "auroc": 0.7953004386998057,
+      "pr_auc": 0.7817146564189243,
+      "clean_mean_distance": 8.153922080993652,
+      "attack_mean_distance": 10.519686698913574
+    },
+    "emergent_detection_viable": true
+  },
+  "track4_cross_policy_transfer": {
+    "bline_to_meander": {
+      "source_policy": "bline_targeted",
+      "target_policy_unseen": "meander_stealth",
+      "in_distribution": {
+        "macro_f1": 0.9336066735820533,
+        "auroc": 0.9653599172153504,
+        "detection_rate_pct": 98.97245299519021
+      },
+      "zero_shot_ood": {
+        "macro_f1": 0.6831861312670322,
+        "auroc": 0.9323781977522413,
+        "detection_rate_pct": 97.72027110289588,
+        "false_alarm_rate_pct": 42.70910436713545,
+        "attacks_caught": 1586,
+        "attacks_missed": 37,
+        "total_attacks": 1623
+      },
+      "zero_shot_retention_rate_pct": 73.17708309065424,
+      "generalization_penalty_delta_f1": -0.2504205423150211
+    },
+    "meander_to_bline": {
+      "source_policy": "meander_stealth",
+      "target_policy_unseen": "bline_targeted",
+      "in_distribution": {
+        "macro_f1": 0.8877047044938144,
+        "auroc": 0.9603554656804731,
+        "detection_rate_pct": 84.96611213801602
+      },
+      "zero_shot_ood": {
+        "macro_f1": 0.8384775891158122,
+        "auroc": 0.9576867435842296,
+        "detection_rate_pct": 86.68561434193266,
+        "false_alarm_rate_pct": 5.807622504537205,
+        "attacks_caught": 3965,
+        "attacks_missed": 609,
+        "total_attacks": 4574
+      },
+      "zero_shot_retention_rate_pct": 94.45456184598318,
+      "generalization_penalty_delta_f1": -0.049227115378002284
+    }
+  },
+  "track5_mitre_localization": {
+    "overall_mean_macro_f1": 0.8300252633180674,
+    "overall_mean_auroc": 0.9561615260780186,
+    "tier_summary": {
+      "user_tier": {
+        "mean_macro_f1": 0.8997152227745188,
+        "mean_auroc": 0.9566266447746694,
+        "mean_fpr_at_95_recall": 0.23493173440861775,
+        "monitored_hosts": [
+          "User1",
+          "User2",
+          "User3",
+          "User4"
+        ]
+      },
+      "enterprise_tier": {
+        "mean_macro_f1": 0.8691401530996172,
+        "mean_auroc": 0.9409171493702493,
+        "mean_fpr_at_95_recall": 0.27956226867972184,
+        "monitored_hosts": [
+          "Enterprise0",
+          "Enterprise1",
+          "Enterprise2"
+        ]
+      },
+      "operational_tier": {
+        "mean_macro_f1": 0.730999136525454,
+        "mean_auroc": 0.9671296899121946,
+        "mean_fpr_at_95_recall": 0.11372214074610122,
+        "monitored_hosts": [
+          "Op_Server0",
+          "Op_Host0",
+          "Op_Host1",
+          "Op_Host2"
+        ]
+      }
+    },
+    "by_host": {
+      "Enterprise0": {
+        "macro_f1": 0.8724000386641708,
+        "auroc": 0.9455090926393582,
+        "fpr_at_95_recall": 0.21020969405293916,
+        "pr_auc": 0.9302965745242044,
+        "train_positives": 27094,
+        "test_positives": 5534,
+        "status": "evaluated"
+      },
+      "Enterprise1": {
+        "macro_f1": 0.8911861572955073,
+        "auroc": 0.9523009927164264,
+        "fpr_at_95_recall": 0.24094881398252185,
+        "pr_auc": 0.9335325619642297,
+        "train_positives": 24467,
+        "test_positives": 4944,
+        "status": "evaluated"
+      },
+      "Enterprise2": {
+        "macro_f1": 0.8438342633391733,
+        "auroc": 0.9249413627549633,
+        "fpr_at_95_recall": 0.3875282980037045,
+        "pr_auc": 0.93871463815251,
+        "train_positives": 31835,
+        "test_positives": 6493,
+        "status": "evaluated"
+      },
+      "Op_Server0": {
+        "macro_f1": 0.9243931092214459,
+        "auroc": 0.9738896687753077,
+        "fpr_at_95_recall": 0.10048496605237633,
+        "pr_auc": 0.9722710492466873,
+        "train_positives": 29479,
+        "test_positives": 6197,
+        "status": "evaluated"
+      },
+      "Op_Host0": {
+        "macro_f1": 0.49980171844018506,
+        "auroc": 0.9760890221085936,
+        "fpr_at_95_recall": 0.12703870228334654,
+        "pr_auc": 0.05679279145483793,
+        "train_positives": 52,
+        "test_positives": 9,
+        "status": "evaluated"
+      },
+      "Op_Host1": {
+        "macro_f1": 1.0,
+        "auroc": 1.0,
+        "fpr_at_95_recall": 0.0,
+        "pr_auc": 1.0,
+        "train_positives": 75,
+        "test_positives": 0,
+        "status": "evaluated"
+      },
+      "Op_Host2": {
+        "macro_f1": 0.49980171844018506,
+        "auroc": 0.918540068764877,
+        "fpr_at_95_recall": 0.227364894648682,
+        "pr_auc": 0.01928603815428638,
+        "train_positives": 53,
+        "test_positives": 9,
+        "status": "evaluated"
+      },
+      "User1": {
+        "macro_f1": 0.9134138312279032,
+        "auroc": 0.9681084111110765,
+        "fpr_at_95_recall": 0.1689540937056318,
+        "pr_auc": 0.9528022875292935,
+        "train_positives": 24257,
+        "test_positives": 5013,
+        "status": "evaluated"
+      },
+      "User2": {
+        "macro_f1": 0.8820865446538007,
+        "auroc": 0.9489156357612688,
+        "fpr_at_95_recall": 0.24261734535281318,
+        "pr_auc": 0.9226635361839,
+        "train_positives": 25441,
+        "test_positives": 4918,
+        "status": "evaluated"
+      },
+      "User3": {
+        "macro_f1": 0.9029096510788654,
+        "auroc": 0.9464330964156566,
+        "fpr_at_95_recall": 0.336455893832943,
+        "pr_auc": 0.9088667902551841,
+        "train_positives": 17422,
+        "test_positives": 3666,
+        "status": "evaluated"
+      },
+      "User4": {
+        "macro_f1": 0.9004508641375057,
+        "auroc": 0.9630494358106759,
+        "fpr_at_95_recall": 0.191699604743083,
+        "pr_auc": 0.9497969305964662,
+        "train_positives": 24457,
+        "test_positives": 5280,
+        "status": "evaluated"
+      }
+    }
+  }
+}
