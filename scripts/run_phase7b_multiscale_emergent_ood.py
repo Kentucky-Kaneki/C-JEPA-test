@@ -160,6 +160,9 @@ def run_phase7b_benchmark(
     all_groups = sorted(all_trans["split_group_id"].unique().tolist())
     splits = generate_group_splits(all_groups, train_ratio=0.70, val_ratio=0.15, test_ratio=0.15, salt="cyborg_jepa_split_v1")
 
+    # Authoritative policy map for B-line vs Meander breakdown
+    policy_map = dict(zip(all_trans["trajectory_id"].astype(str), all_trans["red_policy"].astype(str)))
+
     base_train = CyberJEPADataset(shard_paths, split_group_set=splits["train"], fit_normalizers=True)
     base_val = CyberJEPADataset(shard_paths, split_group_set=splits["val"], fit_normalizers=False, normalizer_stats=base_train.normalizer_stats)
     base_test = CyberJEPADataset(shard_paths, split_group_set=splits["test"], fit_normalizers=False, normalizer_stats=base_train.normalizer_stats)
@@ -213,8 +216,12 @@ def run_phase7b_benchmark(
         # where the environment is unperturbed and adversary actions have not initiated
         clean_ref_mask = (train_data["t_contexts"] <= 5)
         if np.sum(clean_ref_mask) < 10:
+            clean_ref_mask = (train_data["t_contexts"] <= 10)
+        if np.sum(clean_ref_mask) < 10:
+            sorted_t_idx = np.argsort(train_data["t_contexts"])
+            k = max(10, int(len(train_data["t_contexts"]) * 0.10))
             clean_ref_mask = np.zeros(len(train_data["t_contexts"]), dtype=bool)
-            clean_ref_mask[:max(10, int(len(clean_ref_mask) * 0.10))] = True
+            clean_ref_mask[sorted_t_idx[:k]] = True
         clean_ref_latents = train_data["context_latents"][clean_ref_mask]
         clean_ref_energies = train_data["energies"][clean_ref_mask]
 
@@ -249,13 +256,13 @@ def run_phase7b_benchmark(
         # ---------------------------------------------------------------------
         # 3. Calibrated Cross-Policy Out-of-Distribution (OOD) Transfer
         # ---------------------------------------------------------------------
-        b_train = np.array(["bline" in str(t) for t in train_data["trajectory_ids"]])
-        b_val = np.array(["bline" in str(t) for t in val_data["trajectory_ids"]])
-        b_test = np.array(["bline" in str(t) for t in test_data["trajectory_ids"]])
+        b_train = np.array([policy_map.get(str(t), "") == "bline" or "bline" in str(t).lower() for t in train_data["trajectory_ids"]])
+        b_val = np.array([policy_map.get(str(t), "") == "bline" or "bline" in str(t).lower() for t in val_data["trajectory_ids"]])
+        b_test = np.array([policy_map.get(str(t), "") == "bline" or "bline" in str(t).lower() for t in test_data["trajectory_ids"]])
 
-        m_train = np.array(["meander" in str(t) for t in train_data["trajectory_ids"]])
-        m_val = np.array(["meander" in str(t) for t in val_data["trajectory_ids"]])
-        m_test = np.array(["meander" in str(t) for t in test_data["trajectory_ids"]])
+        m_train = np.array([policy_map.get(str(t), "") == "meander" or "meander" in str(t).lower() for t in train_data["trajectory_ids"]])
+        m_val = np.array([policy_map.get(str(t), "") == "meander" or "meander" in str(t).lower() for t in val_data["trajectory_ids"]])
+        m_test = np.array([policy_map.get(str(t), "") == "meander" or "meander" in str(t).lower() for t in test_data["trajectory_ids"]])
 
         # B-line -> Meander (Targeted -> Stealth OOD)
         b2m = evaluate_cross_policy_transfer(
