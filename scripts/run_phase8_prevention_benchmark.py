@@ -215,10 +215,13 @@ def run_phase8_prevention_benchmark(
         lt98 = q98["lead_time"]
         prev98 = q98["closed_loop_prevention"]
 
+        def _pfar(val: float | None) -> str:
+            return f"{val:.2f}%" if val is not None else "N/A (0 clean eps)"
+
         print(f"\n[Prevention Results: Scale {scale}] (AUROC: {multi_q_res['auroc']:.4f})")
-        print(f"  -> Quantile 90%: Mean Lead: {lt90['mean_lead_time_steps']:.1f} steps | Early Warn Rate: {lt90['early_warning_rate_pct']:.2f}% | CJ Preservation: {prev90['crown_jewel_preservation_rate_pct']:.2f}% | False Intervention: {prev90['false_intervention_rate_pct']:.2f}%")
-        print(f"  -> Quantile 95%: Mean Lead: {lt95['mean_lead_time_steps']:.1f} steps | Early Warn Rate: {lt95['early_warning_rate_pct']:.2f}% | CJ Preservation: {prev95['crown_jewel_preservation_rate_pct']:.2f}% | False Intervention: {prev95['false_intervention_rate_pct']:.2f}%")
-        print(f"  -> Quantile 98%: Mean Lead: {lt98['mean_lead_time_steps']:.1f} steps | Early Warn Rate: {lt98['early_warning_rate_pct']:.2f}% | CJ Preservation: {prev98['crown_jewel_preservation_rate_pct']:.2f}% | False Intervention: {prev98['false_intervention_rate_pct']:.2f}%")
+        print(f"  -> Quantile 90%: Mean Lead: {lt90['mean_lead_time_steps']:.1f} steps | Early Warn Rate: {lt90['early_warning_rate_pct']:.2f}% | CJ Preservation: {prev90['crown_jewel_preservation_rate_pct']:.2f}% | False Intervention: {_pfar(prev90['false_intervention_rate_pct'])}")
+        print(f"  -> Quantile 95%: Mean Lead: {lt95['mean_lead_time_steps']:.1f} steps | Early Warn Rate: {lt95['early_warning_rate_pct']:.2f}% | CJ Preservation: {prev95['crown_jewel_preservation_rate_pct']:.2f}% | False Intervention: {_pfar(prev95['false_intervention_rate_pct'])}")
+        print(f"  -> Quantile 98%: Mean Lead: {lt98['mean_lead_time_steps']:.1f} steps | Early Warn Rate: {lt98['early_warning_rate_pct']:.2f}% | CJ Preservation: {prev98['crown_jewel_preservation_rate_pct']:.2f}% | False Intervention: {_pfar(prev98['false_intervention_rate_pct'])}")
 
         # ---------------------------------------------------------------------
         # Policy Breakdown: B-line vs Meander Prevention

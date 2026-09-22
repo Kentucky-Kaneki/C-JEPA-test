@@ -28,15 +28,21 @@ def compute_predictive_metrics(
     # 2. Cosine Similarity
     cos_sim = float(F.cosine_similarity(pred_latents, target_latents, dim=-1).mean().item())
 
-    # 3. Latent R^2
-    target_var = float(np.var(target_np, axis=0).sum())
-    mse = float(np.mean((pred_np - target_np) ** 2))
-    r2 = float(1.0 - (mse / max(1e-6, target_var)))
+    # 3. Latent R^2 (Total Variance Explained and Macro-Averaged)
+    var_per_dim = np.var(target_np, axis=0)
+    mse_per_dim = np.mean((pred_np - target_np) ** 2, axis=0)
+    total_var = float(np.sum(var_per_dim))
+    total_mse = float(np.sum(mse_per_dim))
+    r2 = float(1.0 - (total_mse / max(1e-6, total_var)))
+
+    valid_dims = var_per_dim > 1e-6
+    r2_macro = float(np.mean(1.0 - (mse_per_dim[valid_dims] / var_per_dim[valid_dims]))) if np.any(valid_dims) else 0.0
 
     metrics = {
         "smooth_l1": smooth_l1,
         "cosine_similarity": cos_sim,
         "latent_r2": r2,
+        "latent_r2_macro": r2_macro,
     }
 
     # 4. Changed vs Unchanged Targets
@@ -55,9 +61,10 @@ def compute_predictive_metrics(
 
     # 5. Improvement over Latent Persistence
     if persistence_latents is not None:
-        pers_mse = float(np.mean((persistence_latents.detach().cpu().numpy() - target_np) ** 2))
-        metrics["persistence_mse"] = pers_mse
-        metrics["improvement_over_persistence"] = float(1.0 - (mse / max(1e-6, pers_mse)))
+        pers_mse_per_dim = np.mean((persistence_latents.detach().cpu().numpy() - target_np) ** 2, axis=0)
+        total_pers_mse = float(np.sum(pers_mse_per_dim))
+        metrics["persistence_mse"] = total_pers_mse
+        metrics["improvement_over_persistence"] = float(1.0 - (total_mse / max(1e-6, total_pers_mse)))
 
     return metrics
 

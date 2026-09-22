@@ -283,11 +283,15 @@ def evaluate_closed_loop_prevention(
         else 0.0
     )
     false_intervention_rate = (
-        float((false_interventions / max(1, clean_baseline_episodes)) * 100.0)
+        float((false_interventions / clean_baseline_episodes) * 100.0)
         if clean_baseline_episodes > 0
-        else 0.0
+        else None
     )
-    net_defense_utility = float(preservation_rate - false_intervention_rate)
+    net_defense_utility = (
+        float(preservation_rate - false_intervention_rate)
+        if false_intervention_rate is not None
+        else float(preservation_rate)
+    )
 
     return {
         "operating_threshold": float(threshold),
@@ -437,6 +441,12 @@ def compute_prevention_scorecard(
         "| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |",
     ])
 
+    def _fmt_far(clp_dict: dict[str, Any]) -> str:
+        far = clp_dict.get("false_intervention_rate_pct")
+        if far is None:
+            return "N/A (0 clean)"
+        return f"{far:.2f}%"
+
     for s in scales:
         if s not in scale_results:
             continue
@@ -446,9 +456,9 @@ def compute_prevention_scorecard(
         q95 = prev_s["operating_points"]["q_95"]["closed_loop_prevention"]
         q98 = prev_s["operating_points"]["q_98"]["closed_loop_prevention"]
         scorecard_lines.append(
-            f"| **Scale {s}** | **{q90['crown_jewel_preservation_rate_pct']:.2f}%** | {q90.get('perimeter_containment_rate_pct', 0.0):.2f}% | {q90['false_intervention_rate_pct']:.2f}% | **{q90['net_defense_utility']:+.2f}** | "
-            f"**{q95['crown_jewel_preservation_rate_pct']:.2f}%** | {q95['false_intervention_rate_pct']:.2f}% | **{q95['net_defense_utility']:+.2f}** | "
-            f"**{q98['crown_jewel_preservation_rate_pct']:.2f}%** | {q98['false_intervention_rate_pct']:.2f}% | **{q98['net_defense_utility']:+.2f}** |"
+            f"| **Scale {s}** | **{q90['crown_jewel_preservation_rate_pct']:.2f}%** | {q90.get('perimeter_containment_rate_pct', 0.0):.2f}% | {_fmt_far(q90)} | **{q90['net_defense_utility']:+.2f}** | "
+            f"**{q95['crown_jewel_preservation_rate_pct']:.2f}%** | {_fmt_far(q95)} | **{q95['net_defense_utility']:+.2f}** | "
+            f"**{q98['crown_jewel_preservation_rate_pct']:.2f}%** | {_fmt_far(q98)} | **{q98['net_defense_utility']:+.2f}** |"
         )
 
     scorecard_lines.extend([

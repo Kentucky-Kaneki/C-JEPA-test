@@ -105,9 +105,16 @@ SCALE_SPECS = {
 class ScaledDatasetWrapper(Dataset[dict[str, Any]]):
     """Wraps an existing CyberJEPADataset and projects/slices it to target network scale."""
 
-    def __init__(self, base_dataset: Any, scale: str = "13", target_hosts: int | None = None):
+    def __init__(
+        self,
+        base_dataset: Any,
+        scale: str = "13",
+        target_hosts: int | None = None,
+        scaling_mode: str = "needle_in_haystack",
+    ):
         self.base = base_dataset
         self.scale = scale
+        self.scaling_mode = scaling_mode
         scale_key = str(scale)
         if target_hosts is not None:
             self.num_hosts = target_hosts
@@ -152,7 +159,7 @@ class ScaledDatasetWrapper(Dataset[dict[str, Any]]):
         hist = item["history_flat"] # [T, 52]
         target = item["target_flat"] # [52]
         base_comp = item.get("host_compromised", torch.zeros(11))
-        label = item["label"]
+        label = item.get("label", item.get("context_label", 0))
 
         if self.obs_dim <= 52:
             # Sliced / subset scale (e.g. 3, 5, 10, 13 hosts)
@@ -163,13 +170,22 @@ class ScaledDatasetWrapper(Dataset[dict[str, Any]]):
             else:
                 host_comp = torch.cat([base_comp, torch.zeros(self.num_hosts - len(base_comp))])
         else:
-            # Scaled / enterprise replication (e.g. 25, 45, 50, 100, 250, 500 hosts)
-            repeats = int(np.ceil(self.obs_dim / 52))
-            hist_rep = hist.repeat(1, repeats)[:, :self.obs_dim].clone()
-            target_rep = target.repeat(repeats)[:self.obs_dim].clone()
-            hist_scaled = hist_rep
-            target_scaled = target_rep
-            host_comp = base_comp.repeat(int(np.ceil(self.num_hosts / len(base_comp))))[:self.num_hosts]
+            # Scaled enterprise networks (e.g. 25, 50, 100, 250, 500 hosts)
+            if self.scaling_mode == "needle_in_haystack":
+                # Scientifically rigorous: 13 monitored hosts in slots 0..51; remaining hosts are benign background
+                T_hist = hist.shape[0]
+                hist_scaled = torch.zeros(T_hist, self.obs_dim, dtype=hist.dtype)
+                target_scaled = torch.zeros(self.obs_dim, dtype=target.dtype)
+                hist_scaled[:, :52] = hist
+                target_scaled[:52] = target
+                # Background enterprise hosts are strictly clean (0.0 compromise)
+                host_comp = torch.cat([base_comp, torch.zeros(self.num_hosts - len(base_comp))])
+            else:
+                # Legacy replication mode (for comparison/ablations)
+                repeats = int(np.ceil(self.obs_dim / 52))
+                hist_scaled = hist.repeat(1, repeats)[:, :self.obs_dim].clone()
+                target_scaled = target.repeat(repeats)[:self.obs_dim].clone()
+                host_comp = base_comp.repeat(int(np.ceil(self.num_hosts / len(base_comp))))[:self.num_hosts]
 
         delta = target_scaled - hist_scaled[-1]
         rms_delta = float(torch.sqrt(torch.mean(delta ** 2)).item())

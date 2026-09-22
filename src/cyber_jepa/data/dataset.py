@@ -157,9 +157,11 @@ class CyberJEPADataset(Dataset[dict[str, Any]]):
 
         if fit_normalizers and self.samples:
             all_hist = torch.stack([s["history_flat"] for s in self.samples])
-            mean = all_hist.mean(dim=(0, 1)).numpy().tolist()
-            std = (all_hist.std(dim=(0, 1)) + 1e-6).numpy().tolist()
-            self.normalizer_stats = {"mean": mean, "std": std}
+            mean = all_hist.mean(dim=(0, 1))
+            std_raw = all_hist.std(dim=(0, 1))
+            # Floor small standard deviations to 1.0 to prevent division by near-zero on invariant dimensions
+            std = torch.where(std_raw < 1e-4, torch.ones_like(std_raw), std_raw)
+            self.normalizer_stats = {"mean": mean.numpy().tolist(), "std": std.numpy().tolist()}
         else:
             self.normalizer_stats = normalizer_stats or {}
 
@@ -218,13 +220,18 @@ class CyberJEPADataset(Dataset[dict[str, Any]]):
                     t_tgt = int(t_vals[i + self.horizon])
                     tid_ctx = str(trans_ids[i])
                     tgt_label = int(labels[i + self.horizon]) if i + self.horizon < len(labels) else 0
+                    ctx_label = int(labels[i]) if i < len(labels) else 0
 
                     delta = target_flat - hist_flats[-1]
                     rms_delta = float(np.sqrt(np.mean(delta ** 2)))
 
                     target_step = i + self.horizon
-                    host_vec = [
+                    host_vec_target = [
                         float(host_comp_map[h][target_step]) if target_step < len(host_comp_map[h]) else 0.0
+                        for h in MONITORED_HOSTS
+                    ]
+                    host_vec_context = [
+                        float(host_comp_map[h][i]) if i < len(host_comp_map[h]) else 0.0
                         for h in MONITORED_HOSTS
                     ]
 
@@ -238,10 +245,14 @@ class CyberJEPADataset(Dataset[dict[str, Any]]):
                         "history_flat": torch.tensor(hist_flats, dtype=torch.float32),
                         "action_seq": torch.tensor(action_seq, dtype=torch.long),
                         "target_flat": torch.tensor(target_flat, dtype=torch.float32),
-                        "label": tgt_label,
+                        "label": ctx_label, # Operational detection label at context time t (strict zero leakage)
+                        "context_label": ctx_label, # Ground truth at context step t
+                        "target_label": tgt_label,   # Future ground truth at target step t+horizon
                         "horizon": self.horizon,
                         "rms_delta": rms_delta,
-                        "host_compromised": torch.tensor(host_vec, dtype=torch.float32),
+                        "host_compromised": torch.tensor(host_vec_context, dtype=torch.float32), # Context-aligned [11]
+                        "host_compromised_context": torch.tensor(host_vec_context, dtype=torch.float32),
+                        "host_compromised_target": torch.tensor(host_vec_target, dtype=torch.float32),
                         "action_type": act_type,
                     })
 

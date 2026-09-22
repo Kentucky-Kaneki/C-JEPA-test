@@ -287,7 +287,10 @@ class LatentPredictor(nn.Module):
         if isinstance(z_t, ContextTokens):
             memory_tokens = z_t.tokens
             memory_padding_mask = z_t.padding_mask
-            if z_t.global_token is not None and z_t.tokens.dim() == 3:
+            # If 3D tokens are present and valid, preserve 3D for token-preserving cross-attention
+            if z_t.tokens.dim() == 3 and (z_t.global_token is None or getattr(self, "prefer_token_memory", True)):
+                z_t_ctx = z_t.tokens
+            elif z_t.global_token is not None:
                 z_t_ctx = z_t.global_token
             else:
                 z_t_ctx = z_t.tokens
@@ -314,11 +317,21 @@ class LatentPredictor(nn.Module):
 
             target_query = (g_e + e_e + h_e).unsqueeze(0).unsqueeze(1).expand(B, 1, -1) # [B, 1, D]
 
-            tgt_seq = torch.cat([target_query, act_tokens], dim=1)
+            tgt_seq = torch.cat([target_query, act_tokens], dim=1) # [B, 1 + K, D]
+
+            # Causal mask: target_query (idx 0) only attends to actions <= k, and actions are causal
+            tgt_len = 1 + K
+            tgt_mask = torch.zeros(tgt_len, tgt_len, device=device)
+            for i in range(1, tgt_len):
+                tgt_mask[i, i + 1:] = float('-inf')
+                tgt_mask[i, 0] = float('-inf') # Actions do not attend to future target query
+            if k < K:
+                tgt_mask[0, 1 + k:] = float('-inf') # Query cannot attend to actions beyond horizon k
 
             decoded = self.decoder(
                 tgt=tgt_seq,
                 memory=z_t_ctx,
+                tgt_mask=tgt_mask,
                 memory_key_padding_mask=memory_padding_mask,
             )
             decoded = self.norm(decoded)

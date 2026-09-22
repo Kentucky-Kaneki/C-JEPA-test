@@ -220,6 +220,9 @@ def evaluate_jepa_energy_anomaly(
     test_labels: np.ndarray,
     test_host_comp: np.ndarray | None = None,
     quantiles: list[float] | None = None,
+    direction: str = "auto",
+    val_energies: np.ndarray | None = None,
+    val_labels: np.ndarray | None = None,
 ) -> dict[str, Any]:
     """
     Evaluate unsupervised threat detection via JEPA prediction energy E(x, y, a).
@@ -228,14 +231,9 @@ def evaluate_jepa_energy_anomaly(
     future latent z_hat and actual observed future target latent z_target:
         E(x, y, a) = 1 - cos(z_hat, z_target)
         
-    Clean transitions adhere to normal background telemetry patterns.
-    When attacker transitions occur, the dynamics shift. If the adversary executes
-    structured, highly-predictable exploit chains, energy can collapse (lower energy);
-    conversely, unmodeled perturbations produce higher energy.
-    
-    This function automatically detects the direction of separation between clean baseline
-    and anomalous dynamics, providing both raw and inverted scores, and calibrates
-    unsupervised operational thresholds at the designated quantiles.
+    Strict Zero-Leakage Guarantee:
+    Operating direction and thresholds are predetermined or calibrated strictly on training/validation
+    data, never optimized on test labels.
     """
     if len(clean_energies) == 0 or len(test_energies) == 0:
         return {}
@@ -243,19 +241,23 @@ def evaluate_jepa_energy_anomaly(
     if quantiles is None:
         quantiles = [0.80, 0.85, 0.90, 0.95, 0.98]
 
+    # Strictly determine direction without touching test_labels
+    if direction == "auto":
+        # Unsupervised shift detection against clean baseline (zero label leakage)
+        effective_direction = "lower_energy" if np.mean(test_energies) < np.mean(clean_energies) else "higher_energy"
+    elif direction == "auto_val" and val_energies is not None and val_labels is not None and len(np.unique(val_labels)) > 1:
+        val_raw = float(roc_auc_score(val_labels, val_energies))
+        val_inv = float(roc_auc_score(val_labels, -val_energies))
+        effective_direction = "lower_energy" if val_inv > val_raw else "higher_energy"
+    else:
+        effective_direction = direction
+
     has_both = len(np.unique(test_labels)) > 1
     raw_auroc = float(roc_auc_score(test_labels, test_energies)) if has_both else 0.5
     inv_auroc = float(roc_auc_score(test_labels, -test_energies)) if has_both else 0.5
-
-    # Determine effective separation direction
-    if inv_auroc > raw_auroc:
-        effective_direction = "lower_energy"
-        effective_auroc = inv_auroc
-        prauc = float(average_precision_score(test_labels, -test_energies)) if has_both else 0.0
-    else:
-        effective_direction = "higher_energy"
-        effective_auroc = raw_auroc
-        prauc = float(average_precision_score(test_labels, test_energies)) if has_both else 0.0
+    scores = -test_energies if effective_direction == "lower_energy" else test_energies
+    effective_auroc = float(roc_auc_score(test_labels, scores)) if has_both else 0.5
+    prauc = float(average_precision_score(test_labels, scores)) if has_both else 0.0
 
     operating_points = {}
     for q in quantiles:
