@@ -147,6 +147,7 @@ def run_phase6b_benchmark(
     seed: int = 1001,
     device_name: str = "cuda",
     output_dir: Path = Path("experiments/phase6b"),
+    eval_only: bool = False,
 ) -> dict[str, Any]:
     """Execute complete Phase 6B scaled red agent detection benchmark suite."""
     device = torch.device(device_name if torch.cuda.is_available() and device_name == "cuda" else "cpu")
@@ -245,14 +246,19 @@ def run_phase6b_benchmark(
             monitor_metric="val_pred_loss",
         )
 
-        t_start = time.perf_counter()
-        history = trainer.fit()
-        train_time = float(time.perf_counter() - t_start)
-        epochs_trained = len(history["train_loss"])
-        print(f"[+] Model trained in {train_time:.2f}s ({epochs_trained} epochs).")
+        best_ckpt_path = run_dir / "best.pt"
+        if not eval_only or not best_ckpt_path.exists():
+            t_start = time.perf_counter()
+            history = trainer.fit()
+            train_time = float(time.perf_counter() - t_start)
+            epochs_trained = len(history["train_loss"])
+            print(f"[+] Model trained in {train_time:.2f}s ({epochs_trained} epochs).")
+        else:
+            print(f"[+] Skipping training (eval-only mode): Loading existing checkpoint {best_ckpt_path}...")
+            train_time = 0.0
+            epochs_trained = epochs
 
         # Load best checkpoint
-        best_ckpt_path = run_dir / "best.pt"
         if best_ckpt_path.exists():
             ckpt = torch.load(best_ckpt_path, map_location=device, weights_only=False)
             flat_jepa.online_encoder.load_state_dict(ckpt["online_encoder"])
@@ -422,6 +428,7 @@ def main() -> None:
     parser.add_argument("--device", type=str, default="cuda", help="Target device ('cuda' or 'cpu')")
     parser.add_argument("--scales", nargs="+", default=["5", "10", "13", "25", "50", "100", "250", "500"], help="Scales to evaluate")
     parser.add_argument("--output_dir", type=str, default="experiments/phase6b", help="Output directory")
+    parser.add_argument("--eval-only", action="store_true", help="Evaluate existing checkpoints without retraining")
 
     args = parser.parse_args()
     run_phase6b_benchmark(
@@ -430,6 +437,7 @@ def main() -> None:
         seed=args.seed,
         device_name=args.device,
         output_dir=Path(args.output_dir),
+        eval_only=args.eval_only,
     )
 
 
