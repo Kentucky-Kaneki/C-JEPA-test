@@ -31,6 +31,7 @@ from cyber_jepa.data.dataset import (
     generate_group_splits,
 )
 from cyber_jepa.evaluation.prevention_analysis import (
+    compute_prevention_scorecard,
     evaluate_multi_quantile_prevention,
     evaluate_prevention_lead_time,
     evaluate_closed_loop_prevention,
@@ -84,10 +85,16 @@ def extract_prevention_telemetry(
     concat_labels = np.concatenate(labels_list, axis=0)
     n_samples = len(concat_labels)
 
+    if len(traj_ids) != n_samples:
+        raise ValueError(
+            f"Trajectory IDs count ({len(traj_ids)}) does not match sample count ({n_samples}). "
+            "Ensure batch['trajectory_id'] is emitted."
+        )
+
     return {
         "context_latents": np.concatenate(context_latents, axis=0),
         "labels": concat_labels,
-        "trajectory_ids": traj_ids if len(traj_ids) == n_samples else ["traj_0"] * n_samples,
+        "trajectory_ids": traj_ids,
         "t_contexts": np.concatenate(t_contexts, axis=0) if t_contexts else np.arange(n_samples),
         "host_compromised": np.concatenate(host_comp_list, axis=0) if host_comp_list else np.zeros((n_samples, len(MONITORED_HOSTS))),
     }
@@ -123,6 +130,9 @@ def run_phase8_prevention_benchmark(
     all_trans = pd.concat(trans_list, ignore_index=True)
     all_groups = sorted(all_trans["split_group_id"].unique().tolist())
     splits = generate_group_splits(all_groups, train_ratio=0.70, val_ratio=0.15, test_ratio=0.15, salt="cyborg_jepa_split_v1")
+
+    # Authoritative policy map for B-line vs Meander breakdown
+    policy_map = dict(zip(all_trans["trajectory_id"].astype(str), all_trans["red_policy"].astype(str)))
 
     base_train = CyberJEPADataset(shard_paths, split_group_set=splits["train"], fit_normalizers=True)
     base_val = CyberJEPADataset(shard_paths, split_group_set=splits["val"], fit_normalizers=False, normalizer_stats=base_train.normalizer_stats)
@@ -166,11 +176,17 @@ def run_phase8_prevention_benchmark(
         extraction_time = time.time() - t0
         print(f"[+] Extracted telemetry in {extraction_time:.2f}s.")
 
-        # Zero-label clean baseline reference (prefix steps before adversary initiation)
+        # Zero-label clean baseline reference: prefix steps before adversary initiation (t <= 5)
         clean_ref_mask = (train_data["t_contexts"] <= 5)
         if np.sum(clean_ref_mask) < 10:
+            print(f"[!] Warning: Only {np.sum(clean_ref_mask)} clean prefix samples at t<=5. Expanding to t<=10.")
+            clean_ref_mask = (train_data["t_contexts"] <= 10)
+        if np.sum(clean_ref_mask) < 10:
+            # Sort temporally by t_contexts and select earliest 10%
+            sorted_t_idx = np.argsort(train_data["t_contexts"])
+            k = max(10, int(len(train_data["t_contexts"]) * 0.10))
             clean_ref_mask = np.zeros(len(train_data["t_contexts"]), dtype=bool)
-            clean_ref_mask[:max(10, int(len(clean_ref_mask) * 0.10))] = True
+            clean_ref_mask[sorted_t_idx[:k]] = True
         clean_ref_latents = train_data["context_latents"][clean_ref_mask]
 
         # ---------------------------------------------------------------------
@@ -207,8 +223,8 @@ def run_phase8_prevention_benchmark(
         # ---------------------------------------------------------------------
         # Policy Breakdown: B-line vs Meander Prevention
         # ---------------------------------------------------------------------
-        b_test = np.array(["bline" in str(t) for t in test_data["trajectory_ids"]])
-        m_test = np.array(["meander" in str(t) for t in test_data["trajectory_ids"]])
+        b_test = np.array([policy_map.get(str(t), "") == "bline" or "bline" in str(t).lower() for t in test_data["trajectory_ids"]])
+        m_test = np.array([policy_map.get(str(t), "") == "meander" or "meander" in str(t).lower() for t in test_data["trajectory_ids"]])
 
         centroid = np.mean(clean_ref_latents, axis=0)
         norm_test = test_data["context_latents"] / np.maximum(1e-12, np.linalg.norm(test_data["context_latents"], axis=1, keepdims=True))
@@ -284,118 +300,11 @@ def run_phase8_prevention_benchmark(
         json.dump(results, f, indent=2, default=_json_serial)
     print(f"\n[+] Full Prevention Results exported to {json_path}")
 
-    # Build Markdown Scorecard
-    scorecard_lines = [
-        "# Cyber-JEPA Phase 8: Operational Prevention & Early Warning Lead-Time Scorecard",
-        "",
-        "## Executive Summary",
-        "",
-        "This benchmark moves beyond passive threat detection to evaluate **active cyber prevention**.",
-        "Using Cyber-JEPA's emergent zero-label representations across 8 network scales (5 to 500 hosts),",
-        r"we quantify: (1) how many steps ahead of critical compromise an alarm is raised ($\Delta t$),",
-        "(2) the Crown Jewel Preservation Rate under automated containment, and (3) operational false intervention costs.",
-        "",
-        "---",
-        "",
-        r"## Section 1: Early Warning Lead-Time ($\Delta t$) Distribution Across Network Scales",
-        "",
-        r"$\Delta t = t_{\text{CrownJewelBreach}} - t_{\text{FirstAlert}}$. Calibrated on uncompromised baseline telemetry with zero attack labels.",
-        "",
-        r"| Network Scale | Hosts | Dims | Clean Q90 Tau | Early Warn Rate (%) | Mean Lead Steps | Median Lead Steps | Lead $\ge 3$ Steps (%) | Lead $\ge 5$ Steps (%) | Anomaly AUROC |",
-        "| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |",
-    ]
-
-    for s in scales:
-        if s not in scale_results:
-            continue
-        res_s = scale_results[s]
-        spec_s = res_s["scale_spec"]
-        prev_s = res_s["overall_prevention"]
-        q90 = prev_s["operating_points"]["q_90"]
-        lt = q90["lead_time"]
-        scorecard_lines.append(
-            f"| **Scale {s}** | {spec_s['num_hosts']} | {spec_s['obs_dim']} | "
-            f"{q90['threshold_value']:.4f} | **{lt['early_warning_rate_pct']:.2f}%** | "
-            f"**{lt['mean_lead_time_steps']:.1f}** | {lt['median_lead_time_steps']:.1f} | "
-            f"**{lt['lead_ge_3_steps_rate_pct']:.2f}%** | {lt['lead_ge_5_steps_rate_pct']:.2f}% | "
-            f"**{prev_s['auroc']:.4f}** |"
-        )
-
-    scorecard_lines.extend([
-        "",
-        "---",
-        "",
-        "## Section 2: Closed-Loop Crown Jewel Preservation Rate Across Quantiles",
-        "",
-        "Simulated automated containment (`Restore` / `Quarantine`) triggered at initial alert timestamp.",
-        "",
-        "| Network Scale | Q90 CJ Preserved (%) | Q90 False Intervene (%) | Q90 Net Utility | Q95 CJ Preserved (%) | Q95 False Intervene (%) | Q95 Net Utility | Q98 CJ Preserved (%) | Q98 False Intervene (%) | Q98 Net Utility |",
-        "| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |",
-    ])
-
-    for s in scales:
-        if s not in scale_results:
-            continue
-        res_s = scale_results[s]
-        prev_s = res_s["overall_prevention"]
-        q90 = prev_s["operating_points"]["q_90"]["closed_loop_prevention"]
-        q95 = prev_s["operating_points"]["q_95"]["closed_loop_prevention"]
-        q98 = prev_s["operating_points"]["q_98"]["closed_loop_prevention"]
-        scorecard_lines.append(
-            f"| **Scale {s}** | **{q90['crown_jewel_preservation_rate_pct']:.2f}%** | {q90['false_intervention_rate_pct']:.2f}% | **{q90['net_defense_utility']:+.2f}** | "
-            f"**{q95['crown_jewel_preservation_rate_pct']:.2f}%** | {q95['false_intervention_rate_pct']:.2f}% | **{q95['net_defense_utility']:+.2f}** | "
-            f"**{q98['crown_jewel_preservation_rate_pct']:.2f}%** | {q98['false_intervention_rate_pct']:.2f}% | **{q98['net_defense_utility']:+.2f}** |"
-        )
-
-    scorecard_lines.extend([
-        "",
-        "---",
-        "",
-        "## Section 3: Policy Breakdown — Fast Killchains (B-line) vs. Stealth Evasion (Meander)",
-        "",
-        "Comparison of early warning lead-time and preservation rate across adversarial killchain styles (evaluated at Q90).",
-        "",
-        "| Network Scale | B-line Mean Lead (steps) | B-line Preservation (%) | Meander Mean Lead (steps) | Meander Preservation (%) | Lead Time Advantage |",
-        "| :--- | :---: | :---: | :---: | :---: | :---: |",
-    ])
-
-    for s in scales:
-        if s not in scale_results:
-            continue
-        res_s = scale_results[s]
-        b_res = res_s["bline_prevention_q90"]
-        m_res = res_s["meander_prevention_q90"]
-        b_lt = b_res["lead_time"]["mean_lead_time_steps"]
-        b_p = b_res["closed_loop"]["crown_jewel_preservation_rate_pct"]
-        m_lt = m_res["lead_time"]["mean_lead_time_steps"]
-        m_p = m_res["closed_loop"]["crown_jewel_preservation_rate_pct"]
-        advantage = f"{m_lt - b_lt:+.1f} steps (Stealth)" if m_lt >= b_lt else f"{b_lt - m_lt:+.1f} steps (B-line)"
-        scorecard_lines.append(
-            f"| **Scale {s}** | {b_lt:.1f} | **{b_p:.2f}%** | {m_lt:.1f} | **{m_p:.2f}%** | `{advantage}` |"
-        )
-
-    # Dynamic metrics computation
-    q90_cj_list = [scale_results[s]["overall_prevention"]["operating_points"]["q_90"]["closed_loop_prevention"]["crown_jewel_preservation_rate_pct"] for s in scales if s in scale_results]
-    mean_leads = [scale_results[s]["overall_prevention"]["operating_points"]["q_90"]["lead_time"]["mean_lead_time_steps"] for s in scales if s in scale_results]
-    min_cj = min(q90_cj_list) if q90_cj_list else 0.0
-    max_cj = max(q90_cj_list) if q90_cj_list else 0.0
-    min_lead = min(mean_leads) if mean_leads else 0.0
-    max_lead = max(mean_leads) if mean_leads else 0.0
-
-    scorecard_lines.extend([
-        "",
-        "---",
-        "",
-        "## Key Strategic Insights for Journal Publication",
-        "",
-        f"1. **Operational Defense Runway**: Across all 8 scales, Cyber-JEPA alerts arrive on average **{min_lead:.1f} to {max_lead:.1f} steps before Crown Jewel compromise**, providing sufficient operational runway for automated eviction or human SOC response.",
-        f"2. **Effective Containment**: Triggering automated containment upon initial alarm preserves **{min_cj:.1f}% to {max_cj:.1f}% of Crown Jewels** that would otherwise be destroyed, while keeping false disruption on clean infrastructure bounded.",
-        "3. **Adversarial Invariance**: Stealthy exploratory evasion (`meander`) affords even greater lead times than rapid killchains (`bline`), proving that stealth techniques provide more opportunities for early latent detection.",
-    ])
-
+    # Build and write Markdown Scorecard
+    scorecard_md = compute_prevention_scorecard(scale_results, scales)
     scorecard_path = output_dir / "PREVENTION_SCORECARD.md"
     with open(scorecard_path, "w", encoding="utf-8") as f:
-        f.write("\n".join(scorecard_lines) + "\n")
+        f.write(scorecard_md)
     print(f"[+] Multi-Scale Prevention Scorecard written to {scorecard_path}")
 
     return results
