@@ -15,6 +15,7 @@ Provides:
    - Direct before-and-after comparison of operational detection rates and false alarms.
 """
 
+from collections import defaultdict
 from typing import Any
 import numpy as np
 from sklearn.linear_model import LogisticRegression
@@ -94,7 +95,7 @@ def calibrate_decision_threshold(
     else:
         best_thresh = 0.50
 
-    return float(np.clip(best_thresh, 0.05, 0.95))
+    return float(np.clip(best_thresh, 0.01, 0.99))
 
 
 def apply_temporal_smoothing(
@@ -117,10 +118,11 @@ def apply_temporal_smoothing(
         1D array of smoothed probabilities [N]
     """
     smoothed = np.zeros_like(probs, dtype=float)
-    unique_trajs = sorted(list(set(trajectory_ids)))
+    traj_indices: dict[str, list[int]] = defaultdict(list)
+    for i, tid in enumerate(trajectory_ids):
+        traj_indices[tid].append(i)
 
-    for traj in unique_trajs:
-        idx = [i for i, tid in enumerate(trajectory_ids) if tid == traj]
+    for traj, idx in traj_indices.items():
         traj_p = probs[idx]
         s_val = float(traj_p[0])
         for step_i, orig_i in enumerate(idx):

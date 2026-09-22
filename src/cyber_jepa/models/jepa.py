@@ -139,6 +139,14 @@ class CyberJEPA(nn.Module):
             else:
                 return cast(torch.Tensor, target_out)
 
+    @torch.no_grad()
+    def encode_target_frame(self, target_obs: torch.Tensor) -> torch.Tensor:
+        """
+        Public API: Encode single-frame target observation (T=1).
+        Returns target latent [B, hidden_dim].
+        """
+        return self._encode_target_single_frame(target_obs)
+
     def encode_context(
         self,
         history_obs: torch.Tensor,

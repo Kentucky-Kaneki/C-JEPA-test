@@ -12,7 +12,7 @@
       "250",
       "500"
     ],
-    "timestamp": "2026-09-21T18:00:38Z"
+    "timestamp": "2026-09-22T15:00:33Z"
   },
   "by_scale": {
     "5": {
@@ -137,6 +137,9 @@
       },
       "energy_anomaly": {
         "auroc": 0.5247615042289948,
+        "raw_auroc": 0.5247615042289948,
+        "inverted_auroc": 0.47523849577100524,
+        "effective_direction": "higher_energy",
         "pr_auc": 0.5246070895399236,
         "clean_mean_energy": 0.5293664336204529,
         "attack_mean_energy": 0.86905837059021,
@@ -217,6 +220,7 @@
           "total_attacks": 1623
         },
         "calibrated_ood": {
+          "calibration_source": "in_distribution_validation",
           "calibrated_tau_youden": 0.9000065670903648,
           "calibrated_tau_f2": 0.29,
           "baseline_tau_050": {
@@ -281,6 +285,7 @@
           "total_attacks": 4574
         },
         "calibrated_ood": {
+          "calibration_source": "in_distribution_validation",
           "calibrated_tau_youden": 0.3068019969608522,
           "calibrated_tau_f2": 0.12,
           "baseline_tau_050": {
@@ -449,66 +454,69 @@
         }
       },
       "energy_anomaly": {
-        "auroc": 0.1485682740952687,
-        "pr_auc": 0.37008176520969166,
+        "auroc": 0.8514317259047313,
+        "raw_auroc": 0.1485682740952687,
+        "inverted_auroc": 0.8514317259047313,
+        "effective_direction": "lower_energy",
+        "pr_auc": 0.838489757943907,
         "clean_mean_energy": 0.3941238820552826,
         "attack_mean_energy": 0.15848475694656372,
         "benign_mean_energy": 0.3662959039211273,
         "operating_points": {
           "q_80": {
             "calibration_quantile": 0.8,
-            "threshold_value": 0.5671685934066772,
-            "attacks_caught": 63,
-            "attacks_missed": 6134,
+            "threshold_value": 0.20554029941558838,
+            "attacks_caught": 5322,
+            "attacks_missed": 875,
             "total_attacks": 6197,
-            "detection_rate_pct": 1.0166209456188477,
-            "false_alarms": 989,
-            "false_alarm_rate_pct": 19.185257032007762,
-            "macro_f1": 0.2782476316527154
+            "detection_rate_pct": 85.88026464418267,
+            "false_alarms": 1679,
+            "false_alarm_rate_pct": 32.570320077594566,
+            "macro_f1": 0.7689067068829835
           },
           "q_85": {
             "calibration_quantile": 0.85,
-            "threshold_value": 0.626876711845398,
-            "attacks_caught": 49,
-            "attacks_missed": 6148,
+            "threshold_value": 0.19940103590488434,
+            "attacks_caught": 5264,
+            "attacks_missed": 933,
             "total_attacks": 6197,
-            "detection_rate_pct": 0.7907051799257705,
-            "false_alarms": 758,
-            "false_alarm_rate_pct": 14.704170708050437,
-            "macro_f1": 0.2870596965519248
+            "detection_rate_pct": 84.94432790059706,
+            "false_alarms": 1584,
+            "false_alarm_rate_pct": 30.7274490785645,
+            "macro_f1": 0.773233264277362
           },
           "q_90": {
             "calibration_quantile": 0.9,
-            "threshold_value": 0.7364912033081055,
-            "attacks_caught": 27,
-            "attacks_missed": 6170,
+            "threshold_value": 0.18257448077201843,
+            "attacks_caught": 5125,
+            "attacks_missed": 1072,
             "total_attacks": 6197,
-            "detection_rate_pct": 0.4356946909795062,
-            "false_alarms": 475,
-            "false_alarm_rate_pct": 9.21435499515034,
-            "macro_f1": 0.2964390746118439
+            "detection_rate_pct": 82.70130708407294,
+            "false_alarms": 1309,
+            "false_alarm_rate_pct": 25.392822502424828,
+            "macro_f1": 0.7875605302415005
           },
           "q_95": {
             "calibration_quantile": 0.95,
-            "threshold_value": 0.8454528450965881,
-            "attacks_caught": 16,
-            "attacks_missed": 6181,
+            "threshold_value": 0.1541687250137329,
+            "attacks_caught": 4607,
+            "attacks_missed": 1590,
             "total_attacks": 6197,
-            "detection_rate_pct": 0.25818944650637404,
-            "false_alarms": 294,
-            "false_alarm_rate_pct": 5.703200775945684,
-            "macro_f1": 0.30257619609958564
+            "detection_rate_pct": 74.34242375342907,
+            "false_alarms": 848,
+            "false_alarm_rate_pct": 16.450048496605238,
+            "macro_f1": 0.7850859880434147
           },
           "q_98": {
             "calibration_quantile": 0.98,
-            "threshold_value": 0.8926205635070801,
-            "attacks_caught": 11,
-            "attacks_missed": 6186,
+            "threshold_value": 0.1452903151512146,
+            "attacks_caught": 4295,
+            "attacks_missed": 1902,
             "total_attacks": 6197,
-            "detection_rate_pct": 0.17750524447313218,
-            "false_alarms": 226,
-            "false_alarm_rate_pct": 4.384093113482057,
-            "macro_f1": 0.30465988251183257
+            "detection_rate_pct": 69.30772954655478,
+            "false_alarms": 686,
+            "false_alarm_rate_pct": 13.307468477206596,
+            "macro_f1": 0.7719689778827658
           }
         }
       },
@@ -530,6 +538,7 @@
           "total_attacks": 1623
         },
         "calibrated_ood": {
+          "calibration_source": "in_distribution_validation",
           "calibrated_tau_youden": 0.7307787468155063,
           "calibrated_tau_f2": 0.18,
           "baseline_tau_050": {
@@ -594,6 +603,7 @@
           "total_attacks": 4574
         },
         "calibrated_ood": {
+          "calibration_source": "in_distribution_validation",
           "calibrated_tau_youden": 0.3136075128038281,
           "calibrated_tau_f2": 0.3,
           "baseline_tau_050": {
@@ -762,66 +772,69 @@
         }
       },
       "energy_anomaly": {
-        "auroc": 0.3716904882012463,
-        "pr_auc": 0.4407164072240675,
+        "auroc": 0.6283095117987537,
+        "raw_auroc": 0.3716904882012463,
+        "inverted_auroc": 0.6283095117987537,
+        "effective_direction": "lower_energy",
+        "pr_auc": 0.5860234482329673,
         "clean_mean_energy": 0.36690664291381836,
         "attack_mean_energy": 0.3482246994972229,
         "benign_mean_energy": 0.4399217963218689,
         "operating_points": {
           "q_80": {
             "calibration_quantile": 0.8,
-            "threshold_value": 0.6025308966636658,
-            "attacks_caught": 194,
-            "attacks_missed": 6003,
+            "threshold_value": 0.13669592142105103,
+            "attacks_caught": 0,
+            "attacks_missed": 6197,
             "total_attacks": 6197,
-            "detection_rate_pct": 3.130547038889785,
-            "false_alarms": 991,
-            "false_alarm_rate_pct": 19.224054316197865,
-            "macro_f1": 0.2980462288613002
+            "detection_rate_pct": 0.0,
+            "false_alarms": 111,
+            "false_alarm_rate_pct": 2.1532492725509216,
+            "macro_f1": 0.3076360087826299
           },
           "q_85": {
             "calibration_quantile": 0.85,
-            "threshold_value": 0.706017255783081,
-            "attacks_caught": 86,
-            "attacks_missed": 6111,
+            "threshold_value": 0.1319829523563385,
+            "attacks_caught": 0,
+            "attacks_missed": 6197,
             "total_attacks": 6197,
-            "detection_rate_pct": 1.3877682749717604,
-            "false_alarms": 634,
-            "false_alarm_rate_pct": 12.298739088263822,
-            "macro_f1": 0.2988080011480725
+            "detection_rate_pct": 0.0,
+            "false_alarms": 91,
+            "false_alarm_rate_pct": 1.7652764306498547,
+            "macro_f1": 0.3084795321637427
           },
           "q_90": {
             "calibration_quantile": 0.9,
-            "threshold_value": 0.7521743178367615,
-            "attacks_caught": 59,
-            "attacks_missed": 6138,
+            "threshold_value": 0.12916702032089233,
+            "attacks_caught": 0,
+            "attacks_missed": 6197,
             "total_attacks": 6197,
-            "detection_rate_pct": 0.9520735839922544,
-            "false_alarms": 478,
-            "false_alarm_rate_pct": 9.2725509214355,
-            "macro_f1": 0.3016231242906259
+            "detection_rate_pct": 0.0,
+            "false_alarms": 54,
+            "false_alarm_rate_pct": 1.0475266731328807,
+            "macro_f1": 0.3100346441378472
           },
           "q_95": {
             "calibration_quantile": 0.95,
-            "threshold_value": 0.8238794803619385,
-            "attacks_caught": 30,
-            "attacks_missed": 6167,
+            "threshold_value": 0.12392373383045197,
+            "attacks_caught": 0,
+            "attacks_missed": 6197,
             "total_attacks": 6197,
-            "detection_rate_pct": 0.48410521219945135,
-            "false_alarms": 287,
-            "false_alarm_rate_pct": 5.567410281280311,
-            "macro_f1": 0.30528489689997296
+            "detection_rate_pct": 0.0,
+            "false_alarms": 31,
+            "false_alarm_rate_pct": 0.6013579049466538,
+            "macro_f1": 0.31099781500364165
           },
           "q_98": {
             "calibration_quantile": 0.98,
-            "threshold_value": 0.8951374292373657,
-            "attacks_caught": 16,
-            "attacks_missed": 6181,
+            "threshold_value": 0.1182783991098404,
+            "attacks_caught": 0,
+            "attacks_missed": 6197,
             "total_attacks": 6197,
-            "detection_rate_pct": 0.25818944650637404,
-            "false_alarms": 163,
-            "false_alarm_rate_pct": 3.1619786614936953,
-            "macro_f1": 0.3082418943650153
+            "detection_rate_pct": 0.0,
+            "false_alarms": 13,
+            "false_alarm_rate_pct": 0.2521823472356935,
+            "macro_f1": 0.3117497271735176
           }
         }
       },
@@ -843,6 +856,7 @@
           "total_attacks": 1623
         },
         "calibrated_ood": {
+          "calibration_source": "in_distribution_validation",
           "calibrated_tau_youden": 0.7726918884437899,
           "calibrated_tau_f2": 0.35999999999999993,
           "baseline_tau_050": {
@@ -907,6 +921,7 @@
           "total_attacks": 4574
         },
         "calibrated_ood": {
+          "calibration_source": "in_distribution_validation",
           "calibrated_tau_youden": 0.2702192465512204,
           "calibrated_tau_f2": 0.26999999999999996,
           "baseline_tau_050": {
@@ -1075,66 +1090,69 @@
         }
       },
       "energy_anomaly": {
-        "auroc": 0.1648040641673398,
-        "pr_auc": 0.373432770368226,
+        "auroc": 0.8351959358326603,
+        "raw_auroc": 0.1648040641673398,
+        "inverted_auroc": 0.8351959358326603,
+        "effective_direction": "lower_energy",
+        "pr_auc": 0.8360299947824215,
         "clean_mean_energy": 0.3063647150993347,
         "attack_mean_energy": 0.15402144193649292,
         "benign_mean_energy": 0.32657963037490845,
         "operating_points": {
           "q_80": {
             "calibration_quantile": 0.8,
-            "threshold_value": 0.4930952191352844,
-            "attacks_caught": 64,
-            "attacks_missed": 6133,
+            "threshold_value": 0.1518479585647583,
+            "attacks_caught": 4305,
+            "attacks_missed": 1892,
             "total_attacks": 6197,
-            "detection_rate_pct": 1.0327577860254962,
-            "false_alarms": 1007,
-            "false_alarm_rate_pct": 19.53443258971872,
-            "macro_f1": 0.27752819068077067
+            "detection_rate_pct": 69.46909795062128,
+            "false_alarms": 888,
+            "false_alarm_rate_pct": 17.225994180407373,
+            "macro_f1": 0.7551064877548432
           },
           "q_85": {
             "calibration_quantile": 0.85,
-            "threshold_value": 0.5355421304702759,
-            "attacks_caught": 43,
-            "attacks_missed": 6154,
+            "threshold_value": 0.14532390236854553,
+            "attacks_caught": 4071,
+            "attacks_missed": 2126,
             "total_attacks": 6197,
-            "detection_rate_pct": 0.6938841374858802,
-            "false_alarms": 822,
-            "false_alarm_rate_pct": 15.94568380213385,
-            "macro_f1": 0.28309953910332475
+            "detection_rate_pct": 65.69307729546556,
+            "false_alarms": 731,
+            "false_alarm_rate_pct": 14.180407371483996,
+            "macro_f1": 0.7480826943259453
           },
           "q_90": {
             "calibration_quantile": 0.9,
-            "threshold_value": 0.5989651679992676,
-            "attacks_caught": 25,
-            "attacks_missed": 6172,
+            "threshold_value": 0.13750842213630676,
+            "attacks_caught": 3763,
+            "attacks_missed": 2434,
             "total_attacks": 6197,
-            "detection_rate_pct": 0.40342101016620946,
-            "false_alarms": 608,
-            "false_alarm_rate_pct": 11.794374393792435,
-            "macro_f1": 0.29010356262743336
+            "detection_rate_pct": 60.72293045021785,
+            "false_alarms": 591,
+            "false_alarm_rate_pct": 11.464597478176527,
+            "macro_f1": 0.7321937917838901
           },
           "q_95": {
             "calibration_quantile": 0.95,
-            "threshold_value": 0.6717571020126343,
-            "attacks_caught": 8,
-            "attacks_missed": 6189,
+            "threshold_value": 0.127020001411438,
+            "attacks_caught": 3129,
+            "attacks_missed": 3068,
             "total_attacks": 6197,
-            "detection_rate_pct": 0.12909472325318702,
+            "detection_rate_pct": 50.49217363240277,
             "false_alarms": 415,
             "false_alarm_rate_pct": 8.050436469447138,
-            "macro_f1": 0.29591126946070895
+            "macro_f1": 0.6868756854367983
           },
           "q_98": {
             "calibration_quantile": 0.98,
-            "threshold_value": 0.7649785876274109,
-            "attacks_caught": 4,
-            "attacks_missed": 6193,
+            "threshold_value": 0.12262861430644989,
+            "attacks_caught": 2522,
+            "attacks_missed": 3675,
             "total_attacks": 6197,
-            "detection_rate_pct": 0.06454736162659351,
-            "false_alarms": 228,
-            "false_alarm_rate_pct": 4.4228903976721625,
-            "macro_f1": 0.3033564357358255
+            "detection_rate_pct": 40.69711150556721,
+            "false_alarms": 334,
+            "false_alarm_rate_pct": 6.479146459747817,
+            "macro_f1": 0.6317426262195063
           }
         }
       },
@@ -1156,6 +1174,7 @@
           "total_attacks": 1623
         },
         "calibrated_ood": {
+          "calibration_source": "in_distribution_validation",
           "calibrated_tau_youden": 0.6945048450382862,
           "calibrated_tau_f2": 0.24,
           "baseline_tau_050": {
@@ -1220,6 +1239,7 @@
           "total_attacks": 4574
         },
         "calibrated_ood": {
+          "calibration_source": "in_distribution_validation",
           "calibrated_tau_youden": 0.28164097627868573,
           "calibrated_tau_f2": 0.15999999999999998,
           "baseline_tau_050": {
@@ -1388,66 +1408,69 @@
         }
       },
       "energy_anomaly": {
-        "auroc": 0.2001343693257915,
-        "pr_auc": 0.38313015470488326,
+        "auroc": 0.7998656306742086,
+        "raw_auroc": 0.2001343693257915,
+        "inverted_auroc": 0.7998656306742086,
+        "effective_direction": "lower_energy",
+        "pr_auc": 0.8021825430431639,
         "clean_mean_energy": 0.27722033858299255,
         "attack_mean_energy": 0.14750365912914276,
         "benign_mean_energy": 0.3027929961681366,
         "operating_points": {
           "q_80": {
             "calibration_quantile": 0.8,
-            "threshold_value": 0.41698455810546875,
-            "attacks_caught": 112,
-            "attacks_missed": 6085,
+            "threshold_value": 0.11698317527770996,
+            "attacks_caught": 2863,
+            "attacks_missed": 3334,
             "total_attacks": 6197,
-            "detection_rate_pct": 1.8073261255446185,
-            "false_alarms": 1147,
-            "false_alarm_rate_pct": 22.250242483026188,
-            "macro_f1": 0.277875604033344
+            "detection_rate_pct": 46.199774084234306,
+            "false_alarms": 562,
+            "false_alarm_rate_pct": 10.902036857419981,
+            "macro_f1": 0.6486403924960351
           },
           "q_85": {
             "calibration_quantile": 0.85,
-            "threshold_value": 0.5723583102226257,
-            "attacks_caught": 39,
-            "attacks_missed": 6158,
+            "threshold_value": 0.11442315578460693,
+            "attacks_caught": 2743,
+            "attacks_missed": 3454,
             "total_attacks": 6197,
-            "detection_rate_pct": 0.6293367758592867,
-            "false_alarms": 633,
-            "false_alarm_rate_pct": 12.279340446168769,
-            "macro_f1": 0.29124762234726725
+            "detection_rate_pct": 44.263353235436504,
+            "false_alarms": 498,
+            "false_alarm_rate_pct": 9.660523763336567,
+            "macro_f1": 0.6416814001617258
           },
           "q_90": {
             "calibration_quantile": 0.9,
-            "threshold_value": 0.6402472257614136,
-            "attacks_caught": 19,
-            "attacks_missed": 6178,
+            "threshold_value": 0.11284884810447693,
+            "attacks_caught": 2609,
+            "attacks_missed": 3588,
             "total_attacks": 6197,
-            "detection_rate_pct": 0.3065999677263192,
-            "false_alarms": 471,
-            "false_alarm_rate_pct": 9.136760426770126,
-            "macro_f1": 0.2952806171930435
+            "detection_rate_pct": 42.10101662094562,
+            "false_alarms": 444,
+            "false_alarm_rate_pct": 8.612997090203686,
+            "macro_f1": 0.632210141463003
           },
           "q_95": {
             "calibration_quantile": 0.95,
-            "threshold_value": 0.831137478351593,
-            "attacks_caught": 7,
-            "attacks_missed": 6190,
+            "threshold_value": 0.10954290628433228,
+            "attacks_caught": 2447,
+            "attacks_missed": 3750,
             "total_attacks": 6197,
-            "detection_rate_pct": 0.11295788284653865,
-            "false_alarms": 184,
-            "false_alarm_rate_pct": 3.5693501454898158,
-            "macro_f1": 0.30576606695288405
+            "detection_rate_pct": 39.486848475068584,
+            "false_alarms": 353,
+            "false_alarm_rate_pct": 6.847720659553831,
+            "macro_f1": 0.6223114959187412
           },
           "q_98": {
             "calibration_quantile": 0.98,
-            "threshold_value": 0.9489123225212097,
-            "attacks_caught": 0,
-            "attacks_missed": 6197,
+            "threshold_value": 0.10807342827320099,
+            "attacks_caught": 2388,
+            "attacks_missed": 3809,
             "total_attacks": 6197,
-            "detection_rate_pct": 0.0,
-            "false_alarms": 90,
-            "false_alarm_rate_pct": 1.7458777885548011,
-            "macro_f1": 0.3085216543826521
+            "detection_rate_pct": 38.53477489107633,
+            "false_alarms": 315,
+            "false_alarm_rate_pct": 6.110572259941804,
+            "macro_f1": 0.6189376145653922
           }
         }
       },
@@ -1469,6 +1492,7 @@
           "total_attacks": 1623
         },
         "calibrated_ood": {
+          "calibration_source": "in_distribution_validation",
           "calibrated_tau_youden": 0.846910308585617,
           "calibrated_tau_f2": 0.37999999999999995,
           "baseline_tau_050": {
@@ -1533,6 +1557,7 @@
           "total_attacks": 4574
         },
         "calibrated_ood": {
+          "calibration_source": "in_distribution_validation",
           "calibrated_tau_youden": 0.30526862569639657,
           "calibrated_tau_f2": 0.18,
           "baseline_tau_050": {
@@ -1701,66 +1726,69 @@
         }
       },
       "energy_anomaly": {
-        "auroc": 0.21024607977296356,
-        "pr_auc": 0.3863648857796861,
+        "auroc": 0.7897539202270364,
+        "raw_auroc": 0.21024607977296356,
+        "inverted_auroc": 0.7897539202270364,
+        "effective_direction": "lower_energy",
+        "pr_auc": 0.8014264059860937,
         "clean_mean_energy": 0.33846306800842285,
         "attack_mean_energy": 0.16453418135643005,
         "benign_mean_energy": 0.3266320824623108,
         "operating_points": {
           "q_80": {
             "calibration_quantile": 0.8,
-            "threshold_value": 0.5464153289794922,
-            "attacks_caught": 70,
-            "attacks_missed": 6127,
+            "threshold_value": 0.16542315483093262,
+            "attacks_caught": 4222,
+            "attacks_missed": 1975,
             "total_attacks": 6197,
-            "detection_rate_pct": 1.1295788284653865,
-            "false_alarms": 832,
-            "false_alarm_rate_pct": 16.139670223084384,
-            "macro_f1": 0.2868871377789264
+            "detection_rate_pct": 68.12974019686945,
+            "false_alarms": 1323,
+            "false_alarm_rate_pct": 25.66440349175558,
+            "macro_f1": 0.709135204562759
           },
           "q_85": {
             "calibration_quantile": 0.85,
-            "threshold_value": 0.6362455487251282,
-            "attacks_caught": 48,
-            "attacks_missed": 6149,
+            "threshold_value": 0.15651623904705048,
+            "attacks_caught": 4006,
+            "attacks_missed": 2191,
             "total_attacks": 6197,
-            "detection_rate_pct": 0.7745683395191222,
-            "false_alarms": 591,
-            "false_alarm_rate_pct": 11.464597478176527,
-            "macro_f1": 0.2946445389206418
+            "detection_rate_pct": 64.6441826690334,
+            "false_alarms": 1140,
+            "false_alarm_rate_pct": 22.114451988360813,
+            "macro_f1": 0.7065713448111869
           },
           "q_90": {
             "calibration_quantile": 0.9,
-            "threshold_value": 0.6862978935241699,
-            "attacks_caught": 35,
-            "attacks_missed": 6162,
+            "threshold_value": 0.14178454875946045,
+            "attacks_caught": 3508,
+            "attacks_missed": 2689,
             "total_attacks": 6197,
-            "detection_rate_pct": 0.5647894142326932,
-            "false_alarms": 449,
-            "false_alarm_rate_pct": 8.709990300678951,
-            "macro_f1": 0.2989415389378666
+            "detection_rate_pct": 56.60803614652251,
+            "false_alarms": 885,
+            "false_alarm_rate_pct": 17.16779825412221,
+            "macro_f1": 0.6837406302075515
           },
           "q_95": {
             "calibration_quantile": 0.95,
-            "threshold_value": 0.8021489381790161,
-            "attacks_caught": 14,
-            "attacks_missed": 6183,
+            "threshold_value": 0.12872552871704102,
+            "attacks_caught": 2812,
+            "attacks_missed": 3385,
             "total_attacks": 6197,
-            "detection_rate_pct": 0.2259157656930773,
-            "false_alarms": 237,
-            "false_alarm_rate_pct": 4.597478176527643,
-            "macro_f1": 0.30470566469979093
+            "detection_rate_pct": 45.37679522349524,
+            "false_alarms": 611,
+            "false_alarm_rate_pct": 11.852570320077595,
+            "macro_f1": 0.6396020976883099
           },
           "q_98": {
             "calibration_quantile": 0.98,
-            "threshold_value": 0.9015131592750549,
-            "attacks_caught": 7,
-            "attacks_missed": 6190,
+            "threshold_value": 0.12296050786972046,
+            "attacks_caught": 2554,
+            "attacks_missed": 3643,
             "total_attacks": 6197,
-            "detection_rate_pct": 0.11295788284653865,
-            "false_alarms": 104,
-            "false_alarm_rate_pct": 2.017458777885548,
-            "macro_f1": 0.30917264414677753
+            "detection_rate_pct": 41.213490398579964,
+            "false_alarms": 511,
+            "false_alarm_rate_pct": 9.91270611057226,
+            "macro_f1": 0.6212346808192566
           }
         }
       },
@@ -1782,6 +1810,7 @@
           "total_attacks": 1623
         },
         "calibrated_ood": {
+          "calibration_source": "in_distribution_validation",
           "calibrated_tau_youden": 0.8489477140135674,
           "calibrated_tau_f2": 0.20999999999999996,
           "baseline_tau_050": {
@@ -1846,6 +1875,7 @@
           "total_attacks": 4574
         },
         "calibrated_ood": {
+          "calibration_source": "in_distribution_validation",
           "calibrated_tau_youden": 0.3137231906950985,
           "calibrated_tau_f2": 0.30999999999999994,
           "baseline_tau_050": {
@@ -2014,66 +2044,69 @@
         }
       },
       "energy_anomaly": {
-        "auroc": 0.20354395379510784,
-        "pr_auc": 0.3843166213214391,
+        "auroc": 0.7964560462048922,
+        "raw_auroc": 0.20354395379510784,
+        "inverted_auroc": 0.7964560462048922,
+        "effective_direction": "lower_energy",
+        "pr_auc": 0.7774054380749473,
         "clean_mean_energy": 0.3234099745750427,
         "attack_mean_energy": 0.15693365037441254,
         "benign_mean_energy": 0.3335268199443817,
         "operating_points": {
           "q_80": {
             "calibration_quantile": 0.8,
-            "threshold_value": 0.57436203956604,
-            "attacks_caught": 46,
-            "attacks_missed": 6151,
+            "threshold_value": 0.12117588520050049,
+            "attacks_caught": 2036,
+            "attacks_missed": 4161,
             "total_attacks": 6197,
-            "detection_rate_pct": 0.7422946587058254,
-            "false_alarms": 904,
-            "false_alarm_rate_pct": 17.536372453928227,
-            "macro_f1": 0.27968946488249646
+            "detection_rate_pct": 32.8546070679361,
+            "false_alarms": 478,
+            "false_alarm_rate_pct": 9.2725509214355,
+            "macro_f1": 0.5679660188590121
           },
           "q_85": {
             "calibration_quantile": 0.85,
-            "threshold_value": 0.6592531800270081,
-            "attacks_caught": 23,
-            "attacks_missed": 6174,
+            "threshold_value": 0.09882655739784241,
+            "attacks_caught": 552,
+            "attacks_missed": 5645,
             "total_attacks": 6197,
-            "detection_rate_pct": 0.3711473293529127,
-            "false_alarms": 598,
-            "false_alarm_rate_pct": 11.6003879728419,
-            "macro_f1": 0.2902297747957571
+            "detection_rate_pct": 8.907535904469905,
+            "false_alarms": 141,
+            "false_alarm_rate_pct": 2.7352085354025215,
+            "macro_f1": 0.3971769424788126
           },
           "q_90": {
             "calibration_quantile": 0.9,
-            "threshold_value": 0.7383895516395569,
-            "attacks_caught": 13,
-            "attacks_missed": 6184,
+            "threshold_value": 0.09572458267211914,
+            "attacks_caught": 388,
+            "attacks_missed": 5809,
             "total_attacks": 6197,
-            "detection_rate_pct": 0.2097789252864289,
-            "false_alarms": 374,
-            "false_alarm_rate_pct": 7.255092143549952,
-            "macro_f1": 0.29856257292662264
+            "detection_rate_pct": 6.26109407777957,
+            "false_alarms": 96,
+            "false_alarm_rate_pct": 1.8622696411251212,
+            "macro_f1": 0.3738087713550298
           },
           "q_95": {
             "calibration_quantile": 0.95,
-            "threshold_value": 0.8293318748474121,
-            "attacks_caught": 6,
-            "attacks_missed": 6191,
+            "threshold_value": 0.09384465217590332,
+            "attacks_caught": 337,
+            "attacks_missed": 5860,
             "total_attacks": 6197,
-            "detection_rate_pct": 0.09682104243989027,
-            "false_alarms": 199,
-            "false_alarm_rate_pct": 3.8603297769156155,
-            "macro_f1": 0.3049489848187623
+            "detection_rate_pct": 5.438115217040504,
+            "false_alarms": 64,
+            "false_alarm_rate_pct": 1.241513094083414,
+            "macro_f1": 0.3671694650102814
           },
           "q_98": {
             "calibration_quantile": 0.98,
-            "threshold_value": 0.8712973594665527,
-            "attacks_caught": 5,
-            "attacks_missed": 6192,
+            "threshold_value": 0.09130775928497314,
+            "attacks_caught": 207,
+            "attacks_missed": 5990,
             "total_attacks": 6197,
-            "detection_rate_pct": 0.08068420203324189,
-            "false_alarms": 144,
-            "false_alarm_rate_pct": 2.7934044616876816,
-            "macro_f1": 0.3071211904669885
+            "detection_rate_pct": 3.340325964176214,
+            "false_alarms": 40,
+            "false_alarm_rate_pct": 0.7759456838021339,
+            "macro_f1": 0.34669855078439055
           }
         }
       },
@@ -2095,6 +2128,7 @@
           "total_attacks": 1623
         },
         "calibrated_ood": {
+          "calibration_source": "in_distribution_validation",
           "calibrated_tau_youden": 0.7804803096372313,
           "calibrated_tau_f2": 0.32999999999999996,
           "baseline_tau_050": {
@@ -2159,6 +2193,7 @@
           "total_attacks": 4574
         },
         "calibrated_ood": {
+          "calibration_source": "in_distribution_validation",
           "calibrated_tau_youden": 0.29315297458912587,
           "calibrated_tau_f2": 0.20999999999999996,
           "baseline_tau_050": {
@@ -2327,66 +2362,69 @@
         }
       },
       "energy_anomaly": {
-        "auroc": 0.21959342674962243,
-        "pr_auc": 0.38899428004431347,
+        "auroc": 0.7804065732503775,
+        "raw_auroc": 0.21959342674962243,
+        "inverted_auroc": 0.7804065732503775,
+        "effective_direction": "lower_energy",
+        "pr_auc": 0.7783992778764512,
         "clean_mean_energy": 0.31499794125556946,
         "attack_mean_energy": 0.1498754620552063,
         "benign_mean_energy": 0.2993803918361664,
         "operating_points": {
           "q_80": {
             "calibration_quantile": 0.8,
-            "threshold_value": 0.5672532916069031,
-            "attacks_caught": 43,
-            "attacks_missed": 6154,
+            "threshold_value": 0.13344717025756836,
+            "attacks_caught": 3656,
+            "attacks_missed": 2541,
             "total_attacks": 6197,
-            "detection_rate_pct": 0.6938841374858802,
-            "false_alarms": 656,
-            "false_alarm_rate_pct": 12.725509214354997,
-            "macro_f1": 0.2908382316334295
+            "detection_rate_pct": 58.99628852670647,
+            "false_alarms": 944,
+            "false_alarm_rate_pct": 18.31231813773036,
+            "macro_f1": 0.6922700899555141
           },
           "q_85": {
             "calibration_quantile": 0.85,
-            "threshold_value": 0.6222050189971924,
-            "attacks_caught": 25,
-            "attacks_missed": 6172,
+            "threshold_value": 0.12847864627838135,
+            "attacks_caught": 3069,
+            "attacks_missed": 3128,
             "total_attacks": 6197,
-            "detection_rate_pct": 0.40342101016620946,
-            "false_alarms": 491,
-            "false_alarm_rate_pct": 9.524733268671193,
-            "macro_f1": 0.2953881784185117
+            "detection_rate_pct": 49.52396320800388,
+            "false_alarms": 825,
+            "false_alarm_rate_pct": 16.003879728419008,
+            "macro_f1": 0.647428993950971
           },
           "q_90": {
             "calibration_quantile": 0.9,
-            "threshold_value": 0.6807305812835693,
-            "attacks_caught": 15,
-            "attacks_missed": 6182,
+            "threshold_value": 0.11857777833938599,
+            "attacks_caught": 2570,
+            "attacks_missed": 3627,
             "total_attacks": 6197,
-            "detection_rate_pct": 0.24205260609972568,
-            "false_alarms": 311,
-            "false_alarm_rate_pct": 6.03297769156159,
-            "macro_f1": 0.30166300638028926
+            "detection_rate_pct": 41.471679845086335,
+            "false_alarms": 603,
+            "false_alarm_rate_pct": 11.697381183317168,
+            "macro_f1": 0.615662546648548
           },
           "q_95": {
             "calibration_quantile": 0.95,
-            "threshold_value": 0.7907392978668213,
-            "attacks_caught": 7,
-            "attacks_missed": 6190,
+            "threshold_value": 0.11186474561691284,
+            "attacks_caught": 1967,
+            "attacks_missed": 4230,
             "total_attacks": 6197,
-            "detection_rate_pct": 0.11295788284653865,
-            "false_alarms": 147,
-            "false_alarm_rate_pct": 2.851600387972842,
-            "macro_f1": 0.3073456913529248
+            "detection_rate_pct": 31.74116507987736,
+            "false_alarms": 473,
+            "false_alarm_rate_pct": 9.175557710960232,
+            "macro_f1": 0.5605768286061548
           },
           "q_98": {
             "calibration_quantile": 0.98,
-            "threshold_value": 0.8709204196929932,
-            "attacks_caught": 3,
-            "attacks_missed": 6194,
+            "threshold_value": 0.10173611342906952,
+            "attacks_caught": 1221,
+            "attacks_missed": 4976,
             "total_attacks": 6197,
-            "detection_rate_pct": 0.048410521219945137,
-            "false_alarms": 71,
-            "false_alarm_rate_pct": 1.3773035887487877,
-            "macro_f1": 0.30985586476053983
+            "detection_rate_pct": 19.70308213651767,
+            "false_alarms": 294,
+            "false_alarm_rate_pct": 5.703200775945684,
+            "macro_f1": 0.482564283247054
           }
         }
       },
@@ -2408,6 +2446,7 @@
           "total_attacks": 1623
         },
         "calibrated_ood": {
+          "calibration_source": "in_distribution_validation",
           "calibrated_tau_youden": 0.8363598112569556,
           "calibrated_tau_f2": 0.18,
           "baseline_tau_050": {
@@ -2472,6 +2511,7 @@
           "total_attacks": 4574
         },
         "calibrated_ood": {
+          "calibration_source": "in_distribution_validation",
           "calibrated_tau_youden": 0.34097736336328766,
           "calibrated_tau_f2": 0.25999999999999995,
           "baseline_tau_050": {

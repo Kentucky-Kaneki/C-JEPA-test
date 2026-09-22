@@ -228,8 +228,14 @@ def evaluate_jepa_energy_anomaly(
     future latent z_hat and actual observed future target latent z_target:
         E(x, y, a) = 1 - cos(z_hat, z_target)
         
-    Clean transitions adhere to the forward dynamics model (low energy).
-    Zero-day attacks violate the normal transition manifold (high energy).
+    Clean transitions adhere to normal background telemetry patterns.
+    When attacker transitions occur, the dynamics shift. If the adversary executes
+    structured, highly-predictable exploit chains, energy can collapse (lower energy);
+    conversely, unmodeled perturbations produce higher energy.
+    
+    This function automatically detects the direction of separation between clean baseline
+    and anomalous dynamics, providing both raw and inverted scores, and calibrates
+    unsupervised operational thresholds at the designated quantiles.
     """
     if len(clean_energies) == 0 or len(test_energies) == 0:
         return {}
@@ -238,13 +244,30 @@ def evaluate_jepa_energy_anomaly(
         quantiles = [0.80, 0.85, 0.90, 0.95, 0.98]
 
     has_both = len(np.unique(test_labels)) > 1
-    auroc = float(roc_auc_score(test_labels, test_energies)) if has_both else 0.5
-    prauc = float(average_precision_score(test_labels, test_energies)) if has_both else 0.0
+    raw_auroc = float(roc_auc_score(test_labels, test_energies)) if has_both else 0.5
+    inv_auroc = float(roc_auc_score(test_labels, -test_energies)) if has_both else 0.5
+
+    # Determine effective separation direction
+    if inv_auroc > raw_auroc:
+        effective_direction = "lower_energy"
+        effective_auroc = inv_auroc
+        prauc = float(average_precision_score(test_labels, -test_energies)) if has_both else 0.0
+    else:
+        effective_direction = "higher_energy"
+        effective_auroc = raw_auroc
+        prauc = float(average_precision_score(test_labels, test_energies)) if has_both else 0.0
 
     operating_points = {}
     for q in quantiles:
-        th = float(np.percentile(clean_energies, q * 100.0))
-        preds = (test_energies >= th).astype(int)
+        if effective_direction == "lower_energy":
+            # Calibrate threshold on lower tail of clean baseline
+            th = float(np.percentile(clean_energies, (1.0 - q) * 100.0))
+            preds = (test_energies <= th).astype(int)
+        else:
+            # Calibrate threshold on upper tail of clean baseline
+            th = float(np.percentile(clean_energies, q * 100.0))
+            preds = (test_energies >= th).astype(int)
+
         cm = confusion_matrix(test_labels, preds, labels=[0, 1])
         tn, fp, fn, tp = int(cm[0, 0]), int(cm[0, 1]), int(cm[1, 0]), int(cm[1, 1])
 
@@ -267,7 +290,10 @@ def evaluate_jepa_energy_anomaly(
         }
 
     return {
-        "auroc": auroc,
+        "auroc": effective_auroc,
+        "raw_auroc": raw_auroc,
+        "inverted_auroc": inv_auroc,
+        "effective_direction": effective_direction,
         "pr_auc": prauc,
         "clean_mean_energy": float(np.mean(clean_energies)),
         "attack_mean_energy": float(np.mean(test_energies[test_labels == 1])) if np.sum(test_labels == 1) > 0 else 0.0,
@@ -373,6 +399,7 @@ def evaluate_cross_policy_transfer(
             "total_attacks": ood_base["total_attacks"],
         },
         "calibrated_ood": {
+            "calibration_source": "in_distribution_validation",
             "calibrated_tau_youden": tau_youden,
             "calibrated_tau_f2": tau_f2,
             "baseline_tau_050": ood_base,

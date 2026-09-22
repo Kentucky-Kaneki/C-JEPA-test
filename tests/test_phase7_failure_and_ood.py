@@ -109,25 +109,25 @@ def test_calibrate_decision_threshold():
     # Clean probs centered around 0.20, attack probs centered around 0.70
     p_val = np.clip(np.concatenate([np.random.normal(0.20, 0.10, 50), np.random.normal(0.70, 0.10, 50)]), 0.01, 0.99)
 
-    # Youden's J
+    # Youden's J: optimal separator for bimodal normals N(0.2, 0.1) vs N(0.7, 0.1)
     tau_youden = calibrate_decision_threshold(y_val, p_val, criterion="youden")
-    assert 0.30 <= tau_youden <= 0.60
+    assert 0.35 <= tau_youden <= 0.55
 
     # F2 (recall-prioritized) should select lower threshold
     tau_f2 = calibrate_decision_threshold(y_val, p_val, criterion="f2")
-    assert 0.10 <= tau_f2 <= 0.50
+    assert 0.10 <= tau_f2 <= 0.45
 
     # F0.5 (precision-prioritized)
     tau_f05 = calibrate_decision_threshold(y_val, p_val, criterion="f05")
-    assert 0.20 <= tau_f05 <= 0.90
+    assert 0.35 <= tau_f05 <= 0.85
 
     # FPR target 5%
     tau_fpr05 = calibrate_decision_threshold(y_val, p_val, criterion="fpr_target_05")
-    assert 0.20 <= tau_fpr05 <= 0.90
+    assert 0.35 <= tau_fpr05 <= 0.65
 
     # Recall target 95%
     tau_rec95 = calibrate_decision_threshold(y_val, p_val, criterion="recall_target_95")
-    assert 0.10 <= tau_rec95 <= 0.65
+    assert 0.15 <= tau_rec95 <= 0.55
 
 
 def test_apply_temporal_smoothing():
@@ -223,13 +223,17 @@ def test_evaluate_zero_label_latent_anomaly():
 
 
 def test_evaluate_cross_policy_transfer():
-    """Verify zero-shot cross-policy transfer and retention rate calculation."""
+    """Verify zero-shot cross-policy transfer, threshold calibration, and retention rate calculation."""
     np.random.seed(42)
-    N_train, N_test, D = 200, 100, 64
+    N_train, N_val, N_test, D = 200, 100, 100, 64
 
     # Source policy training data
     train_z = np.random.randn(N_train, D)
     train_y = (train_z[:, 0] > 0).astype(int)
+
+    # Source policy validation data (for threshold calibration)
+    val_z = np.random.randn(N_val, D)
+    val_y = (val_z[:, 0] > 0).astype(int)
 
     # In-distribution test data
     test_z_in = np.random.randn(N_test, D)
@@ -239,6 +243,7 @@ def test_evaluate_cross_policy_transfer():
     test_z_ood = np.random.randn(N_test, D)
     test_z_ood[:, 0] += 0.5 * test_z_ood[:, 1]
     test_y_ood = (test_z_ood[:, 0] > 0).astype(int)
+    test_trajs_ood = [f"ep_{i // 10}" for i in range(N_test)]
 
     transfer_res = evaluate_cross_policy_transfer(
         train_latents=train_z,
@@ -249,6 +254,10 @@ def test_evaluate_cross_policy_transfer():
         test_labels_ood=test_y_ood,
         source_policy_name="bline",
         target_policy_name="meander",
+        val_latents_indist=val_z,
+        val_labels_indist=val_y,
+        test_trajectories_ood=test_trajs_ood,
+        temporal_alpha=0.60,
         seed=42,
     )
 
@@ -256,6 +265,15 @@ def test_evaluate_cross_policy_transfer():
     assert transfer_res["in_distribution"]["macro_f1"] > 0.70
     assert transfer_res["zero_shot_ood"]["macro_f1"] > 0.60
     assert transfer_res["zero_shot_retention_rate_pct"] > 50.0
+
+    # Verify calibration path was executed and recorded
+    assert "calibrated_ood" in transfer_res
+    cal = transfer_res["calibrated_ood"]
+    assert cal["calibration_source"] == "in_distribution_validation"
+    assert 0.05 <= cal["calibrated_tau_youden"] <= 0.95
+    assert 0.05 <= cal["calibrated_tau_f2"] <= 0.95
+    assert "smoothed_and_youden" in cal
+    assert cal["smoothed_and_youden"]["macro_f1"] > 0.50
 
 
 def test_evaluate_mitre_tier_summary():
@@ -329,29 +347,51 @@ def test_evaluate_operational_zero_day_detection():
 
 
 def test_evaluate_jepa_energy_anomaly():
-    """Verify JEPA prediction energy anomaly detection computes operational points."""
+    """Verify JEPA prediction energy anomaly detection computes operational points in both directions."""
     np.random.seed(42)
     N_clean, N_test = 100, 200
 
-    # Low prediction error energy on clean transitions (0.05 +- 0.02)
-    clean_energy = np.random.normal(0.05, 0.02, N_clean)
-
-    # Test set: 100 low energy clean, 100 high energy attack (0.35 +- 0.05)
-    test_clean_energy = np.random.normal(0.05, 0.02, 100)
-    test_attack_energy = np.random.normal(0.35, 0.05, 100)
-    test_energy = np.concatenate([test_clean_energy, test_attack_energy])
+    # -------------------------------------------------------------------------
+    # Case 1: Direct mode (unmodeled attacks have HIGHER prediction energy)
+    # -------------------------------------------------------------------------
+    clean_energy_dir = np.random.normal(0.05, 0.02, N_clean)
+    test_clean_dir = np.random.normal(0.05, 0.02, 100)
+    test_attack_dir = np.random.normal(0.35, 0.05, 100)
+    test_energy_dir = np.concatenate([test_clean_dir, test_attack_dir])
     test_y = np.array([0] * 100 + [1] * 100)
 
-    res = evaluate_jepa_energy_anomaly(
-        clean_energies=clean_energy,
-        test_energies=test_energy,
+    res_dir = evaluate_jepa_energy_anomaly(
+        clean_energies=clean_energy_dir,
+        test_energies=test_energy_dir,
         test_labels=test_y,
         quantiles=[0.90, 0.95],
     )
 
-    assert "auroc" in res
-    assert res["auroc"] > 0.95
-    assert "operating_points" in res
-    assert "q_90" in res["operating_points"]
-    assert res["operating_points"]["q_90"]["detection_rate_pct"] > 90.0
+    assert "auroc" in res_dir
+    assert res_dir["auroc"] > 0.95
+    assert res_dir["effective_direction"] == "higher_energy"
+    assert "operating_points" in res_dir
+    assert "q_90" in res_dir["operating_points"]
+    assert res_dir["operating_points"]["q_90"]["detection_rate_pct"] > 90.0
+
+    # -------------------------------------------------------------------------
+    # Case 2: Inverted mode (predictable killchains have LOWER prediction energy)
+    # -------------------------------------------------------------------------
+    clean_energy_inv = np.random.normal(0.35, 0.05, N_clean)
+    test_clean_inv = np.random.normal(0.35, 0.05, 100)
+    test_attack_inv = np.random.normal(0.12, 0.02, 100)
+    test_energy_inv = np.concatenate([test_clean_inv, test_attack_inv])
+
+    res_inv = evaluate_jepa_energy_anomaly(
+        clean_energies=clean_energy_inv,
+        test_energies=test_energy_inv,
+        test_labels=test_y,
+        quantiles=[0.90, 0.95],
+    )
+
+    assert res_inv["auroc"] > 0.95
+    assert res_inv["effective_direction"] == "lower_energy"
+    assert res_inv["inverted_auroc"] > res_inv["raw_auroc"]
+    assert "q_90" in res_inv["operating_points"]
+    assert res_inv["operating_points"]["q_90"]["detection_rate_pct"] > 90.0
 
