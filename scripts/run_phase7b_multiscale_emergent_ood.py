@@ -224,6 +224,8 @@ def run_phase7b_benchmark(
             clean_ref_mask[sorted_t_idx[:k]] = True
         clean_ref_latents = train_data["context_latents"][clean_ref_mask]
         clean_ref_energies = train_data["energies"][clean_ref_mask]
+        clean_traj_ids = np.array(train_data["trajectory_ids"])[clean_ref_mask]
+        clean_t_ctx = train_data["t_contexts"][clean_ref_mask]
 
         zero_day_results = evaluate_operational_zero_day_detection(
             clean_reference_latents=clean_ref_latents,
@@ -231,6 +233,14 @@ def run_phase7b_benchmark(
             test_labels=test_data["labels"],
             test_host_comp=test_data["host_compromised"],
             quantiles=[0.80, 0.85, 0.90, 0.95, 0.98],
+            trajectory_ids=test_data["trajectory_ids"],
+            t_contexts=test_data["t_contexts"],
+            clean_trajectory_ids=clean_traj_ids,
+            clean_t_contexts=clean_t_ctx,
+            num_clusters=2,
+            velocity_weight=0.25,
+            velocity_mode="deceleration",
+            random_state=1001,
         )
 
         q90 = zero_day_results["operating_points"]["q_90"]

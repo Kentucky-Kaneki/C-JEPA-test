@@ -1,0 +1,64 @@
+{
+  "jepa": {
+    "mean_team_reward": -50.0,
+    "std_team_reward": 44.553338819890925,
+    "min_team_reward": -190.0,
+    "max_team_reward": -5.0,
+    "per_agent_mean_reward": {
+      "blue_agent_0": -10.0,
+      "blue_agent_1": -10.0,
+      "blue_agent_2": -10.0,
+      "blue_agent_3": -10.0,
+      "blue_agent_4": -10.0
+    },
+    "action_distribution": {
+      "Sleep": 7056,
+      "Restore": 194
+    },
+    "mean_sleep_percentage": 97.32413793103447,
+    "mean_latency_ms": 12.321165999987738,
+    "episodes": 50,
+    "steps_per_episode": 30
+  },
+  "reactive": {
+    "mean_team_reward": -78.5,
+    "std_team_reward": 56.01115960235067,
+    "min_team_reward": -275.0,
+    "max_team_reward": -5.0,
+    "per_agent_mean_reward": {
+      "blue_agent_0": -15.7,
+      "blue_agent_1": -15.7,
+      "blue_agent_2": -15.7,
+      "blue_agent_3": -15.7,
+      "blue_agent_4": -15.7
+    },
+    "action_distribution": {
+      "Sleep": 6796,
+      "Restore": 454
+    },
+    "mean_sleep_percentage": 93.73793103448276,
+    "mean_latency_ms": 0.10863206951461475,
+    "episodes": 50,
+    "steps_per_episode": 30
+  },
+  "sleep": {
+    "mean_team_reward": -32.9,
+    "std_team_reward": 45.804912400309206,
+    "min_team_reward": -190.0,
+    "max_team_reward": 0.0,
+    "per_agent_mean_reward": {
+      "blue_agent_0": -6.58,
+      "blue_agent_1": -6.58,
+      "blue_agent_2": -6.58,
+      "blue_agent_3": -6.58,
+      "blue_agent_4": -6.58
+    },
+    "action_distribution": {
+      "Sleep": 7250
+    },
+    "mean_sleep_percentage": 100.0,
+    "mean_latency_ms": 0.013066482838596506,
+    "episodes": 50,
+    "steps_per_episode": 30
+  }
+}
