@@ -1,0 +1,240 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "model_name": "Cyber-JEPA",
+  "version": "Phase5_Optimal_Production_v1.0",
+  "description": "Fully specified, empirical-evidence-backed optimal architecture, input modeling, loss regularization, and training hyperparameters for Cyber-JEPA.",
+  "evidence_summary": {
+    "empirical_backing": {
+      "representation_choice": "Phase 2 and 3 proved FlatVectorRepresentation avoids token-mean-pooling dimensional collapse seen in feature/host/hierarchical representations (effective rank preserved, 0.8810 Val / 0.8751 Test / 0.8257 OOD FLK).",
+      "action_separation": "Phase 4 proved that fusing state and action into a single 10-layer encoder causes 100% collapse (effective rank < 2.5). Phase 5 proved separate ActionEncoder + LatentPredictor natively yields strong action sensitivity (+15.9% zeroed degradation) without needing auxiliary contrastive losses.",
+      "prediction_horizon": "Phase 5 Stage 3 proved horizon=4 decisively outperforms horizon=8 and 16, jumping to 0.9246 Val / 0.9201 Test / 0.8755 OOD F1 and resolving the persistence deficit (-0.0029 vs -0.1310).",
+      "target_normalization": "Phase 5 Stage 3 proved batch_center expands effective rank from 9.95 to 13.66 (21.3% capacity) and quadruples action sensitivity (+0.1271 degradation under action shuffle).",
+      "transition_balancing": "Phase 5 Stage 1 proved static50_dynamic50 (1:1 balanced sampling) prevents trivial constant-state predictions while maximizing downstream linear probing accuracy."
+    },
+    "target_metrics": {
+      "validation_probe_macro_f1": 0.9246,
+      "standard_test_probe_macro_f1": 0.9201,
+      "ood_policy_transfer_macro_f1": 0.8755,
+      "effective_rank": 13.66,
+      "effective_rank_fraction": 0.213,
+      "improvement_over_persistence": -0.0029
+    }
+  },
+  "input_pipeline": {
+    "environment": {
+      "simulator": "CybORG 3.1",
+      "scenario": "Scenario1b (CAGE Challenge 2)",
+      "num_hosts": 13,
+      "host_names": [
+        "Enterprise0", "Enterprise1", "Enterprise2",
+        "Op_Host0", "Op_Host1", "Op_Host2", "Op_Server0",
+        "User0", "User1", "User2", "User3", "User4",
+        "Defender"
+      ],
+      "subnets": ["Contractor", "Enterprise", "Operational", "User"],
+      "raw_observation_dim": 52,
+      "observation_type": "discretized_tabular_vector"
+    },
+    "sliding_window": {
+      "history_len": 4,
+      "history_len_description": "Number of consecutive observation steps passed to the state encoder O_{t-3:t} (shape: [B, 4, 52]).",
+      "horizon": 4,
+      "horizon_description": "Number of future action steps and prediction steps a_{t:t+3} -> z_{t+4}.",
+      "flatten_strategy": "concatenate_along_time",
+      "flattened_state_input_dim": 208,
+      "flattened_state_input_dim_formula": "history_len * raw_observation_dim = 4 * 52 = 208"
+    },
+    "dataset_balancing": {
+      "sampling_strategy": "transition_distance_balanced",
+      "ratio_name": "static50_dynamic50",
+      "static_to_dynamic_ratio": [1, 1],
+      "distance_metric": "rms_flat_observation_delta",
+      "threshold_calibration_rule": "train_median_rms_flat_observation_delta",
+      "threshold_value": 0.25,
+      "calibration_split": "train_only",
+      "evaluation_splits_policy": "natural_distribution_strictly_unmodified"
+    }
+  },
+  "model_architecture": {
+    "hidden_dim": 64,
+    "state_encoder": {
+      "type": "FlatVectorRepresentation",
+      "input_dim": 52,
+      "history_len": 4,
+      "flattened_dim": 208,
+      "hidden_dim": 64,
+      "num_layers": 3,
+      "ffn_dim": 256,
+      "activation": "GELU",
+      "dropout": 0.0,
+      "layer_norm": true,
+      "norm_position": "post_projection",
+      "aggregator_mode": "legacy_last_step_mean",
+      "output_shape": "[B, 64]",
+      "output_semantics": "Context state representation latent z_t"
+    },
+    "target_encoder": {
+      "type": "EMA_Frozen_Encoder",
+      "input_format": "single_frame_target",
+      "input_dim": 52,
+      "history_len": 1,
+      "architecture_match": "same_encoder_topology_as_state_encoder",
+      "training_mode": "frozen_no_gradients",
+      "ema_schedule": {
+        "momentum_init": 0.996,
+        "momentum_final": 1.0,
+        "schedule_type": "cosine_ramp",
+        "update_step": "every_training_batch"
+      },
+      "output_shape": "[B, 64]",
+      "output_semantics": "Target latent representation z_{t+c}"
+    },
+    "action_encoder": {
+      "type": "StructuralActionEncoder",
+      "discrete_action_space_size": 66,
+      "num_action_types": 16,
+      "num_hosts": 14,
+      "num_subnets": 4,
+      "max_horizon": 4,
+      "hidden_dim": 64,
+      "projection_depth": 2,
+      "components": {
+        "type_embedding": {"num_embeddings": 16, "embedding_dim": 64, "semantics": "Action type (Sleep, Monitor, Analyse, Remove, Misinform, Restore)"},
+        "host_embedding": {"num_embeddings": 14, "embedding_dim": 64, "semantics": "Target host index (0=NONE, 1..13=hosts)"},
+        "subnet_embedding": {"num_embeddings": 4, "embedding_dim": 64, "semantics": "Target subnet index (0=NONE, 1..3=subnets)"},
+        "position_embedding": {
+          "num_embeddings": 4,
+          "embedding_dim": 64,
+          "semantics": "Rollout step k in horizon sequence [1..4]"
+        },
+        "validity_embedding": {
+          "num_embeddings": 2,
+          "embedding_dim": 64,
+          "semantics": "Action mask validity (0=invalid/pad, 1=valid)"
+        }
+      },
+      "composition_rule": "token = type_emb + host_emb + subnet_emb + pos_emb + valid_emb",
+      "projection_mlp": "Linear(64, 64) -> GELU -> Linear(64, 64)",
+      "output_shape": "[B, K, 64]",
+      "output_semantics": "Action tokens sequence A^Z_{t:t+c}"
+    },
+    "latent_predictor": {
+      "type": "ActionConditionedTransformerPredictor",
+      "hidden_dim": 64,
+      "num_layers": 3,
+      "num_heads": 4,
+      "ffn_dim": 256,
+      "dropout": 0.1,
+      "activation": "GELU",
+      "norm_first": true,
+      "max_horizon": 4,
+      "input_conditioning": {
+        "state_input": "z_t [B, 64]",
+        "action_sequence": "A_Z_{t:t+4} [B, 4, 64]",
+        "combination_method": "cross_attention_or_concatenation_sequence"
+      },
+      "target_query_interface": {
+        "granularity_embedding": {
+          "num_embeddings": 4,
+          "embedding_dim": 64,
+          "categories": ["feature", "host", "subnet", "network"]
+        },
+        "entity_embedding": {
+          "num_embeddings": 16,
+          "embedding_dim": 64,
+          "semantics": "Entity query index"
+        },
+        "horizon_embedding": {
+          "num_embeddings": 5,
+          "embedding_dim": 64,
+          "semantics": "Target horizon query embedding"
+        }
+      },
+      "output_projection": "LayerNorm(64) -> Linear(64, 64)",
+      "output_shape": "[B, 64] per horizon query or [B, K, 64] for all horizons",
+      "output_semantics": "Predicted target latent z_hat_{t+k}"
+    }
+  },
+  "loss_and_regularization": {
+    "prediction_loss": {
+      "type": "SmoothL1Loss",
+      "beta": 1.0,
+      "formula": "SmoothL1(z_hat_{t+k}, z_{t+k})",
+      "weight": 1.0
+    },
+    "target_normalization": {
+      "mode": "batch_center",
+      "options": ["none", "l2", "batch_center"],
+      "selected_mode": "batch_center",
+      "formula": "z_norm = z - z.mean(dim=0, keepdim=True)",
+      "rationale": "Removes static global mean bias across cyber episodes, expanding effective rank from 9.95 to 13.66 and quadrupling action coupling sensitivity."
+    },
+    "vicreg_regularization": {
+      "variance_term": {
+        "enabled": true,
+        "weight": 1.0,
+        "target_std": 1.0,
+        "epsilon": 0.0001,
+        "formula": "mean(ReLU(target_std - sqrt(Var(z, dim=0) + eps)))",
+        "purpose": "Prevents point/dimensional collapse by forcing every latent feature to maintain standard deviation >= 1.0 across the batch."
+      },
+      "covariance_term": {
+        "enabled": true,
+        "weight": 0.04,
+        "formula": "(1 / dim) * sum(square(off_diagonal(Cov(z))))",
+        "purpose": "Penalizes redundant linear correlation between distinct latent dimensions, driving effective rank expansion."
+      }
+    },
+    "action_contrast_term": {
+      "enabled": false,
+      "weight": 0.0,
+      "rationale": "Empirically redundant; predictor architecture already achieves +15.9V to +22.0% zeroed action degradation natively."
+    },
+    "total_objective_formula": "L_total = SmoothL1(z_hat_norm, z_target_norm) + 1.0 * L_variance + 0.04 * L_covariance"
+  },
+  "training_hyperparameters": {
+    "optimization": {
+      "optimizer": "AdamW",
+      "learning_rate": 0.001,
+      "weight_decay": 0.0001,
+      "betas": [0.9, 0.999],
+      "eps": 1e-08
+    },
+    "lr_scheduler": {
+      "type": "CosineAnnealingLR",
+      "T_max": 20,
+      "eta_min": 1e-06
+    },
+    "batch_size": 64,
+    "epochs": {
+      "max_epochs": 20,
+      "min_epochs": 10,
+      "early_stopping_patience": 5,
+      "monitor_metric": "val_loss",
+      "mode": "min"
+    },
+    "reproducibility": {
+      "evaluation_seeds": [1001, 2003, 3005],
+      "seed_worker_enabled": true,
+      "deterministic_cuda": true
+    }
+  },
+  "evaluation_and_probing_protocol": {
+    "linear_probe": {
+      "type": "RidgeClassifier_or_LogisticRegression",
+      "regularization_c": 1.0,
+      "targets": "host_compromise_state_oracle_labels",
+      "evaluation_splits": [
+        {"name": "validation", "distribution": "natural_in_distribution"},
+        {"name": "standard_test", "distribution": "natural_unseen_episodes_same_policy"},
+        {"name": "policy_transfer_ood", "distribution": "bline_to_meander_zero_shot_adversary_transfer"}
+      ],
+      "metric": "Macro-F1"
+    },
+    "representation_diagnostics": {
+      "effective_rank_formula": "exp(-sum(p_i * log(p_i))), where p_i = s_i / sum(s)",
+      "action_sensitivity_tests": ["action_zeroed_degradation", "action_shuffled_degradation"],
+      "persistence_baseline_metric": "improvement_over_persistence = (MSE_persistence - MSE_jepa) / MSE_persistence"
+    }
+  }
+}
